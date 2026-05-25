@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id            String    @id @default(cuid())
+  email         String    @unique
+  name          String?
+  password      String?
+  role          Role      @default(RENTER)
+  phone         String?
+  avatar        String?
+  isVerified    Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  properties    Property[]
+  bookings      Booking[]   @relation("RenterBookings")
+  reviews       Review[]
+  documents     Document[]
+
+  @@map("users")
+}
+
+model Property {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  address         String
+  city            String
+  pricePerNight   Decimal
+  bedrooms        Int
+  bathrooms       Int
+  maxGuests       Int
+  amenities       String[]
+  images          String[]
+  isVerified      Boolean  @default(false)
+  isAvailable     Boolean  @default(true)
+
+  hostId          String
+  host            User     @relation(fields: [hostId], references: [id])
+
+  bookings        Booking[]
+  reviews         Review[]
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("properties")
+}
+
+model Booking {
+  id            String        @id @default(cuid())
+  checkIn       DateTime
+  checkOut      DateTime
+  totalPrice    Decimal
+  status        BookingStatus @default(PENDING)
+
+  renterId      String
+  propertyId    String
+
+  renter        User      @relation("RenterBookings", fields: [renterId], references: [id])
+  property      Property  @relation(fields: [propertyId], references: [id])
+
+  createdAt     DateTime  @default(now())
+
+  @@map("bookings")
+}
+
+model Review {
+  id         String   @id @default(cuid())
+  rating     Int      @default(5)
+  comment    String?
+  createdAt  DateTime @default(now())
+
+  renterId   String
+  propertyId String
+
+  renter     User     @relation(fields: [renterId], references: [id])
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  @@map("reviews")
+}
+
+model Document {
+  id         String         @id @default(cuid())
+  type       DocumentType
+  fileUrl    String
+  status     DocumentStatus @default(PENDING)
+  uploadedAt DateTime       @default(now())
+
+  userId     String
+  user       User           @relation(fields: [userId], references: [id])
+
+  @@map("documents")
+}
+
+enum Role {
+  RENTER
+  HOST
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+}
+
+enum DocumentType {
+  ID_CARD
+  OWNERSHIP_PROOF
+  HOUSE_REGISTRATION
+  OTHER
+}
+
+enum DocumentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}

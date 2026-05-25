@@ -1,65 +1,113 @@
-import Image from "next/image";
+import prisma from "@/lib/prisma";
+import Link from "next/link";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
-export default function Home() {
+// Awaiting searchParams in Next.js 15
+export default async function Home({ 
+  searchParams 
+}: { 
+  searchParams: Promise<{ city?: string; maxPrice?: string; bedrooms?: string; guests?: string }> 
+}) {
+  const { city, maxPrice, bedrooms, guests } = await searchParams;
+
+  const filters: any = {
+    isVerified: true,
+    isAvailable: true,
+  };
+
+  if (city) filters.city = { contains: city, mode: "insensitive" };
+  if (maxPrice) filters.pricePerNight = { lte: parseFloat(maxPrice) };
+  if (bedrooms) filters.bedrooms = { gte: parseInt(bedrooms, 10) };
+  if (guests) filters.maxGuests = { gte: parseInt(guests, 10) };
+
+  const properties = await prisma.property.findMany({
+    where: filters,
+    orderBy: { createdAt: "desc" },
+  });
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="container mx-auto py-8">
+      {/* Hero Section */}
+      <div className="flex flex-col items-center justify-center text-center py-16 bg-muted/30 rounded-xl mb-12 px-4">
+        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
+          Find your next stay in Ethiopia
+        </h1>
+        <p className="text-lg text-muted-foreground mb-8 max-w-2xl">
+          Discover beautiful homes, apartments, and unique spaces for your short-term rental needs.
+        </p>
+        
+        {/* Advanced Search Bar */}
+        <form className="w-full max-w-4xl bg-background p-4 rounded-xl shadow-md flex flex-wrap md:flex-nowrap items-end gap-4 border" action="/">
+          <div className="flex-1 min-w-[200px]">
+            <label className="text-sm font-medium mb-1 block">Location</label>
+            <Input type="text" name="city" placeholder="e.g. Addis Ababa" defaultValue={city || ""} />
+          </div>
+          <div className="w-full md:w-32">
+            <label className="text-sm font-medium mb-1 block">Max Price</label>
+            <Input type="number" name="maxPrice" placeholder="$" defaultValue={maxPrice || ""} min="0" />
+          </div>
+          <div className="w-full md:w-28">
+            <label className="text-sm font-medium mb-1 block">Bedrooms</label>
+            <Input type="number" name="bedrooms" placeholder="Min" defaultValue={bedrooms || ""} min="1" />
+          </div>
+          <div className="w-full md:w-28">
+            <label className="text-sm font-medium mb-1 block">Guests</label>
+            <Input type="number" name="guests" placeholder="Min" defaultValue={guests || ""} min="1" />
+          </div>
+          <Button type="submit" size="lg" className="w-full md:w-auto h-10 px-8">Search</Button>
+        </form>
+      </div>
+
+      {/* Property Grid */}
+      <div className="mb-8 flex justify-between items-center">
+        <h2 className="text-2xl font-bold tracking-tight">
+          {Object.keys(filters).length > 2 ? "Search Results" : "Featured Properties"}
+        </h2>
+        {Object.keys(filters).length > 2 && (
+          <Link href="/">
+            <Button variant="ghost">Clear Filters</Button>
+          </Link>
+        )}
+      </div>
+
+      {properties.length === 0 ? (
+        <div className="text-center py-12 border rounded-xl bg-muted/10">
+          <p className="text-muted-foreground text-lg">No properties found matching your criteria.</p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {properties.map((property) => (
+            <Link href={`/properties/${property.id}`} key={property.id}>
+              <Card className="overflow-hidden hover:shadow-lg transition-shadow h-full cursor-pointer group">
+                <div
+                  className="h-64 w-full bg-cover bg-center bg-muted transition-transform group-hover:scale-105 duration-300"
+                  style={{ backgroundImage: `url(${property.images[0] || "/placeholder-home.jpg"})` }}
+                />
+                <CardHeader>
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <CardTitle className="line-clamp-1">{property.title}</CardTitle>
+                      <CardDescription className="line-clamp-1">{property.city}</CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <p className="font-semibold text-lg">
+                    ${Number(property.pricePerNight).toFixed(2)} <span className="text-sm font-normal text-muted-foreground">/ night</span>
+                  </p>
+                  <div className="mt-2 flex gap-4 text-sm text-muted-foreground">
+                    <span>{property.bedrooms} Beds</span>
+                    <span>{property.bathrooms} Baths</span>
+                    <span>Up to {property.maxGuests} Guests</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
         </div>
-      </main>
+      )}
     </div>
   );
 }
