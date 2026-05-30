@@ -65,6 +65,7 @@ model Booking {
 
   renter        User      @relation("RenterBookings", fields: [renterId], references: [id])
   property      Property  @relation(fields: [propertyId], references: [id])
+  payment       Payment?
 
   createdAt     DateTime  @default(now())
 
@@ -99,6 +100,19 @@ model Document {
   @@map("documents")
 }
 
+model Payment {
+  id                String        @id @default(cuid())
+  bookingId         String        @unique
+  booking           Booking       @relation(fields: [bookingId], references: [id])
+  amount            Decimal
+  currency          String        @default("ETB")
+  status            PaymentStatus @default(PENDING)
+  chapaReference    String?
+  createdAt         DateTime      @default(now())
+
+  @@map("payments")
+}
+
 enum Role {
   RENTER
   HOST
@@ -123,4 +137,10 @@ enum DocumentStatus {
   PENDING
   APPROVED
   REJECTED
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
 }
