@@ -6,10 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "node-v20-bin/bin/node ./node_modules/.bin/tsx --env-file=.env prisma/seed.ts"
   },
   "prisma": {
-    "seed": "tsx --env-file=.env prisma/seed.ts"
+    "seed": "node-v20-bin/bin/node ./node_modules/.bin/tsx --env-file=.env prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

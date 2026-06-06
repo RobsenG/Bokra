@@ -1,5 +1,8 @@
+import React from "react";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import Navbar from "@/components/common/Navbar";
+import Footer from "@/components/common/Footer";
 
 export default async function RenterLayout({
   children,
@@ -13,11 +16,10 @@ export default async function RenterLayout({
   }
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <header className="sticky top-0 z-50 flex h-16 items-center border-b bg-background px-6">
-        <div className="font-bold text-xl">Renter Dashboard</div>
-      </header>
-      <main className="flex-1">{children}</main>
+    <div className="min-h-screen flex flex-col">
+      <Navbar />
+      <main className="flex-1 container mx-auto px-4 py-8">{children}</main>
+      <Footer />
     </div>
   );
 }

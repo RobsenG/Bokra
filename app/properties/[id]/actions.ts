@@ -2,6 +2,7 @@
 
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { initializeChapaPayment } from "@/lib/chapa";
 import { revalidatePath } from "next/cache";
 
 export async function bookProperty(propertyId: string, checkInStr: string, checkOutStr: string) {
@@ -9,6 +10,15 @@ export async function bookProperty(propertyId: string, checkInStr: string, check
 
   if (!session?.user) {
     throw new Error("You must be logged in to book a property.");
+  }
+
+  // Get full user details for payment gateway
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+  });
+
+  if (!user) {
+    throw new Error("User session invalid.");
   }
 
   const checkIn = new Date(checkInStr);
@@ -48,7 +58,7 @@ export async function bookProperty(propertyId: string, checkInStr: string, check
   }
 
   // Create booking
-  await prisma.booking.create({
+  const booking = await prisma.booking.create({
     data: {
       checkIn,
       checkOut,
@@ -59,6 +69,21 @@ export async function bookProperty(propertyId: string, checkInStr: string, check
     },
   });
 
+  // Split name for Chapa parameters
+  const [firstName = "Guest", lastName = "User"] = (user.name || "").split(" ");
+
+  // Initialize Chapa payment flow
+  const checkoutUrl = await initializeChapaPayment({
+    amount: totalPrice,
+    email: user.email,
+    firstName,
+    lastName,
+    txRef: `booking-${booking.id}`,
+    returnUrl: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/renter/bookings`,
+  });
+
   revalidatePath(`/properties/${propertyId}`);
-  revalidatePath("/(renter)/bookings");
+  revalidatePath("/renter/bookings");
+
+  return { checkoutUrl };
 }
