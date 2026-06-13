@@ -11,7 +11,8 @@ import {
   ShieldAlert, 
   Menu, 
   X, 
-  UserCheck
+  UserCheck,
+  User
 } from "lucide-react";
 
 interface HostSidebarProps {
@@ -28,6 +29,7 @@ export default function HostSidebar({ isVerified }: HostSidebarProps) {
     { name: "Bookings", href: "/host/bookings", icon: CalendarDays },
     { name: "Reviews", href: "/host/reviews", icon: Star },
     { name: "Verification", href: "/host/verification", icon: isVerified ? UserCheck : ShieldAlert },
+    { name: "Profile", href: "/host/profile", icon: User },
   ];
 
   return (

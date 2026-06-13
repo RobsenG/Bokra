@@ -1,16 +1,24 @@
 import prisma from "@/lib/prisma";
 import { notFound } from "next/navigation";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { auth } from "@/lib/auth";
 import BookingForm from "./BookingForm";
+import ReviewForm from "./ReviewForm";
+import { generateReviewSummary } from "@/lib/groq";
+import { Star, MapPin, Users, BedDouble, Bath, Sparkles } from "lucide-react";
 
 // Page for viewing a single property
 export default async function PropertyDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
+  const session = await auth();
 
   const property = await prisma.property.findUnique({
     where: { id },
     include: {
       host: { select: { name: true, avatar: true, email: true } },
+      reviews: {
+        include: { renter: { select: { name: true, avatar: true, email: true } } },
+        orderBy: { createdAt: "desc" }
+      }
     },
   });
 
@@ -18,25 +26,41 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
     notFound();
   }
 
+  // Generate AI Summary
+  const aiSummary = await generateReviewSummary(property.title, property.reviews);
+
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto py-8 space-y-8 max-w-6xl">
       {/* Title & Location */}
-      <div className="mb-6">
-        <h1 className="text-4xl font-bold tracking-tight">{property.title}</h1>
-        <p className="text-lg text-muted-foreground mt-2">{property.address}, {property.city}</p>
+      <div className="space-y-2">
+        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-neutral-800 dark:text-white">
+          {property.title}
+        </h1>
+        <div className="flex items-center gap-4 text-sm font-medium text-neutral-500 dark:text-neutral-400">
+          <span className="flex items-center gap-1">
+            <MapPin className="size-4 text-teal-600 dark:text-teal-400" />
+            {property.address}, {property.city}
+          </span>
+          {property.reviews.length > 0 && (
+            <span className="flex items-center gap-1">
+              <Star className="size-4 fill-orange-500 text-orange-500" />
+              {(property.reviews.reduce((s, r) => s + r.rating, 0) / property.reviews.length).toFixed(1)} ({property.reviews.length} reviews)
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Image Gallery */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[300px] md:h-[450px] rounded-3xl overflow-hidden">
         <div 
-          className="h-[400px] w-full bg-cover bg-center rounded-xl bg-muted"
-          style={{ backgroundImage: `url(${property.images[0] || "/placeholder-home.jpg"})` }}
+          className="h-full w-full bg-cover bg-center bg-neutral-200 dark:bg-neutral-800 hover:scale-105 transition-transform duration-500"
+          style={{ backgroundImage: `url(${property.images[0] || ""})` }}
         />
         <div className="hidden md:grid grid-cols-2 gap-4">
           {property.images.slice(1, 5).map((img, i) => (
             <div 
               key={i}
-              className="h-[192px] w-full bg-cover bg-center rounded-xl bg-muted"
+              className="h-full w-full bg-cover bg-center rounded-xl bg-neutral-200 dark:bg-neutral-800 hover:scale-105 transition-transform duration-500"
               style={{ backgroundImage: `url(${img})` }}
             />
           ))}
@@ -44,57 +68,135 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
       </div>
 
       {/* Main Content & Booking Form */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
         {/* Left Col: Details */}
-        <div className="lg:col-span-2 space-y-8">
+        <div className="lg:col-span-2 space-y-10">
           
-          <div className="flex justify-between items-center border-b pb-6">
-            <div>
-              <h2 className="text-2xl font-semibold">Hosted by {property.host.name || property.host.email}</h2>
-              <p className="text-muted-foreground">
-                {property.maxGuests} guests · {property.bedrooms} bedrooms · {property.bathrooms} baths
-              </p>
+          <div className="flex justify-between items-center pb-8 border-b border-neutral-100 dark:border-neutral-800">
+            <div className="space-y-3">
+              <h2 className="text-xl md:text-2xl font-bold text-neutral-800 dark:text-white">
+                Hosted by {property.host.name || property.host.email}
+              </h2>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-neutral-600 dark:text-neutral-400">
+                <span className="flex items-center gap-1.5"><Users className="size-4" /> {property.maxGuests} guests</span>
+                <span className="flex items-center gap-1.5"><BedDouble className="size-4" /> {property.bedrooms} bedrooms</span>
+                <span className="flex items-center gap-1.5"><Bath className="size-4" /> {property.bathrooms} baths</span>
+              </div>
             </div>
-            {property.host.avatar && (
-              <img src={property.host.avatar} alt="Host Avatar" className="w-16 h-16 rounded-full" />
-            )}
+            <div className="h-16 w-16 rounded-full bg-teal-100 dark:bg-teal-900 overflow-hidden shrink-0">
+              {property.host.avatar ? (
+                <img src={property.host.avatar} alt="Host Avatar" className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-teal-700 dark:text-teal-300 font-bold text-xl">
+                  {(property.host.name || property.host.email)[0].toUpperCase()}
+                </div>
+              )}
+            </div>
           </div>
 
-          <div>
-            <h3 className="text-xl font-semibold mb-4">About this space</h3>
-            <p className="text-muted-foreground whitespace-pre-line leading-relaxed">
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-neutral-800 dark:text-white">About this space</h3>
+            <p className="text-neutral-600 dark:text-neutral-400 whitespace-pre-line leading-relaxed text-sm md:text-base">
               {property.description}
             </p>
           </div>
 
-          <div>
-            <h3 className="text-xl font-semibold mb-4">What this place offers</h3>
-            <ul className="grid grid-cols-2 gap-4">
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-neutral-800 dark:text-white">What this place offers</h3>
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {property.amenities.map((amenity, idx) => (
-                <li key={idx} className="flex items-center gap-2 text-muted-foreground">
-                  <span className="w-2 h-2 bg-primary rounded-full" />
+                <li key={idx} className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400 text-sm">
+                  <div className="w-2 h-2 rounded-full bg-teal-500" />
                   {amenity}
                 </li>
               ))}
             </ul>
           </div>
+
+          <hr className="border-neutral-100 dark:border-neutral-800" />
+
+          {/* AI Review Summary */}
+          <div className="bg-gradient-to-tr from-teal-50 to-emerald-50 dark:from-teal-950/20 dark:to-emerald-950/20 rounded-3xl p-6 md:p-8 border border-teal-100/50 dark:border-teal-900/30 space-y-4">
+            <div className="flex items-center gap-2 text-teal-700 dark:text-teal-400 font-bold">
+              <Sparkles className="size-5" />
+              <h3 className="text-lg">AI Review Summary</h3>
+            </div>
+            <p className="text-sm md:text-base text-neutral-700 dark:text-neutral-300 leading-relaxed font-medium">
+              {aiSummary}
+            </p>
+            <p className="text-xs text-teal-600/70 dark:text-teal-400/50">Generated by Groq LLM</p>
+          </div>
+
+          {/* Reviews List */}
+          <div className="space-y-6">
+            <h3 className="text-xl font-bold text-neutral-800 dark:text-white flex items-center gap-2">
+              <Star className="size-5 fill-orange-500 text-orange-500" />
+              {property.reviews.length} Reviews
+            </h3>
+
+            {property.reviews.length === 0 ? (
+              <p className="text-neutral-500 dark:text-neutral-400 text-sm">No reviews yet.</p>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {property.reviews.map((review) => (
+                  <div key={review.id} className="space-y-3 p-5 rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden shrink-0">
+                        {review.renter.avatar ? (
+                          <img src={review.renter.avatar} alt="Avatar" className="w-full h-full object-cover" />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-neutral-500 dark:text-neutral-400 font-bold text-sm">
+                            {(review.renter.name || review.renter.email)[0].toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div>
+                        <p className="font-bold text-sm text-neutral-800 dark:text-neutral-200">
+                          {review.renter.name || review.renter.email}
+                        </p>
+                        <p className="text-xs text-neutral-500">
+                          {new Date(review.createdAt).toLocaleDateString(undefined, { month: "long", year: "numeric" })}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-0.5">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`size-3.5 ${i < review.rating ? "fill-orange-500 text-orange-500" : "text-neutral-200 dark:text-neutral-800"}`} />
+                      ))}
+                    </div>
+                    {review.comment && (
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                        {review.comment}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Add Review Form */}
+          {session?.user && (
+            <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
+              <ReviewForm propertyId={property.id} />
+            </div>
+          )}
+
         </div>
 
         {/* Right Col: Booking Form */}
         <div className="relative">
           <div className="sticky top-24">
-            <Card className="shadow-lg border-muted">
-              <CardHeader>
-                <CardTitle className="text-2xl font-bold">
-                  ${Number(property.pricePerNight).toFixed(2)}
-                  <span className="text-base font-normal text-muted-foreground"> / night</span>
-                </CardTitle>
-                <CardDescription>Select dates to check availability</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <BookingForm propertyId={property.id} pricePerNight={Number(property.pricePerNight)} />
-              </CardContent>
-            </Card>
+            <div className="bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-xl p-6 md:p-8 space-y-6">
+              <div className="space-y-1">
+                <h3 className="text-2xl font-black text-neutral-800 dark:text-white flex items-baseline gap-1">
+                  {Number(property.pricePerNight).toLocaleString()} ETB
+                  <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400"> / night</span>
+                </h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-400">Select dates to check availability</p>
+              </div>
+              <BookingForm propertyId={property.id} pricePerNight={Number(property.pricePerNight)} />
+            </div>
           </div>
         </div>
       </div>

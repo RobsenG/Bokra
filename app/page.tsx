@@ -5,14 +5,15 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
+import SearchForm from "@/components/common/SearchForm";
 import { Search, MapPin, Calendar, Users, Shield, Compass, BadgeCheck, Sparkles, Plus, Star } from "lucide-react";
 
 export default async function Home({ 
   searchParams 
 }: { 
-  searchParams: Promise<{ city?: string; checkIn?: string; checkOut?: string; guests?: string }> 
+  searchParams: Promise<{ city?: string; checkIn?: string; checkOut?: string; guests?: string; minPrice?: string; maxPrice?: string; bedrooms?: string }> 
 }) {
-  const { city, checkIn, checkOut, guests } = await searchParams;
+  const { city, checkIn, checkOut, guests, minPrice, maxPrice, bedrooms } = await searchParams;
 
   const filters: any = {
     isVerified: true,
@@ -24,6 +25,18 @@ export default async function Home({
   }
   if (guests) {
     filters.maxGuests = { gte: parseInt(guests, 10) };
+  }
+  if (bedrooms) {
+    filters.bedrooms = { gte: parseInt(bedrooms, 10) };
+  }
+  if (minPrice || maxPrice) {
+    filters.pricePerNight = {};
+    if (minPrice) {
+      filters.pricePerNight.gte = parseFloat(minPrice);
+    }
+    if (maxPrice) {
+      filters.pricePerNight.lte = parseFloat(maxPrice);
+    }
   }
 
   // Fetch verified properties
@@ -66,79 +79,7 @@ export default async function Home({
 
             {/* Elegant Search Bar */}
             <div className="pt-8">
-              <form 
-                action="/"
-                method="GET"
-                className="w-full max-w-4xl mx-auto bg-white dark:bg-neutral-900 p-4 md:p-3 rounded-2xl shadow-2xl flex flex-col md:flex-row items-stretch md:items-center gap-3 border border-neutral-100 dark:border-neutral-800 text-neutral-800 dark:text-neutral-200"
-              >
-                {/* Location */}
-                <div className="flex-1 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-800">
-                  <MapPin className="size-5 text-teal-600 shrink-0" />
-                  <div className="flex-1 text-left">
-                    <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Where</label>
-                    <input 
-                      type="text" 
-                      name="city" 
-                      placeholder="Addis Ababa, Hawassa..." 
-                      defaultValue={city || ""}
-                      className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder-neutral-400 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Check In */}
-                <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-800">
-                  <Calendar className="size-5 text-teal-600 shrink-0" />
-                  <div className="flex-1 text-left">
-                    <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Check In</label>
-                    <input 
-                      type="date" 
-                      name="checkIn" 
-                      defaultValue={checkIn || ""}
-                      className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-neutral-600 dark:text-neutral-300 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Check Out */}
-                <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-100 dark:border-neutral-800">
-                  <Calendar className="size-5 text-teal-600 shrink-0" />
-                  <div className="flex-1 text-left">
-                    <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Check Out</label>
-                    <input 
-                      type="date" 
-                      name="checkOut" 
-                      defaultValue={checkOut || ""}
-                      className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-neutral-600 dark:text-neutral-300 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Guests */}
-                <div className="w-full md:w-32 flex items-center gap-2.5 px-3 py-2">
-                  <Users className="size-5 text-teal-600 shrink-0" />
-                  <div className="flex-1 text-left">
-                    <label className="block text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Guests</label>
-                    <input 
-                      type="number" 
-                      name="guests" 
-                      placeholder="Guests" 
-                      defaultValue={guests || ""}
-                      min="1"
-                      className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder-neutral-400 outline-none"
-                    />
-                  </div>
-                </div>
-
-                {/* Submit */}
-                <Button 
-                  type="submit" 
-                  className="bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold h-12 px-6 rounded-xl flex items-center justify-center gap-2 shadow-lg shadow-teal-600/10 cursor-pointer"
-                >
-                  <Search className="size-4" />
-                  <span>Search</span>
-                </Button>
-              </form>
+              <SearchForm />
             </div>
           </div>
         </section>

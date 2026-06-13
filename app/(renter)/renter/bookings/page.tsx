@@ -3,6 +3,7 @@ import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { CalendarDays, MapPin, ExternalLink, RefreshCw } from "lucide-react";
+import CancelBookingButton from "./CancelBookingButton";
 
 export default async function RenterBookingsPage() {
   const session = await auth();
@@ -100,12 +101,17 @@ export default async function RenterBookingsPage() {
                       {Number(booking.totalPrice).toLocaleString()} ETB
                     </p>
                   </div>
-                  <Link href={`/properties/${booking.property.id}`}>
-                    <button className="flex items-center gap-1 text-xs font-semibold text-neutral-600 hover:text-teal-600 dark:text-neutral-350 dark:hover:text-teal-400 border border-neutral-250 dark:border-neutral-750 hover:border-teal-500 px-3 py-1.5 rounded-xl transition-all cursor-pointer">
-                      <span>View Details</span>
-                      <ExternalLink className="size-3" />
-                    </button>
-                  </Link>
+                  <div className="flex gap-2 items-center">
+                    {(booking.status === "PENDING" || booking.status === "CONFIRMED") && (
+                      <CancelBookingButton bookingId={booking.id} />
+                    )}
+                    <Link href={`/properties/${booking.property.id}`}>
+                      <button className="flex items-center gap-1 text-xs font-semibold text-neutral-600 hover:text-teal-600 dark:text-neutral-350 dark:hover:text-teal-400 border border-neutral-250 dark:border-neutral-750 hover:border-teal-500 px-3 py-1.5 rounded-xl transition-all cursor-pointer">
+                        <span>View Details</span>
+                        <ExternalLink className="size-3" />
+                      </button>
+                    </Link>
+                  </div>
                 </div>
               </div>
             </div>

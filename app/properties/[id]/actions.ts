@@ -87,3 +87,51 @@ export async function bookProperty(propertyId: string, checkInStr: string, check
 
   return { checkoutUrl };
 }
+
+export async function postReview(propertyId: string, rating: number, comment: string) {
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new Error("You must be logged in to review a property.");
+  }
+
+  // Check if the user has completed a booking for this property
+  const hasStayed = await prisma.booking.findFirst({
+    where: {
+      propertyId,
+      renterId: session.user.id,
+      status: { in: ["CONFIRMED", "COMPLETED"] },
+    },
+  });
+
+  if (!hasStayed) {
+    throw new Error("You can only review properties you have booked and stayed at.");
+  }
+
+  // Check if they already reviewed
+  const existingReview = await prisma.review.findFirst({
+    where: {
+      propertyId,
+      renterId: session.user.id,
+    },
+  });
+
+  if (existingReview) {
+    throw new Error("You have already reviewed this property.");
+  }
+
+  if (rating < 1 || rating > 5) {
+    throw new Error("Rating must be between 1 and 5.");
+  }
+
+  await prisma.review.create({
+    data: {
+      propertyId,
+      renterId: session.user.id,
+      rating,
+      comment,
+    },
+  });
+
+  revalidatePath(`/properties/${propertyId}`);
+}

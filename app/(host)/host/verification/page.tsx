@@ -1,6 +1,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { ShieldCheck, FileText, Clock, AlertTriangle } from "lucide-react";
+import UploadDocumentForm from "./UploadDocumentForm";
 
 export default async function HostVerificationPage() {
   const session = await auth();
@@ -17,6 +18,7 @@ export default async function HostVerificationPage() {
   });
 
   const isVerified = hostUser?.isVerified ?? false;
+  const hasPending = documents.some((d) => d.status === "PENDING");
 
   return (
     <div className="space-y-6 max-w-2xl">
@@ -31,48 +33,30 @@ export default async function HostVerificationPage() {
       <div className={`flex items-start gap-3 p-4 rounded-2xl border ${
         isVerified
           ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30"
-          : "bg-orange-50 dark:bg-orange-950/10 border-orange-100 dark:border-orange-900/30"
+          : hasPending
+          ? "bg-orange-50 dark:bg-orange-950/10 border-orange-100 dark:border-orange-900/30"
+          : "bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200 dark:border-neutral-700"
       }`}>
         {isVerified ? (
           <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+        ) : hasPending ? (
+          <Clock className="size-5 text-orange-600 dark:text-orange-400 shrink-0 mt-0.5" />
         ) : (
-          <AlertTriangle className="size-5 text-orange-600 dark:text-orange-400 shrink-0 mt-0.5" />
+          <AlertTriangle className="size-5 text-neutral-500 dark:text-neutral-400 shrink-0 mt-0.5" />
         )}
         <div>
-          <p className={`font-bold text-sm ${isVerified ? "text-emerald-800 dark:text-emerald-300" : "text-orange-800 dark:text-orange-300"}`}>
-            {isVerified ? "Your account is verified ✓" : "Verification Pending"}
+          <p className={`font-bold text-sm ${isVerified ? "text-emerald-800 dark:text-emerald-300" : hasPending ? "text-orange-800 dark:text-orange-300" : "text-neutral-700 dark:text-neutral-300"}`}>
+            {isVerified ? "Your account is verified ✓" : hasPending ? "Review in Progress" : "Action Required"}
           </p>
-          <p className={`text-xs mt-0.5 ${isVerified ? "text-emerald-700/80 dark:text-emerald-400/80" : "text-orange-700/80 dark:text-orange-400/80"}`}>
+          <p className={`text-xs mt-0.5 ${isVerified ? "text-emerald-700/80 dark:text-emerald-400/80" : hasPending ? "text-orange-700/80 dark:text-orange-400/80" : "text-neutral-500 dark:text-neutral-400"}`}>
             {isVerified
               ? "You can list properties and receive bookings. Thank you for completing verification."
-              : "Please submit your national ID or ownership proof. Our team reviews submissions within 24 hours."}
+              : hasPending
+              ? "Your documents are under review. Our team will respond within 24 hours."
+              : "Please upload your national ID and proof of property ownership to get verified."}
           </p>
         </div>
       </div>
-
-      {/* What to submit */}
-      {!isVerified && (
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm p-5 space-y-4">
-          <h2 className="font-bold text-neutral-800 dark:text-neutral-200 text-sm">Required Documents</h2>
-          <div className="space-y-2.5">
-            {[
-              { label: "National ID or Passport", desc: "A clear scan of your government-issued ID" },
-              { label: "Proof of Property Ownership", desc: "Title deed, utility bill, or lease agreement" },
-            ].map((doc) => (
-              <div key={doc.label} className="flex items-start gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/40">
-                <FileText className="size-4 text-teal-600 dark:text-teal-400 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{doc.label}</p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{doc.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-          <p className="text-xs text-neutral-400 dark:text-neutral-500 pt-2 border-t border-neutral-100 dark:border-neutral-800">
-            Document upload functionality coming soon. Please contact support@bokrastay.com to submit documents manually.
-          </p>
-        </div>
-      )}
 
       {/* Submitted Documents */}
       {documents.length > 0 && (
@@ -102,6 +86,9 @@ export default async function HostVerificationPage() {
           </div>
         </div>
       )}
+
+      {/* Upload Form — always show unless fully verified */}
+      {!isVerified && <UploadDocumentForm />}
     </div>
   );
 }

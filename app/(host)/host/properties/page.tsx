@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import DeletePropertyButton from "./DeletePropertyButton";
+
 
 export default async function PropertiesPage() {
   const session = await auth();
@@ -62,9 +64,12 @@ export default async function PropertiesPage() {
                   {Number(property.pricePerNight).toLocaleString()} ETB <span className="text-xs font-normal text-neutral-500">/ night</span>
                 </p>
                 <div className="flex gap-2 pt-1">
-                  <button className="flex-1 text-sm py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors font-medium">
-                    Edit
-                  </button>
+                  <Link href={`/host/properties/${property.id}/edit`} className="flex-1">
+                    <button className="w-full text-xs py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors font-semibold cursor-pointer">
+                      Edit
+                    </button>
+                  </Link>
+                  <DeletePropertyButton propertyId={property.id} />
                 </div>
               </div>
             </div>
