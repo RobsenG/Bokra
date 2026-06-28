@@ -6,14 +6,19 @@ export default async function HostBookingsPage() {
   const session = await auth();
   if (!session?.user) return null;
 
-  const bookings = await prisma.booking.findMany({
-    where: { property: { hostId: session.user.id } },
-    orderBy: { createdAt: "desc" },
-    include: {
-      renter: { select: { name: true, email: true } },
-      property: { select: { title: true, city: true } },
-    },
-  });
+  let bookings: any[] = [];
+  try {
+    bookings = await prisma.booking.findMany({
+      where: { property: { hostId: session.user.id } },
+      orderBy: { createdAt: "desc" },
+      include: {
+        renter: { select: { name: true, email: true } },
+        property: { select: { title: true, city: true } },
+      },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch bookings:", error);
+  }
 
   const statusStyle: Record<string, string> = {
     CONFIRMED: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400",

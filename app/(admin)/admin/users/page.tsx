@@ -10,9 +10,14 @@ export default async function AdminUsersPage() {
     redirect("/login");
   }
 
-  const users = await prisma.user.findMany({
-    orderBy: { createdAt: "desc" },
-  });
+  let users: any[] = [];
+  try {
+    users = await prisma.user.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch users:", error);
+  }
 
   return (
     <div className="space-y-6">

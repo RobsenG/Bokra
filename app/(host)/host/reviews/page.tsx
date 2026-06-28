@@ -6,18 +6,23 @@ export default async function HostReviewsPage() {
   const session = await auth();
   if (!session?.user) return null;
 
-  const reviews = await prisma.review.findMany({
-    where: { property: { hostId: session.user.id } },
-    orderBy: { createdAt: "desc" },
-    include: {
-      renter: { select: { name: true, email: true } },
-      property: { select: { title: true } },
-    },
-  });
+  let reviews: any[] = [];
+  try {
+    reviews = await prisma.review.findMany({
+      where: { property: { hostId: session.user.id } },
+      orderBy: { createdAt: "desc" },
+      include: {
+        renter: { select: { name: true, email: true } },
+        property: { select: { title: true } },
+      },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch reviews:", error);
+  }
 
   const avgRating =
     reviews.length > 0
-      ? (reviews.reduce((s, r) => s + r.rating, 0) / reviews.length).toFixed(1)
+      ? (reviews.reduce((s: number, r: any) => s + r.rating, 0) / reviews.length).toFixed(1)
       : null;
 
   return (

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
+import { sendBookingConfirmationEmail } from "@/lib/email";
 
 export async function POST(req: NextRequest) {
   try {
@@ -14,7 +15,11 @@ export async function POST(req: NextRequest) {
 
     const booking = await prisma.booking.findUnique({
       where: { id: bookingId },
-      include: { payment: true },
+      include: { 
+        payment: true,
+        property: true,
+        renter: true
+      },
     });
 
     if (!booking) {
@@ -46,6 +51,17 @@ export async function POST(req: NextRequest) {
         },
       }),
     ]);
+
+    if (isSuccess) {
+      await sendBookingConfirmationEmail({
+        email: booking.renter.email,
+        name: booking.renter.name || "Guest",
+        propertyTitle: booking.property.title,
+        checkIn: booking.checkIn.toLocaleDateString(),
+        checkOut: booking.checkOut.toLocaleDateString(),
+        totalPrice: Number(booking.totalPrice),
+      });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: any) {

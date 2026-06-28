@@ -8,9 +8,14 @@ export default async function EditPropertyPage({ params }: { params: Promise<{ i
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const property = await prisma.property.findFirst({
-    where: { id, hostId: session.user.id },
-  });
+  let property = null;
+  try {
+    property = await prisma.property.findFirst({
+      where: { id, hostId: session.user.id },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch property:", error);
+  }
 
   if (!property) notFound();
 

@@ -37,12 +37,20 @@ export async function approveDocument(documentId: string) {
   const doc = await prisma.document.update({
     where: { id: documentId },
     data: { status: "APPROVED" },
+    include: { user: true }
   });
 
   // Verify the host user automatically once their document is approved
   await prisma.user.update({
     where: { id: doc.userId },
     data: { isVerified: true },
+  });
+
+  // Send email notification
+  await sendVerificationStatusEmail({
+    email: doc.user.email,
+    name: doc.user.name || "Host",
+    isVerified: true,
   });
 
   revalidatePath("/(admin)/admin/verifications");
@@ -54,9 +62,17 @@ export async function rejectDocument(documentId: string) {
   const session = await auth();
   if (!session?.user || session.user.role !== "ADMIN") throw new Error("Unauthorized");
 
-  await prisma.document.update({
+  const doc = await prisma.document.update({
     where: { id: documentId },
     data: { status: "REJECTED" },
+    include: { user: true }
+  });
+
+  // Send email notification
+  await sendVerificationStatusEmail({
+    email: doc.user.email,
+    name: doc.user.name || "Host",
+    isVerified: false,
   });
 
   revalidatePath("/(admin)/admin/verifications");

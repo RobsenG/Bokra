@@ -2,23 +2,32 @@
 
 import { useState } from "react";
 import { updateProfile } from "@/lib/profile-actions";
-import { User, Phone, Camera, CheckCircle, AlertCircle } from "lucide-react";
+import { User, Phone, Camera, CheckCircle, AlertCircle, Shield } from "lucide-react";
 
 interface ProfileFormProps {
   user: {
-    name: string | null;
-    email: string;
-    phone: string | null;
-    avatar: string | null;
-    role: string;
-  };
+    name?: string | null;
+    email?: string | null;
+    phone?: string | null;
+    avatar?: string | null;
+    role?: string | null;
+  } | null;
 }
 
 export default function ProfileForm({ user }: ProfileFormProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(user.avatar);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(user?.avatar || null);
+
+  if (!user) {
+    return (
+      <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-xl text-red-600 dark:text-red-400 text-xs font-semibold">
+        <AlertCircle className="size-4 shrink-0" />
+        No user profile data available.
+      </div>
+    );
+  }
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,7 +54,24 @@ export default function ProfileForm({ user }: ProfileFormProps) {
     }
   };
 
-  const initials = (user.name || user.email)[0].toUpperCase();
+  const nameVal = user.name || "";
+  const emailVal = user.email || "";
+  const phoneVal = user.phone || "";
+  const roleVal = user.role || "RENTER";
+  
+  const initials = (nameVal || emailVal || "U")[0].toUpperCase();
+
+  // Role Badge Styles
+  const getRoleBadgeClass = (role: string) => {
+    switch (role) {
+      case "ADMIN":
+        return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300 border-red-200 dark:border-red-800/50";
+      case "HOST":
+        return "bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300 border-orange-200 dark:border-orange-800/50";
+      default:
+        return "bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-300 border-teal-200 dark:border-teal-800/50";
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
@@ -62,14 +88,14 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         </div>
       )}
 
-      {/* Avatar */}
-      <div className="flex items-center gap-5">
+      {/* Avatar, Name and Email Header */}
+      <div className="flex items-center gap-5 pb-6 border-b border-neutral-100 dark:border-neutral-800">
         <div className="relative group shrink-0">
-          <div className="h-20 w-20 rounded-2xl bg-teal-100 dark:bg-teal-900 overflow-hidden">
+          <div className="h-20 w-20 rounded-2xl bg-teal-100 dark:bg-teal-900 overflow-hidden border border-neutral-200 dark:border-neutral-700 flex items-center justify-center">
             {avatarPreview ? (
               <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-teal-700 dark:text-teal-300 font-bold text-2xl">
+              <div className="w-full h-full flex items-center justify-center text-teal-700 dark:text-teal-300 font-bold text-2xl bg-gradient-to-tr from-teal-100 to-emerald-150">
                 {initials}
               </div>
             )}
@@ -79,22 +105,33 @@ export default function ProfileForm({ user }: ProfileFormProps) {
             <input type="file" name="avatar" accept="image/*" onChange={handleAvatarChange} className="hidden" />
           </label>
         </div>
-        <div>
-          <p className="font-bold text-neutral-800 dark:text-neutral-200 text-sm">{user.name || "No name set"}</p>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">{user.email}</p>
-          <p className="text-[10px] font-semibold text-teal-600 dark:text-teal-400 mt-0.5 uppercase tracking-wider">{user.role}</p>
+        <div className="space-y-1.5">
+          <p className="font-bold text-neutral-800 dark:text-neutral-200 text-lg leading-tight">
+            {nameVal || "No name set"}
+          </p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            {emailVal}
+          </p>
+          <div className="pt-0.5">
+            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border ${getRoleBadgeClass(roleVal)}`}>
+              {roleVal === "ADMIN" && <Shield className="size-3" />}
+              {roleVal}
+            </span>
+          </div>
         </div>
       </div>
 
-      {/* Name */}
+      {/* Name Input */}
       <div className="space-y-1.5">
-        <label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-neutral-500">Full Name</label>
+        <label htmlFor="name" className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+          Full Name
+        </label>
         <div className="relative">
           <input
             id="name"
             name="name"
             type="text"
-            defaultValue={user.name || ""}
+            defaultValue={nameVal}
             required
             placeholder="Your full name"
             className="w-full h-11 px-4 pl-10 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none text-neutral-800 dark:text-neutral-100"
@@ -103,15 +140,17 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         </div>
       </div>
 
-      {/* Phone */}
+      {/* Phone Input */}
       <div className="space-y-1.5">
-        <label htmlFor="phone" className="text-xs font-bold uppercase tracking-wider text-neutral-500">Phone Number</label>
+        <label htmlFor="phone" className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+          Phone Number
+        </label>
         <div className="relative">
           <input
             id="phone"
             name="phone"
             type="tel"
-            defaultValue={user.phone || ""}
+            defaultValue={phoneVal}
             placeholder="+251 9X XXX XXXX"
             className="w-full h-11 px-4 pl-10 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none text-neutral-800 dark:text-neutral-100"
           />
@@ -119,18 +158,21 @@ export default function ProfileForm({ user }: ProfileFormProps) {
         </div>
       </div>
 
-      {/* Email (read-only) */}
+      {/* Email (Read-Only) */}
       <div className="space-y-1.5">
-        <label className="text-xs font-bold uppercase tracking-wider text-neutral-500">Email Address</label>
+        <label className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+          Email Address (Read-Only)
+        </label>
         <input
           type="email"
-          value={user.email}
+          value={emailVal}
           readOnly
-          className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm text-neutral-500 dark:text-neutral-400 outline-none"
+          className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800 text-sm text-neutral-500 dark:text-neutral-400 outline-none cursor-not-allowed"
         />
         <p className="text-[10px] text-neutral-400">Email cannot be changed.</p>
       </div>
 
+      {/* Submit Button */}
       <button
         type="submit"
         disabled={loading}

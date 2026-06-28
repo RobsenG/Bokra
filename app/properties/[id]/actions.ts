@@ -12,6 +12,10 @@ export async function bookProperty(propertyId: string, checkInStr: string, check
     throw new Error("You must be logged in to book a property.");
   }
 
+  if (session.user.role === "ADMIN") {
+    throw new Error("Administrators are not allowed to make bookings.");
+  }
+
   // Get full user details for payment gateway
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
@@ -93,6 +97,10 @@ export async function postReview(propertyId: string, rating: number, comment: st
 
   if (!session?.user) {
     throw new Error("You must be logged in to review a property.");
+  }
+
+  if (session.user.role === "ADMIN") {
+    throw new Error("Administrators are not allowed to leave reviews.");
   }
 
   // Check if the user has completed a booking for this property

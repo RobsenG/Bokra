@@ -18,32 +18,39 @@ export async function registerUser(data: any) {
     const validatedData = registerSchema.parse(data);
     const { name, email, password, role } = validatedData;
 
+    // Check for duplicate email with a specific error message
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      return { error: "User already exists with this email." };
+      return { error: "An account with this email already exists." };
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         name,
         email,
         password: hashedPassword,
         role,
-        isVerified: role === "RENTER", // Renters are auto-verified, hosts require document approval
+        // Renters are auto-verified; hosts require document approval
+        isVerified: role === "RENTER",
       },
     });
 
-    return { success: true, role: user.role };
-  } catch (error) {
+    // SUCCESS: Do NOT auto sign-in — return success so the client redirects to /login
+    return { success: true };
+  } catch (error: any) {
     if (error instanceof z.ZodError) {
       return { error: error.issues[0].message };
     }
-    return { error: "Failed to register user. Please try again." };
+    // Catch Prisma unique constraint violation as a fallback
+    if (error?.code === "P2002") {
+      return { error: "An account with this email already exists." };
+    }
+    return { error: "Failed to create account. Please try again." };
   }
 }
 
@@ -54,7 +61,7 @@ export async function loginUser(data: any) {
       password: data.password,
       redirect: false,
     });
-    
+
     return { success: true };
   } catch (error) {
     if (error instanceof AuthError) {
@@ -65,8 +72,6 @@ export async function loginUser(data: any) {
           return { error: "Something went wrong during sign in." };
       }
     }
-    // NextAuth redirect triggers a special error which we shouldn't block,
-    // but redirect: false avoids it anyway.
     return { error: "Invalid credentials. Please try again." };
   }
 }

@@ -7,10 +7,15 @@ export default async function RenterProfilePage() {
   const session = await auth();
   if (!session?.user) redirect("/login");
 
-  const user = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { name: true, email: true, phone: true, avatar: true, role: true },
-  });
+  let user = null;
+  try {
+    user = await prisma.user.findUnique({
+      where: { id: session!.user.id },
+      select: { name: true, email: true, phone: true, avatar: true, role: true },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch user:", error);
+  }
 
   if (!user) redirect("/login");
 
@@ -23,7 +28,7 @@ export default async function RenterProfilePage() {
         </p>
       </div>
       <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm p-6 sm:p-8">
-        <ProfileForm user={{ ...user, role: user.role.toString() }} />
+        <ProfileForm user={{ ...user, role: user.role?.toString() || "RENTER" }} />
       </div>
     </div>
   );

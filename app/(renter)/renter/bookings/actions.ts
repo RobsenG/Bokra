@@ -3,6 +3,7 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { sendBookingCancellationEmail } from "@/lib/email";
 
 export async function cancelBooking(bookingId: string) {
   const session = await auth();
@@ -14,7 +15,11 @@ export async function cancelBooking(bookingId: string) {
   // Find the booking and verify ownership (must belong to the renter)
   const booking = await prisma.booking.findUnique({
     where: { id: bookingId },
-    include: { payment: true },
+    include: { 
+      payment: true,
+      property: true,
+      renter: true
+    },
   });
 
   if (!booking) {
@@ -48,6 +53,13 @@ export async function cancelBooking(bookingId: string) {
       data: { status: "FAILED" },
     });
   }
+
+  // Send cancellation email
+  await sendBookingCancellationEmail({
+    email: booking.renter.email,
+    name: booking.renter.name || "Guest",
+    propertyTitle: booking.property.title,
+  });
 
   revalidatePath("/renter/bookings");
   revalidatePath("/host/bookings");

@@ -12,7 +12,10 @@ import {
   Building2, 
   Users, 
   CreditCard,
-  Lock
+  Lock,
+  Home,
+  CalendarDays,
+  Settings
 } from "lucide-react";
 
 export default function AdminSidebar() {
@@ -20,11 +23,13 @@ export default function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const links = [
+    { name: "Home", href: "/", icon: Home },
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "Verifications", href: "/admin/verifications", icon: UserCheck },
-    { name: "Properties", href: "/admin/properties", icon: Building2 },
+    { name: "All Properties", href: "/admin/properties", icon: Building2 },
     { name: "Users", href: "/admin/users", icon: Users },
-    { name: "Payments", href: "/admin/payments", icon: CreditCard },
+    { name: "Bookings", href: "/admin/bookings", icon: CalendarDays },
+    { name: "System", href: "/admin/system", icon: Settings },
   ];
 
   return (

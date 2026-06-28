@@ -23,9 +23,14 @@ export default async function HostLayout({
   }
 
   // Fetch host user details from database to check fresh verification status
-  const hostUser = await prisma.user.findUnique({
-    where: { id: session.user.id },
-  });
+  let hostUser = null;
+  try {
+    hostUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch host user:", error);
+  }
 
   const isVerified = hostUser?.isVerified || false;
 

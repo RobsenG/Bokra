@@ -12,15 +12,20 @@ export default async function RenterBookingsPage() {
     redirect("/login");
   }
 
-  const bookings = await prisma.booking.findMany({
-    where: { renterId: session.user.id },
-    include: {
-      property: {
-        select: { id: true, title: true, city: true, images: true },
+  let bookings: any[] = [];
+  try {
+    bookings = await prisma.booking.findMany({
+      where: { renterId: session.user.id },
+      include: {
+        property: {
+          select: { id: true, title: true, city: true, images: true },
+        },
       },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch bookings:", error);
+  }
 
   const statusStyle: Record<string, string> = {
     CONFIRMED: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400",

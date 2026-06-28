@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { auth } from "@/lib/auth";
 import BookingForm from "./BookingForm";
 import ReviewForm from "./ReviewForm";
+import FavoriteButton from "@/components/common/FavoriteButton";
 import { generateReviewSummary } from "@/lib/groq";
 import { Star, MapPin, Users, BedDouble, Bath, Sparkles } from "lucide-react";
 
@@ -11,16 +12,21 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
   const { id } = await params;
   const session = await auth();
 
-  const property = await prisma.property.findUnique({
-    where: { id },
-    include: {
-      host: { select: { name: true, avatar: true, email: true } },
-      reviews: {
-        include: { renter: { select: { name: true, avatar: true, email: true } } },
-        orderBy: { createdAt: "desc" }
-      }
-    },
-  });
+  let property: any = null;
+  try {
+    property = await prisma.property.findUnique({
+      where: { id },
+      include: {
+        host: { select: { name: true, avatar: true, email: true } },
+        reviews: {
+          include: { renter: { select: { name: true, avatar: true, email: true } } },
+          orderBy: { createdAt: "desc" }
+        }
+      },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch property:", error);
+  }
 
   if (!property || !property.isVerified || !property.isAvailable) {
     notFound();
@@ -28,6 +34,23 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
 
   // Generate AI Summary
   const aiSummary = await generateReviewSummary(property.title, property.reviews);
+
+  let isFavorited = false;
+  if (session?.user) {
+    try {
+      const favorite = await prisma.favorite.findUnique({
+        where: {
+          userId_propertyId: {
+            userId: session.user.id,
+            propertyId: property.id,
+          },
+        },
+      });
+      isFavorited = !!favorite;
+    } catch (error) {
+      console.error("[DB Error] Could not fetch favorite status:", error);
+    }
+  }
 
   return (
     <div className="container mx-auto py-8 space-y-8 max-w-6xl">
@@ -44,20 +67,22 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           {property.reviews.length > 0 && (
             <span className="flex items-center gap-1">
               <Star className="size-4 fill-orange-500 text-orange-500" />
-              {(property.reviews.reduce((s, r) => s + r.rating, 0) / property.reviews.length).toFixed(1)} ({property.reviews.length} reviews)
+              {(property.reviews.reduce((s: number, r: any) => s + r.rating, 0) / property.reviews.length).toFixed(1)} ({property.reviews.length} reviews)
             </span>
           )}
         </div>
       </div>
 
       {/* Image Gallery */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[300px] md:h-[450px] rounded-3xl overflow-hidden">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[300px] md:h-[450px] rounded-3xl overflow-hidden relative">
         <div 
-          className="h-full w-full bg-cover bg-center bg-neutral-200 dark:bg-neutral-800 hover:scale-105 transition-transform duration-500"
+          className="h-full w-full bg-cover bg-center bg-neutral-200 dark:bg-neutral-800 hover:scale-105 transition-transform duration-500 relative"
           style={{ backgroundImage: `url(${property.images[0] || ""})` }}
-        />
+        >
+          <FavoriteButton propertyId={property.id} initialIsFavorited={isFavorited} />
+        </div>
         <div className="hidden md:grid grid-cols-2 gap-4">
-          {property.images.slice(1, 5).map((img, i) => (
+          {property.images.slice(1, 5).map((img: string, i: number) => (
             <div 
               key={i}
               className="h-full w-full bg-cover bg-center rounded-xl bg-neutral-200 dark:bg-neutral-800 hover:scale-105 transition-transform duration-500"
@@ -104,13 +129,33 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           <div className="space-y-4">
             <h3 className="text-xl font-bold text-neutral-800 dark:text-white">What this place offers</h3>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {property.amenities.map((amenity, idx) => (
+              {property.amenities.map((amenity: string, idx: number) => (
                 <li key={idx} className="flex items-center gap-3 text-neutral-600 dark:text-neutral-400 text-sm">
                   <div className="w-2 h-2 rounded-full bg-teal-500" />
                   {amenity}
                 </li>
               ))}
             </ul>
+          </div>
+
+          <hr className="border-neutral-100 dark:border-neutral-800" />
+
+          {/* Location Map */}
+          <div className="space-y-4">
+            <h3 className="text-xl font-bold text-neutral-800 dark:text-white">Location</h3>
+            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">{property.address}, {property.city}</p>
+            <div className="w-full h-[300px] rounded-3xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-sm relative">
+              <iframe
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                scrolling="no"
+                marginHeight={0}
+                marginWidth={0}
+                src={`https://maps.google.com/maps?q=${encodeURIComponent(property.city + ', ' + property.address)}&t=&z=13&ie=UTF8&iwloc=&output=embed`}
+                className="absolute inset-0 grayscale-[0.2] contrast-[1.1] rounded-3xl"
+              />
+            </div>
           </div>
 
           <hr className="border-neutral-100 dark:border-neutral-800" />
@@ -138,7 +183,7 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
               <p className="text-neutral-500 dark:text-neutral-400 text-sm">No reviews yet.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {property.reviews.map((review) => (
+                {property.reviews.map((review: any) => (
                   <div key={review.id} className="space-y-3 p-5 rounded-2xl border border-neutral-100 dark:border-neutral-800 bg-white dark:bg-neutral-900 shadow-sm">
                     <div className="flex items-center gap-3">
                       <div className="h-10 w-10 rounded-full bg-neutral-200 dark:bg-neutral-800 overflow-hidden shrink-0">
@@ -178,7 +223,13 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
           {/* Add Review Form */}
           {session?.user && (
             <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800">
-              <ReviewForm propertyId={property.id} />
+              {session.user.role === "ADMIN" ? (
+                <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400 py-2">
+                  Administrators cannot leave reviews
+                </p>
+              ) : (
+                <ReviewForm propertyId={property.id} />
+              )}
             </div>
           )}
 
@@ -188,14 +239,24 @@ export default async function PropertyDetailPage({ params }: { params: Promise<{
         <div className="relative">
           <div className="sticky top-24">
             <div className="bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-100 dark:border-neutral-800 shadow-xl p-6 md:p-8 space-y-6">
-              <div className="space-y-1">
-                <h3 className="text-2xl font-black text-neutral-800 dark:text-white flex items-baseline gap-1">
-                  {Number(property.pricePerNight).toLocaleString()} ETB
-                  <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400"> / night</span>
-                </h3>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">Select dates to check availability</p>
-              </div>
-              <BookingForm propertyId={property.id} pricePerNight={Number(property.pricePerNight)} />
+              {session?.user?.role === "ADMIN" ? (
+                <div className="text-center py-6">
+                  <p className="text-sm font-semibold text-neutral-600 dark:text-neutral-400">
+                    Administrators cannot make bookings
+                  </p>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-1">
+                    <h3 className="text-2xl font-black text-neutral-800 dark:text-white flex items-baseline gap-1">
+                      {Number(property.pricePerNight).toLocaleString()} ETB
+                      <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400"> / night</span>
+                    </h3>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400">Select dates to check availability</p>
+                  </div>
+                  <BookingForm propertyId={property.id} pricePerNight={Number(property.pricePerNight)} />
+                </>
+              )}
             </div>
           </div>
         </div>

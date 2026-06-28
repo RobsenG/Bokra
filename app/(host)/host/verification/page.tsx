@@ -7,15 +7,20 @@ export default async function HostVerificationPage() {
   const session = await auth();
   if (!session?.user) return null;
 
-  const hostUser = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { isVerified: true },
-  });
-
-  const documents = await prisma.document.findMany({
-    where: { userId: session.user.id },
-    orderBy: { uploadedAt: "desc" },
-  });
+  let hostUser: any = null;
+  let documents: any[] = [];
+  try {
+    hostUser = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { isVerified: true },
+    });
+    documents = await prisma.document.findMany({
+      where: { userId: session.user.id },
+      orderBy: { uploadedAt: "desc" },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch verification data:", error);
+  }
 
   const isVerified = hostUser?.isVerified ?? false;
   const hasPending = documents.some((d) => d.status === "PENDING");

@@ -9,14 +9,15 @@ export default async function PropertiesPage() {
   
   if (!session?.user) return null;
 
-  const properties = await prisma.property.findMany({
-    where: {
-      hostId: session.user.id,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  let properties: any[] = [];
+  try {
+    properties = await prisma.property.findMany({
+      where: { hostId: session.user.id },
+      orderBy: { createdAt: "desc" },
+    });
+  } catch (error) {
+    console.error("[DB Error] Could not fetch properties:", error);
+  }
 
   return (
     <div className="space-y-6">

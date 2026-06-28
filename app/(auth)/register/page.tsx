@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { registerUser, loginUser, getSessionRole } from "../actions";
+import { registerUser } from "../actions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -29,7 +29,7 @@ type RegisterFormValues = z.infer<typeof registerSchema>;
 export default function RegisterPage() {
   const router = useRouter();
   const [error, setError] = useState("");
-  
+
   const { register, handleSubmit, setValue, watch, formState: { errors, isSubmitting } } = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
@@ -42,43 +42,22 @@ export default function RegisterPage() {
   const onSubmit = async (data: RegisterFormValues) => {
     setError("");
     try {
-      // 1. Register the user
       const result = await registerUser({
         name: data.name,
         email: data.email,
         password: data.password,
         role: data.role,
       });
-      
+
       if (result?.error) {
         setError(result.error);
         return;
       }
 
-      // 2. Automatically log in the user for seamless experience
-      const loginResult = await loginUser({
-        email: data.email,
-        password: data.password,
-      });
-
-      if (loginResult?.error) {
-        // If auto-login fails, redirect to manual login with a success indicator
-        router.push("/login?registered=true");
-        return;
-      }
-
-      // 3. Smart redirect depending on the role
-      const role = await getSessionRole();
-      if (role === "HOST") {
-        router.push("/host/dashboard");
-      } else if (role === "ADMIN") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/");
-      }
-      router.refresh();
+      // SUCCESS: do NOT auto sign-in — redirect to /login with a success banner
+      router.push("/login?registered=true");
     } catch (err) {
-      setError("An error occurred during registration. Please try again.");
+      setError("An unexpected error occurred. Please try again.");
     }
   };
 

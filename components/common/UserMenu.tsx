@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { User, LogOut, LayoutDashboard, ShieldCheck, ClipboardList } from "lucide-react";
+import { User, LogOut, LayoutDashboard, ShieldCheck, ClipboardList, Heart } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 interface UserMenuProps {
@@ -31,6 +31,11 @@ export default function UserMenu({ user }: UserMenuProps) {
     if (user.role === "HOST") return "/host/dashboard";
     if (user.role === "ADMIN") return "/admin/dashboard";
     return "/renter/bookings";
+  };
+
+  const getProfileLink = () => {
+    if (user.role === "HOST") return "/host/profile";
+    return "/renter/profile";
   };
 
   const handleSignOut = async () => {
@@ -82,6 +87,24 @@ export default function UserMenu({ user }: UserMenuProps) {
               <ClipboardList className="size-4" />
             )}
             <span>Dashboard</span>
+          </Link>
+
+          <Link
+            href={getProfileLink()}
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-teal-50/50 dark:hover:bg-neutral-800/60 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+          >
+            <User className="size-4" />
+            <span>Profile</span>
+          </Link>
+
+          <Link
+            href="/renter/favorites"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-teal-50/50 dark:hover:bg-neutral-800/60 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+          >
+            <Heart className="size-4" />
+            <span>Favorites</span>
           </Link>
 
           <button
