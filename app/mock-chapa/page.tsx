@@ -117,14 +117,14 @@ function MockChapaContent() {
                 disabled={loading}
                 className="w-full h-11 rounded-xl text-sm font-semibold bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white shadow-md shadow-teal-600/10 flex items-center justify-center gap-1.5 disabled:opacity-50 transition-colors cursor-pointer"
               >
-                {loading ? "Processing..." : "Simulate Successful Payment"}
+                {loading ? "Processing..." : "Pay Now ✓"}
               </button>
               <button
                 onClick={() => handleSimulate(false)}
                 disabled={loading}
                 className="w-full h-11 rounded-xl text-sm font-semibold border border-red-200 dark:border-red-900/30 text-red-650 hover:bg-red-50 dark:hover:bg-red-950/20 flex items-center justify-center gap-1.5 disabled:opacity-50 transition-colors cursor-pointer"
               >
-                Simulate Declined Payment
+                Decline Payment ✗
               </button>
             </div>
           </>
@@ -135,7 +135,7 @@ function MockChapaContent() {
             </div>
             <h2 className="text-xl font-bold text-neutral-800 dark:text-white">Payment Successful!</h2>
             <p className="text-xs text-neutral-500 dark:text-neutral-400">
-              Your booking is confirmed. Redirecting you to bookings page...
+              Your booking is confirmed. Redirecting you...
             </p>
           </div>
         ) : (

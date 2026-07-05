@@ -26,7 +26,7 @@ export default function AdminSidebar() {
     { name: "Home", href: "/", icon: Home },
     { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "Verifications", href: "/admin/verifications", icon: UserCheck },
-    { name: "All Properties", href: "/admin/properties", icon: Building2 },
+    { name: "All Properties", href: "/properties", icon: Building2 },
     { name: "Users", href: "/admin/users", icon: Users },
     { name: "Bookings", href: "/admin/bookings", icon: CalendarDays },
     { name: "System", href: "/admin/system", icon: Settings },

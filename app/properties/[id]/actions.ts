@@ -5,7 +5,42 @@ import prisma from "@/lib/prisma";
 import { initializeChapaPayment } from "@/lib/chapa";
 import { revalidatePath } from "next/cache";
 
+// 15-minute payment timeout mechanism
+export async function expireOldPendingBookings() {
+  const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+  
+  const oldPendingBookings = await prisma.booking.findMany({
+    where: {
+      status: "PENDING",
+      createdAt: {
+        lt: fifteenMinutesAgo,
+      },
+    },
+    include: { payment: true },
+  });
+
+  if (oldPendingBookings.length === 0) return;
+
+  const bookingIds = oldPendingBookings.map((b: any) => b.id);
+
+  await prisma.$transaction([
+    prisma.booking.updateMany({
+      where: { id: { in: bookingIds } },
+      data: { status: "CANCELLED" },
+    }),
+    prisma.payment.updateMany({
+      where: { bookingId: { in: bookingIds } },
+      data: { status: "FAILED" },
+    }),
+  ]);
+  
+  console.log(`[Job] Expired ${bookingIds.length} pending bookings.`);
+}
+
 export async function bookProperty(propertyId: string, checkInStr: string, checkOutStr: string) {
+  // Clean up stale pending bookings before checking availability
+  await expireOldPendingBookings();
+
   const session = await auth();
 
   if (!session?.user) {
@@ -77,13 +112,14 @@ export async function bookProperty(propertyId: string, checkInStr: string, check
   const [firstName = "Guest", lastName = "User"] = (user.name || "").split(" ");
 
   // Initialize Chapa payment flow
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
   const checkoutUrl = await initializeChapaPayment({
     amount: totalPrice,
     email: user.email,
     firstName,
     lastName,
     txRef: `booking-${booking.id}`,
-    returnUrl: `${process.env.NEXTAUTH_URL || "http://localhost:3000"}/renter/bookings`,
+    returnUrl: `${baseUrl}/payment/success?bookingId=${booking.id}`,
   });
 
   revalidatePath(`/properties/${propertyId}`);

@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { sendBookingCancellationEmail } from "@/lib/email";
+import { initializeChapaPayment } from "@/lib/chapa";
 
 export async function cancelBooking(bookingId: string) {
   const session = await auth();
@@ -63,4 +64,35 @@ export async function cancelBooking(bookingId: string) {
 
   revalidatePath("/renter/bookings");
   revalidatePath("/host/bookings");
+}
+
+export async function retryPayment(bookingId: string) {
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId, renterId: session.user.id },
+    include: { renter: true },
+  });
+
+  if (!booking || booking.status !== "PENDING") {
+    throw new Error("Invalid booking");
+  }
+
+  const [firstName = "Guest", lastName = "User"] = (booking.renter.name || "").split(" ");
+  const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
+
+  const checkoutUrl = await initializeChapaPayment({
+    amount: Number(booking.totalPrice),
+    email: booking.renter.email,
+    firstName,
+    lastName,
+    txRef: `booking-${booking.id}`,
+    returnUrl: `${baseUrl}/payment/success?bookingId=${booking.id}`,
+  });
+
+  return { checkoutUrl };
 }
