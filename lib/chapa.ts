@@ -32,6 +32,16 @@ export async function initializeChapaPayment({
     return mockCheckoutUrl;
   }
 
+  // Chapa API strictly validates email formatting and domain existence.
+  // If we are testing with seeded/stub emails (like @example.com or @bokrastay.com),
+  // we replace it with a valid format test email so it passes Chapa's validation.
+  const isFakeEmail =
+    !email ||
+    email.endsWith("@example.com") ||
+    email.endsWith("@bokrastay.com") ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const chapaEmail = isFakeEmail ? "testuser@gmail.com" : email;
+
   try {
     const res = await fetch("https://api.chapa.co/v1/transaction/initialize", {
       method: "POST",
@@ -42,7 +52,7 @@ export async function initializeChapaPayment({
       body: JSON.stringify({
         amount: amount.toString(),
         currency: "ETB",
-        email,
+        email: chapaEmail,
         first_name: firstName,
         last_name: lastName,
         tx_ref: txRef,

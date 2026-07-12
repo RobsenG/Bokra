@@ -2,15 +2,70 @@
 
 import { createProperty } from "../actions";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Building2, UploadCloud, Plus } from "lucide-react";
+import { ArrowLeft, Sparkles, UploadCloud, Loader2, Wand2, DollarSign } from "lucide-react";
 import { useState } from "react";
 
 export default function NewPropertyPage() {
   const [loading, setLoading] = useState(false);
   const [imagesSelected, setImagesSelected] = useState<number>(0);
 
-  const handleSubmit = () => {
-    setLoading(true);
+  // AI Description
+  const [descLoading, setDescLoading] = useState(false);
+  const [description, setDescription] = useState("");
+  const [title, setTitle] = useState("");
+  const [amenities, setAmenities] = useState("");
+
+  // AI Price
+  const [priceLoading, setPriceLoading] = useState(false);
+  const [city, setCity] = useState("");
+  const [bedrooms, setBedrooms] = useState("");
+  const [bathrooms, setBathrooms] = useState("");
+  const [pricePerNight, setPricePerNight] = useState("");
+  const [priceRationale, setPriceRationale] = useState("");
+
+  const handleSubmit = () => setLoading(true);
+
+  const handleGenerateDescription = async () => {
+    if (!title.trim()) return;
+    setDescLoading(true);
+    setPriceRationale("");
+    try {
+      const res = await fetch("/api/ai/generate-description", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title, amenities }),
+      });
+      if (!res.ok) throw new Error("Failed to generate description");
+      const data = await res.json();
+      setDescription(data.description || "");
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setDescLoading(false);
+    }
+  };
+
+  const handleSuggestPrice = async () => {
+    if (!city.trim()) return;
+    setPriceLoading(true);
+    setPriceRationale("");
+    try {
+      const res = await fetch("/api/ai/suggest-price", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ city, bedrooms, bathrooms, amenities }),
+      });
+      if (!res.ok) throw new Error("Failed to get price suggestion");
+      const data = await res.json();
+      if (data.suggestedPrice) {
+        setPricePerNight(String(data.suggestedPrice));
+        setPriceRationale(data.rationale || "");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setPriceLoading(false);
+    }
   };
 
   return (
@@ -29,7 +84,7 @@ export default function NewPropertyPage() {
             <Sparkles className="size-4 text-teal-600 dark:text-teal-400" />
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-            Fill out the details to add a new listing to Bokra Stay.
+            Fill out the details to add a new listing to Bokra Stay. Use AI tools to speed things up!
           </p>
         </div>
       </div>
@@ -45,20 +100,36 @@ export default function NewPropertyPage() {
               id="title"
               name="title"
               type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
               placeholder="e.g. Cozy Apartment in Addis Ababa"
               required
               className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
             />
           </div>
 
-          {/* Description */}
+          {/* Description with AI Generator */}
           <div className="space-y-1.5">
-            <label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-              Description
-            </label>
+            <div className="flex items-center justify-between">
+              <label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                Description
+              </label>
+              <button
+                type="button"
+                onClick={handleGenerateDescription}
+                disabled={descLoading || !title.trim()}
+                className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-[11px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-sm"
+                title={!title.trim() ? "Enter a title first" : "Generate description with AI"}
+              >
+                {descLoading ? <Loader2 className="size-3 animate-spin" /> : <Wand2 className="size-3" />}
+                {descLoading ? "Writing..." : "Write with AI ✨"}
+              </button>
+            </div>
             <textarea
               id="description"
               name="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe your property's key features, location, and guest benefits..."
               rows={4}
               required
@@ -89,6 +160,8 @@ export default function NewPropertyPage() {
                 id="city"
                 name="city"
                 type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 placeholder="Addis Ababa"
                 required
                 className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
@@ -96,12 +169,41 @@ export default function NewPropertyPage() {
             </div>
           </div>
 
+          {/* Amenities */}
+          <div className="space-y-1.5">
+            <label htmlFor="amenities" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+              Amenities (comma separated)
+            </label>
+            <input
+              id="amenities"
+              name="amenities"
+              type="text"
+              value={amenities}
+              onChange={(e) => setAmenities(e.target.value)}
+              placeholder="WiFi, Kitchen, Air Conditioning, Free Parking"
+              className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+            />
+          </div>
+
           {/* Specs */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="space-y-1.5">
-              <label htmlFor="pricePerNight" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-                Price / Night (ETB)
-              </label>
+            {/* Price with AI Suggester */}
+            <div className="space-y-1.5 col-span-2 md:col-span-1">
+              <div className="flex items-center justify-between gap-1">
+                <label htmlFor="pricePerNight" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                  Price / Night (ETB)
+                </label>
+                <button
+                  type="button"
+                  onClick={handleSuggestPrice}
+                  disabled={priceLoading || !city.trim()}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-sm shrink-0"
+                  title={!city.trim() ? "Enter a city first" : "AI price suggestion"}
+                >
+                  {priceLoading ? <Loader2 className="size-2.5 animate-spin" /> : <DollarSign className="size-2.5" />}
+                  AI 💡
+                </button>
+              </div>
               <input
                 id="pricePerNight"
                 name="pricePerNight"
@@ -109,6 +211,8 @@ export default function NewPropertyPage() {
                 min="0"
                 step="0.01"
                 required
+                value={pricePerNight}
+                onChange={(e) => setPricePerNight(e.target.value)}
                 placeholder="1500"
                 className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
               />
@@ -123,6 +227,8 @@ export default function NewPropertyPage() {
                 type="number"
                 min="1"
                 required
+                value={bedrooms}
+                onChange={(e) => setBedrooms(e.target.value)}
                 placeholder="1"
                 className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
               />
@@ -137,6 +243,8 @@ export default function NewPropertyPage() {
                 type="number"
                 min="1"
                 required
+                value={bathrooms}
+                onChange={(e) => setBathrooms(e.target.value)}
                 placeholder="1"
                 className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
               />
@@ -157,19 +265,12 @@ export default function NewPropertyPage() {
             </div>
           </div>
 
-          {/* Amenities */}
-          <div className="space-y-1.5">
-            <label htmlFor="amenities" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-              Amenities (comma separated)
-            </label>
-            <input
-              id="amenities"
-              name="amenities"
-              type="text"
-              placeholder="WiFi, Kitchen, Air Conditioning, Free Parking"
-              className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
-            />
-          </div>
+          {/* AI Price Rationale */}
+          {priceRationale && (
+            <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-800/40 rounded-xl p-3.5 text-xs text-amber-800 dark:text-amber-300 leading-relaxed animate-in fade-in duration-200">
+              <span className="font-bold">💡 AI Pricing Insight: </span>{priceRationale}
+            </div>
+          )}
 
           {/* Image Upload Box */}
           <div className="space-y-2">
