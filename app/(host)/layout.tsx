@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import HostSidebar from "@/components/dashboard/HostSidebar";
 import UserMenu from "@/components/common/UserMenu";
-import { AlertCircle, FileWarning } from "lucide-react";
+import { AlertCircle, FileWarning, Home } from "lucide-react";
 import Link from "next/link";
 
 export default async function HostLayout({
@@ -46,7 +46,14 @@ export default async function HostLayout({
           <div className="font-bold text-teal-950 dark:text-white pl-10 md:pl-0">
             Host Dashboard
           </div>
-          <div>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+            >
+              <Home className="size-3.5" />
+              <span className="hidden sm:inline">Home</span>
+            </Link>
             <UserMenu user={session.user} />
           </div>
         </header>

@@ -73,18 +73,34 @@ export default function AIChatbot() {
 
   return (
     <div className="fixed bottom-6 right-6 z-50 font-sans">
-      {/* Floating Toggle Button */}
+      {/* Floating Toggle Button with bounce animation */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="flex items-center justify-center h-14 w-14 rounded-full bg-gradient-to-tr from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white shadow-xl hover:shadow-teal-500/20 hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
-        >
-          <Bot className="size-6 group-hover:scale-110 transition-transform" />
-          <span className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-450 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
-          </span>
-        </button>
+        <>
+          <style>{`
+            @keyframes ai-bounce {
+              0%, 100% { transform: translateY(0) scale(1); }
+              30%       { transform: translateY(-10px) scale(1.05); }
+              60%       { transform: translateY(-4px) scale(1.02); }
+            }
+            .ai-float-btn {
+              animation: ai-bounce 2.8s ease-in-out infinite;
+            }
+            .ai-float-btn:hover {
+              animation: none;
+              transform: scale(1.1);
+            }
+          `}</style>
+          <button
+            onClick={() => setIsOpen(true)}
+            className="ai-float-btn flex items-center justify-center h-14 w-14 rounded-full bg-gradient-to-tr from-teal-600 to-emerald-600 text-white shadow-xl hover:shadow-teal-500/30 active:scale-95 transition-transform duration-200 group cursor-pointer"
+          >
+            <Bot className="size-6" />
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-teal-500"></span>
+            </span>
+          </button>
+        </>
       )}
 
       {/* Chat Window Popup */}
@@ -98,7 +114,7 @@ export default function AIChatbot() {
               </div>
               <div>
                 <h3 className="font-extrabold text-sm tracking-tight">Bokra Stay AI</h3>
-                <p className="text-[10px] text-teal-100 font-medium">Online Helper • LLaMA-3.1</p>
+                <p className="text-[10px] text-teal-100 font-medium">Online • Powered by Gemini</p>
               </div>
             </div>
             <button

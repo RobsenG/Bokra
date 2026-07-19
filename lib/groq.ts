@@ -6,7 +6,7 @@ import Groq from "groq-sdk";
 function getGemini() {
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey || apiKey.startsWith("YOUR_")) return null;
-  return new GoogleGenerativeAI(apiKey).getGenerativeModel({ model: "gemini-2.0-flash" });
+  return new GoogleGenerativeAI(apiKey).getGenerativeModel({ model: "gemini-3.5-flash" });
 }
 
 function getGroq() {
@@ -85,17 +85,23 @@ Format answers with clean Markdown. Be concise, professional, and friendly.`;
   const lastUserMsg = userMessages[userMessages.length - 1]?.content || "";
 
   // Try Gemini first
-  const gemini = getGemini();
-  if (gemini) {
+  const apiKey = process.env.GEMINI_API_KEY;
+  if (apiKey && !apiKey.startsWith("YOUR_")) {
     try {
-      // Build Gemini chat history (all messages except the last)
-      const history = userMessages.slice(0, -1).map((m) => ({
+      // Gemini requires history to strictly alternate user/model, starting with user.
+      // Filter out any leading assistant messages (e.g. the greeting), then pair them up.
+      const allButLast = userMessages.slice(0, -1);
+      // Find index of first user message
+      const firstUserIdx = allButLast.findIndex((m) => m.role === "user");
+      const trimmedHistory = firstUserIdx === -1 ? [] : allButLast.slice(firstUserIdx);
+
+      const history = trimmedHistory.map((m) => ({
         role: m.role === "assistant" ? "model" : "user",
         parts: [{ text: m.content }],
       }));
 
-      const chat = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!).getGenerativeModel({
-        model: "gemini-2.0-flash",
+      const chat = new GoogleGenerativeAI(apiKey).getGenerativeModel({
+        model: "gemini-3.5-flash",
         systemInstruction,
       }).startChat({ history });
 

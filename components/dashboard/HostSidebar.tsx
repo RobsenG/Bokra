@@ -12,7 +12,8 @@ import {
   Menu, 
   X, 
   UserCheck,
-  User
+  User,
+  Home
 } from "lucide-react";
 
 interface HostSidebarProps {
@@ -82,6 +83,18 @@ export default function HostSidebar({ isVerified }: HostSidebarProps) {
               );
             })}
           </nav>
+        </div>
+
+        {/* Home button at the bottom of the nav */}
+        <div className="px-4 pb-4">
+          <Link
+            href="/"
+            onClick={() => setIsOpen(false)}
+            className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-teal-200 hover:bg-teal-900/70 hover:text-white border border-teal-800/60 transition-all"
+          >
+            <Home className="size-4.5 shrink-0" />
+            <span>Back to Home</span>
+          </Link>
         </div>
 
         {/* Footer info in sidebar */}
