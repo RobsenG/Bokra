@@ -4,16 +4,17 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
+  Home,
   LayoutDashboard, 
   Building2, 
   CalendarDays, 
-  Star, 
+  Wallet,
+  FileCheck,
   ShieldAlert, 
+  Star,
+  User,
   Menu, 
   X, 
-  UserCheck,
-  User,
-  Home
 } from "lucide-react";
 
 interface HostSidebarProps {
@@ -25,11 +26,13 @@ export default function HostSidebar({ isVerified }: HostSidebarProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const links = [
+    { name: "Home", href: "/", icon: Home },
     { name: "Dashboard", href: "/host/dashboard", icon: LayoutDashboard },
-    { name: "Properties", href: "/host/properties", icon: Building2 },
+    { name: "My Properties", href: "/host/properties", icon: Building2 },
     { name: "Bookings", href: "/host/bookings", icon: CalendarDays },
+    { name: "Revenue", href: "/host/revenue", icon: Wallet },
     { name: "Reviews", href: "/host/reviews", icon: Star },
-    { name: "Verification", href: "/host/verification", icon: isVerified ? UserCheck : ShieldAlert },
+    { name: "Documents", href: "/host/verification", icon: isVerified ? FileCheck : ShieldAlert },
     { name: "Profile", href: "/host/profile", icon: User },
   ];
 
@@ -39,13 +42,13 @@ export default function HostSidebar({ isVerified }: HostSidebarProps) {
       <div className="md:hidden fixed top-3 left-4 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 rounded-lg bg-teal-900 text-white shadow-md hover:bg-teal-800 transition-colors focus:outline-none"
+          className="p-2 rounded-lg bg-teal-900 text-white shadow-md hover:bg-teal-800 transition-colors focus:outline-none cursor-pointer"
         >
           {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </div>
 
-      {/* Sidebar Sidebar */}
+      {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-teal-950 text-white border-r border-teal-900 flex flex-col justify-between transform transition-transform duration-300 md:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
@@ -62,16 +65,16 @@ export default function HostSidebar({ isVerified }: HostSidebarProps) {
           </div>
 
           {/* Navigation links */}
-          <nav className="space-y-1.5 pt-4">
+          <nav className="space-y-1 pt-2">
             {links.map((link) => {
               const Icon = link.icon;
-              const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+              const isActive = link.href === "/" ? pathname === "/" : (pathname === link.href || pathname.startsWith(link.href + "/"));
               return (
                 <Link
                   key={link.name}
                   href={link.href}
                   onClick={() => setIsOpen(false)}
-                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
+                  className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all cursor-pointer ${
                     isActive
                       ? "bg-teal-500/20 text-teal-300 border-l-4 border-teal-400"
                       : "text-teal-100 hover:bg-teal-900/50 hover:text-white"
@@ -83,18 +86,6 @@ export default function HostSidebar({ isVerified }: HostSidebarProps) {
               );
             })}
           </nav>
-        </div>
-
-        {/* Home button at the bottom of the nav */}
-        <div className="px-4 pb-4">
-          <Link
-            href="/"
-            onClick={() => setIsOpen(false)}
-            className="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-medium text-teal-200 hover:bg-teal-900/70 hover:text-white border border-teal-800/60 transition-all"
-          >
-            <Home className="size-4.5 shrink-0" />
-            <span>Back to Home</span>
-          </Link>
         </div>
 
         {/* Footer info in sidebar */}

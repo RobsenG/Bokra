@@ -55,4 +55,31 @@ export async function uploadDocument(formData: FormData) {
   });
 
   revalidatePath("/host/verification");
+  revalidatePath("/admin/verifications");
+}
+
+export async function saveSelfie(selfieUrl: string) {
+  const session = await auth();
+
+  if (!session?.user) {
+    throw new Error("Unauthorized");
+  }
+
+  if (!selfieUrl || typeof selfieUrl !== "string") {
+    throw new Error("Invalid selfie image URL");
+  }
+
+  await prisma.user.update({
+    where: { id: session.user.id },
+    data: {
+      selfieUrl,
+      selfieVerifiedAt: new Date(),
+    },
+  });
+
+  revalidatePath("/host/verification");
+  revalidatePath("/host/profile");
+  revalidatePath("/admin/verifications");
+
+  return { success: true };
 }

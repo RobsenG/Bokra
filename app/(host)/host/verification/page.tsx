@@ -2,6 +2,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { ShieldCheck, FileText, Clock, AlertTriangle } from "lucide-react";
 import UploadDocumentForm from "./UploadDocumentForm";
+import SelfieVerificationSection from "./SelfieVerificationSection";
 
 export default async function HostVerificationPage() {
   const session = await auth();
@@ -12,7 +13,11 @@ export default async function HostVerificationPage() {
   try {
     hostUser = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { isVerified: true },
+      select: {
+        isVerified: true,
+        selfieUrl: true,
+        selfieVerifiedAt: true,
+      },
     });
     documents = await prisma.document.findMany({
       where: { userId: session.user.id },
@@ -30,7 +35,7 @@ export default async function HostVerificationPage() {
       <div>
         <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">Host Verification</h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-          Submit identity documents to unlock hosting privileges.
+          Submit identity documents and live face photo to unlock hosting privileges.
         </p>
       </div>
 
@@ -38,34 +43,41 @@ export default async function HostVerificationPage() {
       <div className={`flex items-start gap-3 p-4 rounded-2xl border ${
         isVerified
           ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30"
-          : hasPending
+          : hasPending || hostUser?.selfieUrl
           ? "bg-orange-50 dark:bg-orange-950/10 border-orange-100 dark:border-orange-900/30"
           : "bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200 dark:border-neutral-700"
       }`}>
         {isVerified ? (
           <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
-        ) : hasPending ? (
+        ) : hasPending || hostUser?.selfieUrl ? (
           <Clock className="size-5 text-orange-600 dark:text-orange-400 shrink-0 mt-0.5" />
         ) : (
           <AlertTriangle className="size-5 text-neutral-500 dark:text-neutral-400 shrink-0 mt-0.5" />
         )}
         <div>
-          <p className={`font-bold text-sm ${isVerified ? "text-emerald-800 dark:text-emerald-300" : hasPending ? "text-orange-800 dark:text-orange-300" : "text-neutral-700 dark:text-neutral-300"}`}>
-            {isVerified ? "Your account is verified ✓" : hasPending ? "Review in Progress" : "Action Required"}
+          <p className={`font-bold text-sm ${isVerified ? "text-emerald-800 dark:text-emerald-300" : hasPending || hostUser?.selfieUrl ? "text-orange-800 dark:text-orange-300" : "text-neutral-700 dark:text-neutral-300"}`}>
+            {isVerified ? "Your account is verified ✓" : hasPending || hostUser?.selfieUrl ? "Verification Review in Progress" : "Action Required"}
           </p>
-          <p className={`text-xs mt-0.5 ${isVerified ? "text-emerald-700/80 dark:text-emerald-400/80" : hasPending ? "text-orange-700/80 dark:text-orange-400/80" : "text-neutral-500 dark:text-neutral-400"}`}>
+          <p className={`text-xs mt-0.5 ${isVerified ? "text-emerald-700/80 dark:text-emerald-400/80" : hasPending || hostUser?.selfieUrl ? "text-orange-700/80 dark:text-orange-400/80" : "text-neutral-500 dark:text-neutral-400"}`}>
             {isVerified
               ? "You can list properties and receive bookings. Thank you for completing verification."
-              : hasPending
-              ? "Your documents are under review. Our team will respond within 24 hours."
-              : "Please upload your national ID and proof of property ownership to get verified."}
+              : hasPending || hostUser?.selfieUrl
+              ? "Your identity document and live selfie are under admin review. Verification completes within 24 hours."
+              : "Please capture your identity selfie and upload your national ID to get verified."}
           </p>
         </div>
       </div>
 
+      {/* Selfie Verification Component */}
+      <SelfieVerificationSection
+        initialSelfieUrl={hostUser?.selfieUrl || null}
+        initialSelfieDate={hostUser?.selfieVerifiedAt || null}
+        isAccountVerified={isVerified}
+      />
+
       {/* Submitted Documents */}
       {documents.length > 0 && (
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm p-5 space-y-4">
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs p-5 space-y-4">
           <h2 className="font-bold text-neutral-800 dark:text-neutral-200 text-sm">Submitted Documents</h2>
           <div className="space-y-2">
             {documents.map((doc) => (
@@ -92,7 +104,7 @@ export default async function HostVerificationPage() {
         </div>
       )}
 
-      {/* Upload Form — always show unless fully verified */}
+      {/* Upload Form */}
       {!isVerified && <UploadDocumentForm />}
     </div>
   );

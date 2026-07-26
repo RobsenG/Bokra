@@ -1,6 +1,8 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
+import { getUnreadNotifications } from "@/lib/notifications";
+import AdminNotificationsPanel from "@/components/dashboard/AdminNotificationsPanel";
 import {
   Users,
   Building2,
@@ -9,7 +11,6 @@ import {
   ArrowRight,
   AlertCircle,
   CreditCard,
-  TrendingUp,
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
@@ -24,6 +25,7 @@ export default async function AdminDashboardPage() {
     bookingCount,
     recentUsers,
     totalRevenue,
+    unreadNotifications,
   ] = await Promise.all([
     prisma.user.count({ where: { role: "RENTER" } }),
     prisma.user.count({ where: { role: "HOST" } }),
@@ -36,6 +38,7 @@ export default async function AdminDashboardPage() {
       select: { name: true, email: true, role: true, createdAt: true, isVerified: true },
     }),
     prisma.payment.aggregate({ _sum: { amount: true }, where: { status: "SUCCESS" } }),
+    getUnreadNotifications(),
   ]);
 
   const revenue = Number(totalRevenue._sum.amount || 0);
@@ -70,6 +73,9 @@ export default async function AdminDashboardPage() {
         </p>
       </div>
 
+      {/* Admin Alert Feed for Duplicate Listings and System Notifications */}
+      <AdminNotificationsPanel initialNotifications={unreadNotifications} />
+
       {/* Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         {stats.map((stat) => {
@@ -78,7 +84,7 @@ export default async function AdminDashboardPage() {
             <Link
               key={stat.label}
               href={stat.href}
-              className="group bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-5 shadow-sm hover:shadow-md transition-all"
+              className="group bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-5 shadow-xs hover:shadow-md transition-all"
             >
               <div className="flex items-start justify-between">
                 <div className={`p-2.5 rounded-xl ${colorMap[stat.color]}`}>
@@ -109,13 +115,13 @@ export default async function AdminDashboardPage() {
                 {pendingVerifications} propert{pendingVerifications === 1 ? "y" : "ies"} awaiting verification
               </p>
               <p className="text-xs text-orange-700/80 dark:text-orange-400/80 mt-0.5">
-                Review submitted listings to approve or reject them.
+                Review submitted listings and ownership proof documents to approve or reject them.
               </p>
             </div>
           </div>
           <Link
             href="/admin/verifications"
-            className="shrink-0 px-4 py-1.5 rounded-lg text-xs font-semibold bg-orange-600 hover:bg-orange-700 text-white shadow-sm transition-colors"
+            className="shrink-0 px-4 py-1.5 rounded-lg text-xs font-semibold bg-orange-600 hover:bg-orange-700 text-white shadow-xs transition-colors"
           >
             Review Now
           </Link>
@@ -123,7 +129,7 @@ export default async function AdminDashboardPage() {
       )}
 
       {/* Recent Users */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm">
+      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs">
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
           <h2 className="font-bold text-neutral-800 dark:text-white text-sm">
             Recently Joined Users

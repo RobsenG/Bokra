@@ -10,28 +10,31 @@ datasource db {
 }
 
 model User {
-  id            String    @id @default(cuid())
-  email         String    @unique
-  name          String?
-  password      String?
-  role          Role      @default(RENTER)
-  phone         String?
-  avatar        String?
-  isVerified    Boolean   @default(false)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                String    @id @default(cuid())
+  email             String    @unique
+  name              String?
+  password          String?
+  role              Role      @default(RENTER)
+  phone             String?
+  avatar            String?
+  selfieUrl         String?
+  selfieVerifiedAt  DateTime?
+  isVerified        Boolean   @default(false)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
 
-  properties    Property[]
-  bookings      Booking[]   @relation("RenterBookings")
-  reviews       Review[]
-  documents     Document[]
-  favorites     Favorite[]
+  properties        Property[]
+  bookings          Booking[]           @relation("RenterBookings")
+  reviews           Review[]
+  documents         Document[]
+  favorites         Favorite[]
+  withdrawals       WithdrawalRequest[]
 
   @@map("users")
 }
 
 model Property {
-  id              String   @id @default(cuid())
+  id              String     @id @default(cuid())
   title           String
   description     String
   address         String
@@ -42,18 +45,19 @@ model Property {
   maxGuests       Int
   amenities       String[]
   images          String[]
-  isVerified      Boolean  @default(false)
-  isAvailable     Boolean  @default(true)
+  isVerified      Boolean    @default(false)
+  isAvailable     Boolean    @default(true)
 
   hostId          String
-  host            User     @relation(fields: [hostId], references: [id])
+  host            User       @relation(fields: [hostId], references: [id])
 
   bookings        Booking[]
   reviews         Review[]
   favorites       Favorite[]
+  documents       Document[]
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
 
   @@map("properties")
 }
@@ -68,11 +72,11 @@ model Booking {
   renterId      String
   propertyId    String
 
-  renter        User      @relation("RenterBookings", fields: [renterId], references: [id])
-  property      Property  @relation(fields: [propertyId], references: [id])
+  renter        User          @relation("RenterBookings", fields: [renterId], references: [id])
+  property      Property      @relation(fields: [propertyId], references: [id])
   payment       Payment?
 
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime      @default(now())
 
   @@map("bookings")
 }
@@ -102,6 +106,9 @@ model Document {
   userId     String
   user       User           @relation(fields: [userId], references: [id])
 
+  propertyId String?
+  property   Property?      @relation(fields: [propertyId], references: [id])
+
   @@map("documents")
 }
 
@@ -129,6 +136,35 @@ model Favorite {
 
   @@unique([userId, propertyId])
   @@map("favorites")
+}
+
+model WithdrawalRequest {
+  id              String           @id @default(cuid())
+  hostId          String
+  host            User             @relation(fields: [hostId], references: [id])
+  amount          Decimal
+  accountType     String           // "bank" | "telebirr" | "chapa"
+  accountNumber   String
+  accountName     String
+  status          WithdrawalStatus @default(PENDING)
+  chapaReference  String?
+  note            String?
+  createdAt       DateTime         @default(now())
+  processedAt     DateTime?
+
+  @@map("withdrawal_requests")
+}
+
+model AdminNotification {
+  id               String   @id @default(cuid())
+  type             String   // "DUPLICATE_PROPERTY" | "NEW_LISTING" | "DOCUMENT_UPLOADED"
+  message          String
+  isRead           Boolean  @default(false)
+  propertyId       String?
+  reportedByUserId String?
+  createdAt        DateTime @default(now())
+
+  @@map("admin_notifications")
 }
 
 enum Role {
@@ -160,5 +196,12 @@ enum DocumentStatus {
 enum PaymentStatus {
   PENDING
   SUCCESS
+  FAILED
+}
+
+enum WithdrawalStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
   FAILED
 }

@@ -3,6 +3,8 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import AdminSidebar from "@/components/dashboard/AdminSidebar";
 import UserMenu from "@/components/common/UserMenu";
+import AdminNotificationBell from "@/components/dashboard/AdminNotificationBell";
+import { getUnreadNotifications } from "@/lib/notifications";
 
 export default async function AdminLayout({
   children,
@@ -14,6 +16,9 @@ export default async function AdminLayout({
   if (!session?.user || session.user.role !== "ADMIN") {
     redirect("/");
   }
+
+  // Fetch unread notification count for top bar bell
+  const unreadNotifications = await getUnreadNotifications();
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex flex-col md:flex-row">
@@ -27,7 +32,9 @@ export default async function AdminLayout({
           <div className="font-bold text-neutral-800 dark:text-white pl-10 md:pl-0">
             System Administration
           </div>
-          <div>
+          <div className="flex items-center gap-2">
+            {/* Notification Bell with unread count badge */}
+            <AdminNotificationBell unreadCount={unreadNotifications.length} />
             <UserMenu user={session.user} />
           </div>
         </header>

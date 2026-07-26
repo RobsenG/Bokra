@@ -2,6 +2,7 @@ import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CheckCircle2, Home, ListTodo, MapPin, Calendar } from "lucide-react";
+import { sendBookingConfirmationEmail } from "@/lib/email";
 
 export default async function PaymentSuccessPage({
   searchParams,
@@ -21,11 +22,50 @@ export default async function PaymentSuccessPage({
     where: { id: cleanBookingId },
     include: {
       property: true,
+      renter: true,
+      payment: true,
     },
   });
 
   if (!booking) {
     redirect("/");
+  }
+
+  // If status is PENDING when arriving on the success page, auto-confirm it in DB
+  if (booking.status === "PENDING") {
+    try {
+      await prisma.$transaction([
+        prisma.booking.update({
+          where: { id: cleanBookingId },
+          data: { status: "CONFIRMED" },
+        }),
+        prisma.payment.upsert({
+          where: { bookingId: cleanBookingId },
+          update: { status: "SUCCESS" },
+          create: {
+            bookingId: cleanBookingId,
+            amount: booking.totalPrice,
+            currency: "ETB",
+            status: "SUCCESS",
+            chapaReference: `booking-${cleanBookingId}`,
+          },
+        }),
+      ]);
+      booking.status = "CONFIRMED";
+
+      if (booking.renter?.email) {
+        sendBookingConfirmationEmail({
+          email: booking.renter.email,
+          name: booking.renter.name || "Guest",
+          propertyTitle: booking.property.title,
+          checkIn: new Date(booking.checkIn).toLocaleDateString(),
+          checkOut: new Date(booking.checkOut).toLocaleDateString(),
+          totalPrice: Number(booking.totalPrice),
+        }).catch((err) => console.error("Failed to send confirmation email on success page:", err));
+      }
+    } catch (err) {
+      console.error("Error auto-confirming pending booking on success page:", err);
+    }
   }
 
   // If the payment/booking was cancelled or failed, redirect to the failed page

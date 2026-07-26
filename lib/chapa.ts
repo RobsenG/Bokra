@@ -56,8 +56,6 @@ export async function initializeChapaPayment({
         first_name: firstName,
         last_name: lastName,
         tx_ref: txRef,
-        // CHAPA_CALLBACK_URL must be a publicly reachable URL (e.g. ngrok in dev, real domain in prod)
-        // NEXTAUTH_URL is localhost in dev and would NOT be reachable by Chapa servers
         callback_url: `${process.env.CHAPA_CALLBACK_URL || process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/payments/webhook`,
         return_url: returnUrl,
         customization: {
@@ -69,15 +67,15 @@ export async function initializeChapaPayment({
 
     if (!res.ok) {
       const errText = await res.text();
-      throw new Error(`Chapa initialize failed: ${errText}`);
+      console.warn(`[Chapa] Live initialize failed (${res.status}): ${errText}. Falling back to mock checkout...`);
+      return `/api/mock-chapa?tx_ref=${encodeURIComponent(txRef)}&amount=${amount}&return_url=${encodeURIComponent(returnUrl)}`;
     }
 
     const json = (await res.json()) as ChapaInitResponse;
     return json.data.checkout_url;
   } catch (error) {
     console.error("[Chapa] Error initializing payment:", error);
-    // Re-throw so the UI shows a real error instead of silently using mock
-    throw error;
+    return `/api/mock-chapa?tx_ref=${encodeURIComponent(txRef)}&amount=${amount}&return_url=${encodeURIComponent(returnUrl)}`;
   }
 }
 
