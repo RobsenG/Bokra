@@ -3,6 +3,11 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import {
+  getHostAvailableBalance,
+  calculatePlatformFee,
+  calculateNetAmount,
+} from "@/lib/platform";
 
 export async function getRevenueStats(hostId?: string) {
   const session = await auth();
@@ -11,101 +16,66 @@ export async function getRevenueStats(hostId?: string) {
   }
 
   const targetHostId = hostId || session.user.id;
-
-  // 1. Total Earned from SUCCESS payments for this host's properties
-  const earningsResult = await prisma.payment.aggregate({
-    where: {
-      status: "SUCCESS",
-      booking: {
-        property: { hostId: targetHostId },
-      },
-    },
-    _sum: { amount: true },
-  });
-  const totalEarned = Number(earningsResult._sum.amount || 0);
-
-  // 2. Total Withdrawn from COMPLETED withdrawal requests
-  const completedWithdrawals = await prisma.withdrawalRequest.aggregate({
-    where: {
-      hostId: targetHostId,
-      status: "COMPLETED",
-    },
-    _sum: { amount: true },
-  });
-  const totalWithdrawn = Number(completedWithdrawals._sum.amount || 0);
-
-  // 3. Pending / Processing withdrawals
-  const pendingWithdrawalsResult = await prisma.withdrawalRequest.aggregate({
-    where: {
-      hostId: targetHostId,
-      status: { in: ["PENDING", "PROCESSING"] },
-    },
-    _sum: { amount: true },
-  });
-  const pendingWithdrawals = Number(pendingWithdrawalsResult._sum.amount || 0);
-
-  // Available Balance = Total Earned - Completed Withdrawn - Pending/Processing Withdrawn
-  const availableBalance = Math.max(0, totalEarned - totalWithdrawn - pendingWithdrawals);
-
-  return {
-    totalEarned,
-    totalWithdrawn,
-    pendingWithdrawals,
-    availableBalance,
-  };
+  return getHostAvailableBalance(targetHostId);
 }
 
-export async function requestWithdrawal(formData: {
-  amount: number;
-  accountType: string;
-  accountNumber: string;
-  accountName: string;
-  note?: string;
-}) {
+export async function requestWithdrawal(
+  amount: number,
+  accountType: string,
+  accountNumber: string,
+  accountName: string,
+  note?: string
+) {
   const session = await auth();
-  if (!session?.user) {
-    throw new Error("Unauthorized");
+  if (!session?.user || session.user.role !== "HOST") {
+    return { error: "Unauthorized. Host access required." };
   }
 
   const hostId = session.user.id;
-  const { amount, accountType, accountNumber, accountName, note } = formData;
 
-  if (!amount || amount < 100) {
-    throw new Error("Minimum withdrawal amount is 100 ETB.");
+  if (!amount || amount <= 0) {
+    return { error: "Please enter a valid withdrawal amount." };
+  }
+
+  if (amount < 100) {
+    return { error: "Minimum withdrawal amount is 100 ETB." };
   }
 
   if (!accountType || !accountNumber || !accountName) {
-    throw new Error("Please fill in all required account details.");
+    return { error: "Please fill in all required account details." };
   }
 
-  // Check available balance
-  const stats = await getRevenueStats(hostId);
-  if (amount > stats.availableBalance) {
-    throw new Error(`Insufficient available balance. You can withdraw up to ${stats.availableBalance.toLocaleString()} ETB.`);
+  // Calculate available balance
+  const balance = await getHostAvailableBalance(hostId);
+  if (amount > balance.availableBalance) {
+    return {
+      error: `Insufficient balance. Your available balance is ${balance.availableBalance.toLocaleString()} ETB.`,
+    };
   }
 
-  const chapaRef = `transfer-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  // Calculate fees (3% platform fee, 97% net amount transferred)
+  const platformFee = calculatePlatformFee(amount);
+  const netAmount = calculateNetAmount(amount);
 
-  // Create withdrawal request in database
+  const chapaReference = `BOKRA-WD-${Date.now()}`;
+
+  // Mock Chapa Transfer API processing log
+  console.log(`[Mock Chapa Transfer] Sending ${netAmount} ETB to ${accountName} (${accountType}: ${accountNumber}) with ref ${chapaReference}`);
+
+  // Create auto-approved COMPLETED WithdrawalRequest
   const withdrawal = await prisma.withdrawalRequest.create({
     data: {
       hostId,
       amount,
+      platformFee,
+      netAmount,
       accountType,
       accountNumber,
       accountName,
       note: note || null,
-      status: "PENDING",
-      chapaReference: chapaRef,
-    },
-  });
-
-  // Mock Chapa Transfer API processing: simulate async processing transition
-  // In demo sandbox, mark as PROCESSING after creation
-  await prisma.withdrawalRequest.update({
-    where: { id: withdrawal.id },
-    data: {
-      status: "PROCESSING",
+      status: "COMPLETED",
+      chapaReference,
+      processedAt: new Date(),
     },
   });
 
@@ -114,7 +84,10 @@ export async function requestWithdrawal(formData: {
 
   return {
     success: true,
+    message: "Withdrawal processed successfully!",
+    netAmount,
+    platformFee,
+    chapaReference,
     withdrawalId: withdrawal.id,
-    message: "Withdrawal request submitted! Funds will be transferred within 24 hours.",
   };
 }

@@ -1,9 +1,10 @@
 import React from "react";
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import prisma from "@/lib/prisma";
 import AdminSidebar from "@/components/dashboard/AdminSidebar";
-import UserMenu from "@/components/common/UserMenu";
 import AdminNotificationBell from "@/components/dashboard/AdminNotificationBell";
+import UserMenu from "@/components/common/UserMenu";
 import { getUnreadNotifications } from "@/lib/notifications";
 
 export default async function AdminLayout({
@@ -17,23 +18,28 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  // Fetch unread notification count for top bar bell
-  const unreadNotifications = await getUnreadNotifications();
+  // Fetch pending property count for sidebar badge
+  const [pendingCount, unreadNotifications] = await Promise.all([
+    prisma.property.count({ where: { status: "PENDING", isVerified: false } }),
+    getUnreadNotifications(),
+  ]);
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex flex-col md:flex-row">
-      {/* Sidebar Nav */}
-      <AdminSidebar />
+      {/* Sidebar Nav with live pending badge */}
+      <AdminSidebar
+        pendingCount={pendingCount}
+        unreadCount={unreadNotifications.length}
+      />
 
       {/* Main Workspace */}
       <div className="flex-1 flex flex-col md:pl-64">
         {/* Top Header */}
         <header className="sticky top-0 z-30 h-16 border-b border-neutral-100 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md px-6 flex items-center justify-between">
           <div className="font-bold text-neutral-800 dark:text-white pl-10 md:pl-0">
-            System Administration
+            Admin Panel
           </div>
           <div className="flex items-center gap-2">
-            {/* Notification Bell with unread count badge */}
             <AdminNotificationBell unreadCount={unreadNotifications.length} />
             <UserMenu user={session.user} />
           </div>

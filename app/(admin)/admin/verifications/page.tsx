@@ -1,8 +1,9 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
-import { approveProperty, rejectProperty, approveDocument, rejectDocument } from "./actions";
-import { ShieldCheck, FileText, Eye, CheckCircle2, XCircle, Camera, ExternalLink } from "lucide-react";
+import { approveDocument, rejectDocument } from "./actions";
+import { ShieldCheck, FileText, CheckCircle2, Camera, ExternalLink } from "lucide-react";
+import PropertyVerificationCard from "./PropertyVerificationCard";
 
 export default async function VerificationsPage() {
   const session = await auth();
@@ -13,7 +14,7 @@ export default async function VerificationsPage() {
   // Fetch pending properties (including ownership documents) and pending documents (including host user selfie)
   const [pendingProperties, pendingDocuments] = await Promise.all([
     prisma.property.findMany({
-      where: { isVerified: false },
+      where: { isVerified: false, status: { in: ["PENDING"] } },
       include: {
         host: { select: { id: true, name: true, email: true, selfieUrl: true } },
         documents: true,
@@ -43,7 +44,7 @@ export default async function VerificationsPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-neutral-800 dark:text-neutral-100 flex items-center gap-2">
-              <span>Property Listings & Ownership Proof</span>
+              <span>Property Listings &amp; Ownership Proof</span>
               <span className="text-xs bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-400 px-2 py-0.5 rounded-full font-bold">
                 {pendingProperties.length} pending
               </span>
@@ -59,82 +60,27 @@ export default async function VerificationsPage() {
           ) : (
             <div className="space-y-4">
               {pendingProperties.map((property) => (
-                <div key={property.id} className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-5 shadow-xs space-y-4">
-                  <div className="flex justify-between items-start gap-4">
-                    <div className="space-y-1">
-                      <h3 className="font-bold text-neutral-800 dark:text-neutral-200 text-sm line-clamp-1">
-                        {property.title}
-                      </h3>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        Submitted by: <span className="font-semibold">{property.host.name || property.host.email}</span>
-                      </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                        Location: <span className="font-semibold">{property.address}, {property.city}</span>
-                      </p>
-                    </div>
-                    <span className="text-xs font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/30 px-2.5 py-1 rounded-full shrink-0">
-                      {Number(property.pricePerNight).toLocaleString()} ETB / night
-                    </span>
-                  </div>
-
-                  {property.images[0] && (
-                    <div 
-                      className="h-32 w-full rounded-xl bg-cover bg-center bg-neutral-100 dark:bg-neutral-800"
-                      style={{ backgroundImage: `url(${property.images[0]})` }}
-                    />
-                  )}
-
-                  {/* Uploaded Property Ownership Documents */}
-                  <div className="bg-neutral-50 dark:bg-neutral-800/40 rounded-xl p-3.5 border border-neutral-100 dark:border-neutral-800 space-y-2">
-                    <p className="text-xs font-bold text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
-                      <FileText className="size-4 text-teal-600" />
-                      <span>Property Ownership Proof Documents</span>
-                    </p>
-                    {property.documents.length === 0 ? (
-                      <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
-                        ⚠️ No explicit ownership docs uploaded for this listing.
-                      </p>
-                    ) : (
-                      <div className="space-y-1.5">
-                        {property.documents.map((doc) => (
-                          <div key={doc.id} className="flex items-center justify-between bg-white dark:bg-neutral-900 p-2 px-3 rounded-lg border border-neutral-200/60 dark:border-neutral-800 text-xs">
-                            <span className="font-medium text-neutral-700 dark:text-neutral-300 truncate max-w-[180px]">
-                              {doc.type.replace(/_/g, " ")}
-                            </span>
-                            <a
-                              href={doc.fileUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-teal-600 dark:text-teal-400 font-bold hover:underline inline-flex items-center gap-1 text-[11px]"
-                            >
-                              <span>View Document</span>
-                              <ExternalLink className="size-3" />
-                            </a>
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-
-                  <div className="flex gap-2.5 pt-2">
-                    <form action={rejectProperty.bind(null, property.id)} className="flex-1">
-                      <button 
-                        type="submit" 
-                        className="w-full text-xs py-2.5 rounded-xl border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 font-semibold transition-colors cursor-pointer"
-                      >
-                        Reject Listing
-                      </button>
-                    </form>
-                    <form action={approveProperty.bind(null, property.id)} className="flex-1">
-                      <button 
-                        type="submit" 
-                        className="w-full text-xs py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold shadow-md shadow-teal-600/10 transition-colors cursor-pointer"
-                      >
-                        Approve & Publish Listing
-                      </button>
-                    </form>
-                  </div>
-                </div>
+                <PropertyVerificationCard
+                  key={property.id}
+                  property={{
+                    id: property.id,
+                    title: property.title,
+                    address: property.address,
+                    city: property.city,
+                    pricePerNight: Number(property.pricePerNight),
+                    images: property.images,
+                    host: {
+                      id: property.host.id,
+                      name: property.host.name,
+                      email: property.host.email,
+                    },
+                    documents: property.documents.map((d) => ({
+                      id: d.id,
+                      type: d.type,
+                      fileUrl: d.fileUrl,
+                    })),
+                  }}
+                />
               ))}
             </div>
           )}
@@ -144,7 +90,7 @@ export default async function VerificationsPage() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-bold text-neutral-800 dark:text-neutral-100 flex items-center gap-2">
-              <span>Host Identity Documents & Selfie Match</span>
+              <span>Host Identity Documents &amp; Selfie Match</span>
               <span className="text-xs bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-400 px-2 py-0.5 rounded-full font-bold">
                 {pendingDocuments.length} pending
               </span>
@@ -244,7 +190,7 @@ export default async function VerificationsPage() {
                         type="submit" 
                         className="w-full text-xs py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold shadow-md shadow-teal-600/10 transition-colors cursor-pointer"
                       >
-                        Approve & Verify Host
+                        Approve &amp; Verify Host
                       </button>
                     </form>
                   </div>

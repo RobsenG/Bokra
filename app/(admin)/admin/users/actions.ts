@@ -3,42 +3,75 @@
 import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-import { Role } from "@prisma/client";
 
-export async function updateUserRole(userId: string, role: Role) {
+// Role change is PERMANENTLY REMOVED — roles are read-only in admin UI
+
+export async function suspendUser(userId: string) {
   const session = await auth();
-
-  // Only admins can change user roles
   if (!session?.user || session.user.role !== "ADMIN") {
-    throw new Error("Unauthorized. Only admins can perform this action.");
+    throw new Error("Unauthorized");
   }
-
-  // Prevent admin from changing their own role
   if (session.user.id === userId) {
-    throw new Error("You cannot change your own role.");
+    throw new Error("You cannot suspend your own account.");
   }
 
   await prisma.user.update({
     where: { id: userId },
-    data: { role },
+    data: { isVerified: false },
   });
 
   revalidatePath("/admin/users");
-  revalidatePath("/admin/dashboard");
 }
 
-export async function toggleUserVerification(userId: string, isVerified: boolean) {
+export async function activateUser(userId: string) {
   const session = await auth();
-
   if (!session?.user || session.user.role !== "ADMIN") {
     throw new Error("Unauthorized");
   }
 
   await prisma.user.update({
     where: { id: userId },
-    data: { isVerified },
+    data: { isVerified: true },
   });
 
   revalidatePath("/admin/users");
-  revalidatePath("/admin/dashboard");
+}
+
+export async function getUserDetails(userId: string) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "ADMIN") {
+    throw new Error("Unauthorized");
+  }
+
+  return prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      properties: {
+        select: {
+          id: true,
+          title: true,
+          city: true,
+          status: true,
+          isVerified: true,
+          createdAt: true,
+          _count: { select: { bookings: true, reviews: true } },
+        },
+        orderBy: { createdAt: "desc" },
+      },
+      bookings: {
+        take: 10,
+        orderBy: { createdAt: "desc" },
+        include: {
+          property: { select: { title: true, city: true } },
+          payment: { select: { status: true, amount: true } },
+        },
+      },
+      documents: {
+        orderBy: { uploadedAt: "desc" },
+      },
+      _count: {
+        select: { properties: true, bookings: true, reviews: true },
+      },
+    },
+  });
 }

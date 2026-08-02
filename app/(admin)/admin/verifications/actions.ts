@@ -7,27 +7,72 @@ import { sendVerificationStatusEmail } from "@/lib/email";
 
 export async function approveProperty(propertyId: string) {
   const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") throw new Error("Unauthorized");
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return { error: "Unauthorized" };
+  }
 
   await prisma.property.update({
     where: { id: propertyId },
-    data: { isVerified: true },
+    data: {
+      status: "APPROVED",
+      isVerified: true,
+      rejectionReason: null,
+    },
   });
 
-  revalidatePath("/(admin)/admin/verifications");
+  revalidatePath("/admin/verifications");
+  revalidatePath("/host/dashboard");
+  revalidatePath("/host/properties");
   revalidatePath("/");
+
+  return { success: true };
 }
 
-export async function rejectProperty(propertyId: string) {
+export async function rejectProperty(propertyId: string, reason: string) {
   const session = await auth();
-  if (!session?.user || session.user.role !== "ADMIN") throw new Error("Unauthorized");
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return { error: "Unauthorized" };
+  }
 
-  await prisma.property.delete({
+  if (!reason || reason.trim().length < 10) {
+    return {
+      error: "Please provide a detailed rejection reason (minimum 10 characters)",
+    };
+  }
+
+  const property = await prisma.property.findUnique({
     where: { id: propertyId },
+    select: { title: true, hostId: true },
   });
 
-  revalidatePath("/(admin)/admin/verifications");
+  if (!property) {
+    return { error: "Property not found" };
+  }
+
+  await prisma.property.update({
+    where: { id: propertyId },
+    data: {
+      status: "REJECTED",
+      isVerified: false,
+      rejectionReason: reason.trim(),
+    },
+  });
+
+  // Create admin notification record
+  await prisma.adminNotification.create({
+    data: {
+      type: "PROPERTY_REJECTED",
+      message: `Property "${property.title}" was rejected. Reason: ${reason.trim()}`,
+      propertyId,
+    },
+  });
+
+  revalidatePath("/admin/verifications");
+  revalidatePath("/host/dashboard");
+  revalidatePath("/host/properties");
   revalidatePath("/");
+
+  return { success: true };
 }
 
 export async function approveDocument(documentId: string) {
@@ -37,7 +82,7 @@ export async function approveDocument(documentId: string) {
   const doc = await prisma.document.update({
     where: { id: documentId },
     data: { status: "APPROVED" },
-    include: { user: true }
+    include: { user: true },
   });
 
   // Verify the host user automatically once their document is approved
@@ -53,9 +98,9 @@ export async function approveDocument(documentId: string) {
     isVerified: true,
   });
 
-  revalidatePath("/(admin)/admin/verifications");
-  revalidatePath("/(host)/host/dashboard");
-  revalidatePath("/(host)/host/verification");
+  revalidatePath("/admin/verifications");
+  revalidatePath("/host/dashboard");
+  revalidatePath("/host/verification");
 }
 
 export async function rejectDocument(documentId: string) {
@@ -65,7 +110,7 @@ export async function rejectDocument(documentId: string) {
   const doc = await prisma.document.update({
     where: { id: documentId },
     data: { status: "REJECTED" },
-    include: { user: true }
+    include: { user: true },
   });
 
   // Send email notification
@@ -75,6 +120,6 @@ export async function rejectDocument(documentId: string) {
     isVerified: false,
   });
 
-  revalidatePath("/(admin)/admin/verifications");
-  revalidatePath("/(host)/host/verification");
+  revalidatePath("/admin/verifications");
+  revalidatePath("/host/verification");
 }

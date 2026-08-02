@@ -33,6 +33,8 @@ export default async function EditPropertyPage({ params }: { params: Promise<{ i
         maxGuests: property.maxGuests,
         amenities: property.amenities,
         images: property.images,
+        status: property.status,
+        rejectionReason: property.rejectionReason ?? null,
       }}
     />
   );

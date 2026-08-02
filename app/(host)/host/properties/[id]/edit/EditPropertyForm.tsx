@@ -2,7 +2,7 @@
 
 import { updateProperty } from "../../actions";
 import Link from "next/link";
-import { ArrowLeft, UploadCloud, Wand2, DollarSign, Loader2 } from "lucide-react";
+import { ArrowLeft, UploadCloud, Wand2, DollarSign, Loader2, AlertTriangle, CheckCircle2 } from "lucide-react";
 import { useState } from "react";
 
 interface Property {
@@ -17,6 +17,8 @@ interface Property {
   maxGuests: number;
   amenities: string[];
   images: string[];
+  status: string;
+  rejectionReason: string | null;
 }
 
 export default function EditPropertyForm({ property }: { property: Property }) {
@@ -36,6 +38,8 @@ export default function EditPropertyForm({ property }: { property: Property }) {
   const [descLoading, setDescLoading] = useState(false);
   const [priceLoading, setPriceLoading] = useState(false);
   const [priceRationale, setPriceRationale] = useState("");
+
+  const isRejected = property.status === "REJECTED";
 
   const handleSubmit = () => setLoading(true);
   const updatePropertyWithId = updateProperty.bind(null, property.id);
@@ -92,12 +96,40 @@ export default function EditPropertyForm({ property }: { property: Property }) {
           <ArrowLeft className="size-4" />
         </Link>
         <div>
-          <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">Edit Property</h1>
+          <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">
+            {isRejected ? "Edit & Resubmit Property" : "Edit Property"}
+          </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-            Update the details of your listing. Use AI tools to improve your copy!
+            {isRejected
+              ? "Fix the issues below and resubmit for admin review."
+              : "Update the details of your listing. Use AI tools to improve your copy!"}
           </p>
         </div>
       </div>
+
+      {/* Rejection Reason Banner */}
+      {isRejected && property.rejectionReason && (
+        <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-900/50 rounded-2xl p-5 space-y-3">
+          <div className="flex items-start gap-2.5">
+            <AlertTriangle className="size-5 text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
+            <div className="space-y-1">
+              <h3 className="text-sm font-extrabold text-red-800 dark:text-red-300">
+                ✗ This listing was rejected by the admin team
+              </h3>
+              <p className="text-xs font-semibold text-red-700 dark:text-red-400">
+                Rejection reason:
+              </p>
+              <blockquote className="text-xs text-red-700 dark:text-red-300 italic bg-white/60 dark:bg-red-950/40 p-2.5 rounded-lg border border-red-200 dark:border-red-900/40">
+                &quot;{property.rejectionReason}&quot;
+              </blockquote>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-red-700 dark:text-red-300 bg-white/60 dark:bg-black/20 p-2.5 rounded-lg border border-red-200 dark:border-red-900/40">
+            <CheckCircle2 className="size-3.5 text-emerald-500" />
+            <span>After saving your changes, the listing will automatically go back for admin review.</span>
+          </div>
+        </div>
+      )}
 
       <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl shadow-sm p-6 sm:p-8">
         <form action={updatePropertyWithId} onSubmit={handleSubmit} className="space-y-6">
@@ -235,8 +267,12 @@ export default function EditPropertyForm({ property }: { property: Property }) {
               </button>
             </Link>
             <button type="submit" disabled={loading}
-              className="px-5 py-2.5 rounded-xl text-xs font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-600/10 disabled:opacity-50 transition-colors cursor-pointer">
-              {loading ? "Saving..." : "Save Changes"}
+              className={`px-5 py-2.5 rounded-xl text-xs font-semibold text-white shadow-md transition-colors cursor-pointer disabled:opacity-50 ${isRejected ? "bg-teal-600 hover:bg-teal-700 shadow-teal-600/10" : "bg-teal-600 hover:bg-teal-700 shadow-teal-600/10"}`}>
+              {loading
+                ? "Saving..."
+                : isRejected
+                ? "Save & Resubmit for Review"
+                : "Save Changes"}
             </button>
           </div>
         </form>

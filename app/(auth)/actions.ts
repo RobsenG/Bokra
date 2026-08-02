@@ -35,6 +35,7 @@ export async function registerUser(data: any) {
         email,
         password: hashedPassword,
         role,
+        termsAcceptedAt: new Date(),
         // Renters are auto-verified; hosts require document approval
         isVerified: role === "RENTER",
       },

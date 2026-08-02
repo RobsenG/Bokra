@@ -10,6 +10,8 @@ import {
   Wallet,
   Clock,
   User,
+  AlertTriangle,
+  FileEdit,
 } from "lucide-react";
 
 export default async function HostDashboardPage() {
@@ -24,6 +26,7 @@ export default async function HostDashboardPage() {
     pendingBookings,
     revenueResult,
     recentBookings,
+    rejectedProperties,
   ] = await Promise.all([
     // Total properties
     prisma.property.count({
@@ -65,6 +68,21 @@ export default async function HostDashboardPage() {
         property: { select: { title: true } },
         payment: { select: { status: true } },
       },
+    }),
+    // Fetch rejected properties needing attention
+    prisma.property.findMany({
+      where: {
+        hostId,
+        status: "REJECTED",
+      },
+      select: {
+        id: true,
+        title: true,
+        city: true,
+        rejectionReason: true,
+        updatedAt: true,
+      },
+      orderBy: { updatedAt: "desc" },
     }),
   ]);
 
@@ -117,7 +135,7 @@ export default async function HostDashboardPage() {
             Welcome back, {session.user.name?.split(" ")[0] || "Host"} 👋
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-            Here's your live hosting activity and earnings performance.
+            Here&apos;s your live hosting activity and earnings performance.
           </p>
         </div>
         <Link
@@ -128,6 +146,49 @@ export default async function HostDashboardPage() {
           Add Property
         </Link>
       </div>
+
+      {/* MODIFICATION 4: Rejected Properties Alert Section */}
+      {rejectedProperties.length > 0 && (
+        <div className="bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-200 dark:border-amber-900/50 rounded-2xl p-5 shadow-xs space-y-4">
+          <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-extrabold text-sm">
+            <AlertTriangle className="size-5 text-amber-600 dark:text-amber-400 shrink-0" />
+            <span>⚠️ Action Required — {rejectedProperties.length} {rejectedProperties.length === 1 ? "Property Needs" : "Properties Need"} Attention</span>
+          </div>
+          <div className="space-y-3">
+            {rejectedProperties.map((prop) => (
+              <div key={prop.id} className="bg-white dark:bg-neutral-900 rounded-xl p-4 border-l-4 border-l-red-500 border border-neutral-200/80 dark:border-neutral-800 space-y-2">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <h4 className="font-extrabold text-neutral-900 dark:text-white text-sm">
+                    ✗ {prop.title} — <span className="font-semibold text-neutral-500">{prop.city}</span>
+                  </h4>
+                  <span className="text-[10px] text-neutral-400 font-mono">
+                    Rejected on: {new Date(prop.updatedAt).toLocaleDateString()}
+                  </span>
+                </div>
+                {prop.rejectionReason && (
+                  <p className="text-xs text-neutral-600 dark:text-neutral-300 italic bg-neutral-50 dark:bg-neutral-800/60 p-2.5 rounded-lg border border-neutral-100 dark:border-neutral-800">
+                    Reason: &quot;{prop.rejectionReason}&quot;
+                  </p>
+                )}
+                <div className="flex gap-2.5 pt-1">
+                  <Link
+                    href={`/host/properties/${prop.id}/edit`}
+                    className="px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-colors"
+                  >
+                    Edit &amp; Resubmit
+                  </Link>
+                  <Link
+                    href={`/properties/${prop.id}`}
+                    className="px-3.5 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-semibold text-xs transition-colors"
+                  >
+                    View Details
+                  </Link>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
@@ -269,7 +330,7 @@ export default async function HostDashboardPage() {
               Manage Properties
             </p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
-              Edit listings, pricing & details
+              Edit listings, pricing &amp; details
             </p>
           </div>
         </Link>
@@ -286,7 +347,7 @@ export default async function HostDashboardPage() {
               View Bookings
             </p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
-              Track reservations & guests
+              Track reservations &amp; guests
             </p>
           </div>
         </Link>
@@ -300,10 +361,10 @@ export default async function HostDashboardPage() {
           </div>
           <div>
             <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200 group-hover:text-teal-600 transition-colors">
-              Revenue & Withdrawals
+              Revenue &amp; Withdrawals
             </p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
-              Manage payouts & balance
+              Manage payouts &amp; balance
             </p>
           </div>
         </Link>

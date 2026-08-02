@@ -169,9 +169,28 @@ export async function updateProperty(propertyId: string, formData: FormData) {
     imageUrls = uploaded;
   }
 
+  // If property was REJECTED, reset to PENDING on resubmission so admin reviews again
+  const wasRejected = existing.status === "REJECTED";
+
   await prisma.property.update({
     where: { id: propertyId },
-    data: { title, description, address, city, pricePerNight, bedrooms, bathrooms, maxGuests, amenities, images: imageUrls },
+    data: {
+      title,
+      description,
+      address,
+      city,
+      pricePerNight,
+      bedrooms,
+      bathrooms,
+      maxGuests,
+      amenities,
+      images: imageUrls,
+      ...(wasRejected && {
+        status: "PENDING",
+        isVerified: false,
+        rejectionReason: null,
+      }),
+    },
   });
 
   revalidatePath("/host/properties");

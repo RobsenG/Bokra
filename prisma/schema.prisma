@@ -19,6 +19,7 @@ model User {
   avatar            String?
   selfieUrl         String?
   selfieVerifiedAt  DateTime?
+  termsAcceptedAt   DateTime?
   isVerified        Boolean   @default(false)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
@@ -34,7 +35,7 @@ model User {
 }
 
 model Property {
-  id              String     @id @default(cuid())
+  id              String         @id @default(cuid())
   title           String
   description     String
   address         String
@@ -45,19 +46,21 @@ model Property {
   maxGuests       Int
   amenities       String[]
   images          String[]
-  isVerified      Boolean    @default(false)
-  isAvailable     Boolean    @default(true)
+  status          PropertyStatus @default(PENDING)
+  rejectionReason String?
+  isVerified      Boolean        @default(false)
+  isAvailable     Boolean        @default(true)
 
   hostId          String
-  host            User       @relation(fields: [hostId], references: [id])
+  host            User           @relation(fields: [hostId], references: [id])
 
   bookings        Booking[]
   reviews         Review[]
   favorites       Favorite[]
   documents       Document[]
 
-  createdAt       DateTime   @default(now())
-  updatedAt       DateTime   @updatedAt
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
 
   @@map("properties")
 }
@@ -143,21 +146,23 @@ model WithdrawalRequest {
   hostId          String
   host            User             @relation(fields: [hostId], references: [id])
   amount          Decimal
-  accountType     String           // "bank" | "telebirr" | "chapa"
+  platformFee     Decimal          @default(0)
+  netAmount       Decimal          @default(0)
+  accountType     String
   accountNumber   String
   accountName     String
-  status          WithdrawalStatus @default(PENDING)
+  status          WithdrawalStatus @default(COMPLETED)
   chapaReference  String?
   note            String?
   createdAt       DateTime         @default(now())
-  processedAt     DateTime?
+  processedAt     DateTime?        @default(now())
 
   @@map("withdrawal_requests")
 }
 
 model AdminNotification {
   id               String   @id @default(cuid())
-  type             String   // "DUPLICATE_PROPERTY" | "NEW_LISTING" | "DOCUMENT_UPLOADED"
+  type             String   // "DUPLICATE_PROPERTY" | "NEW_LISTING" | "DOCUMENT_UPLOADED" | "PROPERTY_REJECTED"
   message          String
   isRead           Boolean  @default(false)
   propertyId       String?
@@ -171,6 +176,12 @@ enum Role {
   RENTER
   HOST
   ADMIN
+}
+
+enum PropertyStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
 
 enum BookingStatus {

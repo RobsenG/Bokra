@@ -65,6 +65,8 @@ export default async function HostRevenuePage() {
     id: w.id,
     createdAt: w.createdAt,
     amount: Number(w.amount),
+    platformFee: Number(w.platformFee || 0),
+    netAmount: Number(w.netAmount || w.amount),
     accountType: w.accountType,
     accountNumber: w.accountNumber,
     accountName: w.accountName,
