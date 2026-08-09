@@ -18,7 +18,7 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  // Fetch pending property count for sidebar badge
+  // Fetch pending property count for sidebar badge and unread notifications for notification bell
   const [pendingCount, unreadNotifications] = await Promise.all([
     prisma.property.count({ where: { status: "PENDING", isVerified: false } }),
     getUnreadNotifications(),
@@ -40,15 +40,22 @@ export default async function AdminLayout({
             Admin Panel
           </div>
           <div className="flex items-center gap-2">
-            <AdminNotificationBell unreadCount={unreadNotifications.length} />
+            <AdminNotificationBell
+              notifications={unreadNotifications.map((n) => ({
+                id: n.id,
+                type: n.type,
+                message: n.message,
+                createdAt: n.createdAt.toISOString(),
+                isRead: n.isRead,
+                propertyId: n.propertyId,
+              }))}
+            />
             <UserMenu user={session.user} />
           </div>
         </header>
 
         {/* Workspace Content */}
-        <main className="flex-1 p-6">
-          {children}
-        </main>
+        <main className="flex-1 p-6">{children}</main>
       </div>
     </div>
   );

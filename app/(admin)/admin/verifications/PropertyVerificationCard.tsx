@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { approveProperty, rejectProperty } from "./actions";
-import { FileText, ExternalLink, AlertCircle, Loader2, X } from "lucide-react";
+import { FileText, ExternalLink, AlertCircle, Loader2, X, ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 interface PropertyVerificationCardProps {
   property: {
@@ -35,8 +36,8 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
     setLoading(true);
     try {
       await approveProperty(property.id);
-    } catch (err: any) {
-      setError(err.message || "Failed to approve listing.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to approve listing.");
     } finally {
       setLoading(false);
     }
@@ -59,8 +60,8 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
         return;
       }
       setShowRejectForm(false);
-    } catch (err: any) {
-      setError(err.message || "Failed to reject listing.");
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : "Failed to reject listing.");
     } finally {
       setLoading(false);
     }
@@ -122,6 +123,16 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
             ))}
           </div>
         )}
+      </div>
+
+      <div className="flex justify-end">
+        <Link
+          href={`/admin/verifications/${property.id}`}
+          className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline inline-flex items-center gap-1"
+        >
+          <span>View Full Details</span>
+          <ArrowRight className="size-3.5" />
+        </Link>
       </div>
 
       {error && (

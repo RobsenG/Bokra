@@ -30,7 +30,7 @@ export default async function AdminDashboardPage() {
     prisma.user.count({ where: { role: "RENTER" } }),
     prisma.user.count({ where: { role: "HOST" } }),
     prisma.property.count({ where: { isVerified: true } }),
-    prisma.property.count({ where: { isVerified: false } }),
+    prisma.property.count({ where: { isVerified: false, status: "PENDING" } }),
     prisma.booking.count(),
     prisma.user.findMany({
       take: 5,
@@ -46,10 +46,10 @@ export default async function AdminDashboardPage() {
   const stats = [
     { label: "Total Renters", value: userCount, icon: Users, color: "teal", href: "/admin/users" },
     { label: "Total Hosts", value: hostCount, icon: Building2, color: "emerald", href: "/admin/users" },
-    { label: "Verified Properties", value: propertyCount, icon: ShieldCheck, color: "violet", href: "/admin/properties" },
+    { label: "Verified Properties", value: propertyCount, icon: ShieldCheck, color: "violet", href: "/properties" },
     { label: "Pending Verifications", value: pendingVerifications, icon: AlertCircle, color: "orange", href: "/admin/verifications" },
     { label: "Total Bookings", value: bookingCount, icon: CalendarDays, color: "blue", href: "/admin/bookings" },
-    { label: "Total Revenue (ETB)", value: revenue.toLocaleString(), icon: CreditCard, color: "rose", href: "/admin/payments" },
+    { label: "Total Revenue (ETB)", value: revenue.toLocaleString(), icon: CreditCard, color: "rose", href: "/admin/revenue" },
   ];
 
   const colorMap: Record<string, string> = {
@@ -166,7 +166,7 @@ export default async function AdminDashboardPage() {
                     user.role === "ADMIN"
                       ? "bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300"
                       : user.role === "HOST"
-                      ? "bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-300"
+                      ? "bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-400"
                       : "bg-neutral-50 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400"
                   }`}
                 >

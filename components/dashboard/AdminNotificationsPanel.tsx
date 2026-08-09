@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
-import { Bell, AlertTriangle, Check, ShieldAlert, Building2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { AlertTriangle, Check, ShieldAlert, CheckCheck, ExternalLink } from "lucide-react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import {
+  markNotificationReadAction,
+  markAllNotificationsReadAction,
+} from "@/app/(admin)/admin/notifications/actions";
 
 interface NotificationItem {
   id: string;
@@ -20,15 +24,33 @@ export default function AdminNotificationsPanel({
   initialNotifications: NotificationItem[];
 }) {
   const router = useRouter();
-  const [notifications, setNotifications] = useState(initialNotifications);
+  const [notifications, setNotifications] = useState<NotificationItem[]>(initialNotifications);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    setNotifications(initialNotifications);
+  }, [initialNotifications]);
 
   const handleMarkRead = async (id: string) => {
     try {
-      await fetch(`/api/notifications/${id}/read`, { method: "POST" });
       setNotifications((prev) => prev.filter((n) => n.id !== id));
+      await markNotificationReadAction(id);
       router.refresh();
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleMarkAllRead = async () => {
+    setLoading(true);
+    try {
+      setNotifications([]);
+      await markAllNotificationsReadAction();
+      router.refresh();
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -41,9 +63,17 @@ export default function AdminNotificationsPanel({
           <ShieldAlert className="size-5 text-amber-600 dark:text-amber-400" />
           <span>Admin Alert Feed ({notifications.length} Unread)</span>
         </div>
-        <span className="text-[10px] font-bold uppercase tracking-wider bg-amber-200/60 dark:bg-amber-900/60 text-amber-900 dark:text-amber-200 px-2.5 py-0.5 rounded-full">
-          Attention Required
-        </span>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={handleMarkAllRead}
+            disabled={loading}
+            className="px-2.5 py-1 rounded-full bg-amber-200/80 dark:bg-amber-900/80 hover:bg-amber-300 dark:hover:bg-amber-800 text-amber-900 dark:text-amber-200 font-bold text-[10px] transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <CheckCheck className="size-3" />
+            <span>Mark all read</span>
+          </button>
+        </div>
       </div>
 
       <div className="space-y-2.5">
@@ -67,16 +97,17 @@ export default function AdminNotificationsPanel({
             <div className="flex items-center gap-2 shrink-0">
               {notif.propertyId && (
                 <Link
-                  href="/admin/verifications"
-                  className="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-400 font-bold text-[10px] hover:bg-teal-100 transition-colors"
+                  href={`/admin/verifications/${notif.propertyId}`}
+                  className="px-2.5 py-1 rounded-lg bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-400 font-bold text-[10px] hover:bg-teal-100 transition-colors flex items-center gap-1"
                 >
-                  Inspect
+                  <span>Inspect</span>
+                  <ExternalLink className="size-2.5" />
                 </Link>
               )}
               <button
                 type="button"
                 onClick={() => handleMarkRead(notif.id)}
-                className="p-1 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-400 hover:text-neutral-600 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-neutral-400 hover:text-emerald-600 transition-colors cursor-pointer"
                 title="Mark alert as read"
               >
                 <Check className="size-4" />

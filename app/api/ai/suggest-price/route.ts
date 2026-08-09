@@ -1,27 +1,43 @@
 import { NextRequest, NextResponse } from "next/server";
-import { suggestPropertyPrice } from "@/lib/groq";
+import { getSmartPricingSuggestion } from "@/lib/groq";
 
 export async function POST(req: NextRequest) {
   try {
-    const { city, bedrooms, bathrooms, amenities } = await req.json();
-    if (!city || typeof city !== "string") {
-      return NextResponse.json({ error: "Invalid city parameter" }, { status: 400 });
+    const body = await req.json();
+    const { city, propertyType, bedrooms, amenities, currentPrice } = body;
+
+    if (!city || typeof city !== "string" || city.trim() === "") {
+      return NextResponse.json({ error: "City is required" }, { status: 400 });
+    }
+    if (!bedrooms && bedrooms !== 0) {
+      return NextResponse.json({ error: "Bedrooms count is required" }, { status: 400 });
     }
 
-    const amenitiesList = Array.isArray(amenities)
+    const amenitiesList: string[] = Array.isArray(amenities)
       ? amenities
       : typeof amenities === "string"
-      ? amenities.split(",").map((a: string) => a.trim()).filter(Boolean)
+      ? amenities
+          .split(",")
+          .map((a: string) => a.trim())
+          .filter(Boolean)
       : [];
 
-    const numBedrooms = parseInt(bedrooms, 10) || 1;
-    const numBathrooms = parseInt(bathrooms, 10) || 1;
+    const numBedrooms = Math.max(1, parseInt(String(bedrooms), 10) || 1);
+    const numCurrentPrice = parseFloat(String(currentPrice)) || 0;
+    const resolvedPropertyType = typeof propertyType === "string" && propertyType.trim() ? propertyType.trim() : "Apartment";
 
-    const priceSuggestion = await suggestPropertyPrice(city, numBedrooms, numBathrooms, amenitiesList);
+    const suggestion = await getSmartPricingSuggestion(
+      city.trim(),
+      resolvedPropertyType,
+      numBedrooms,
+      amenitiesList,
+      numCurrentPrice
+    );
 
-    return NextResponse.json(priceSuggestion);
-  } catch (error: any) {
+    return NextResponse.json(suggestion);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Internal server error";
     console.error("AI Price Suggestion API Error:", error);
-    return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

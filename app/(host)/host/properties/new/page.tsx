@@ -15,8 +15,17 @@ import {
   FileText,
   Trash2,
   ShieldCheck,
+  TrendingUp,
+  TrendingDown,
 } from "lucide-react";
 import { useState } from "react";
+
+interface PricingSuggestion {
+  suggestedPrice: number;
+  minRange: number;
+  maxRange: number;
+  reasoning: string;
+}
 
 interface UploadedDoc {
   docType: string;
@@ -39,8 +48,9 @@ export default function NewPropertyPage() {
   const [city, setCity] = useState("");
   const [bedrooms, setBedrooms] = useState("");
   const [bathrooms, setBathrooms] = useState("");
+  const [propertyType, setPropertyType] = useState("Apartment");
   const [pricePerNight, setPricePerNight] = useState("");
-  const [priceRationale, setPriceRationale] = useState("");
+  const [priceSuggestion, setPriceSuggestion] = useState<PricingSuggestion | null>(null);
 
   // Ownership Proof Documents State
   const [uploadedDocs, setUploadedDocs] = useState<UploadedDoc[]>([]);
@@ -67,7 +77,6 @@ export default function NewPropertyPage() {
   const handleGenerateDescription = async () => {
     if (!title.trim()) return;
     setDescLoading(true);
-    setPriceRationale("");
     try {
       const res = await fetch("/api/ai/generate-description", {
         method: "POST",
@@ -87,18 +96,27 @@ export default function NewPropertyPage() {
   const handleSuggestPrice = async () => {
     if (!city.trim()) return;
     setPriceLoading(true);
-    setPriceRationale("");
+    setPriceSuggestion(null);
     try {
+      const amenitiesList = amenities
+        .split(",")
+        .map((a) => a.trim())
+        .filter(Boolean);
       const res = await fetch("/api/ai/suggest-price", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ city, bedrooms, bathrooms, amenities }),
+        body: JSON.stringify({
+          city,
+          propertyType,
+          bedrooms: parseInt(bedrooms) || 1,
+          amenities: amenitiesList,
+          currentPrice: parseFloat(pricePerNight) || 0,
+        }),
       });
       if (!res.ok) throw new Error("Failed to get price suggestion");
-      const data = await res.json();
+      const data: PricingSuggestion = await res.json();
       if (data.suggestedPrice) {
-        setPricePerNight(String(data.suggestedPrice));
-        setPriceRationale(data.rationale || "");
+        setPriceSuggestion(data);
       }
     } catch (err) {
       console.error(err);
@@ -106,6 +124,16 @@ export default function NewPropertyPage() {
       setPriceLoading(false);
     }
   };
+
+  const currentPriceNum = parseFloat(pricePerNight) || 0;
+  const priceWarning =
+    priceSuggestion && currentPriceNum > 0
+      ? currentPriceNum > priceSuggestion.maxRange
+        ? "above"
+        : currentPriceNum < priceSuggestion.minRange
+        ? "below"
+        : null
+      : null;
 
   const handleDocUpload = (typeLabel: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -351,6 +379,90 @@ export default function NewPropertyPage() {
                 />
               </div>
             </div>
+
+            {/* Property Type selector (used for AI pricing) */}
+            <div className="space-y-1.5">
+              <label htmlFor="propertyType" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                Property Type
+              </label>
+              <select
+                id="propertyType"
+                name="propertyType"
+                value={propertyType}
+                onChange={(e) => setPropertyType(e.target.value)}
+                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+              >
+                <option value="Studio">Studio</option>
+                <option value="Apartment">Apartment</option>
+                <option value="House">House</option>
+                <option value="Guesthouse">Guesthouse</option>
+                <option value="Villa">Villa</option>
+              </select>
+            </div>
+
+            {/* AI Pricing Suggestion Card */}
+            {priceSuggestion && (
+              <div className="rounded-2xl border border-amber-200 dark:border-amber-900/50 bg-amber-50/60 dark:bg-amber-950/20 p-4 space-y-3">
+                <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-extrabold text-xs">
+                  <Sparkles className="size-4 text-amber-500 shrink-0" />
+                  <span>💡 AI Pricing Suggestion for {city}</span>
+                </div>
+
+                <div className="border-t border-amber-200/60 dark:border-amber-900/40 pt-3 space-y-2">
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold">Suggested Price</span>
+                    <span className="text-lg font-black text-teal-700 dark:text-teal-300">
+                      {priceSuggestion.suggestedPrice.toLocaleString()} ETB
+                      <span className="text-xs font-normal text-neutral-500"> / night</span>
+                    </span>
+                  </div>
+                  <div className="flex items-baseline justify-between">
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold">Market Range</span>
+                    <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">
+                      {priceSuggestion.minRange.toLocaleString()} – {priceSuggestion.maxRange.toLocaleString()} ETB
+                    </span>
+                  </div>
+                  <div className="border-t border-amber-200/60 dark:border-amber-900/40 pt-2">
+                    <p className="text-[11px] text-neutral-600 dark:text-neutral-400 italic leading-relaxed">
+                      <span className="font-bold text-neutral-700 dark:text-neutral-300 not-italic">Why: </span>
+                      {priceSuggestion.reasoning}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Price warning */}
+                {priceWarning === "above" && (
+                  <div className="flex items-start gap-2 p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 text-xs text-red-700 dark:text-red-300">
+                    <TrendingUp className="size-3.5 shrink-0 mt-0.5" />
+                    <span>⚠️ Your price is above the suggested range for this area. High prices may reduce bookings.</span>
+                  </div>
+                )}
+                {priceWarning === "below" && (
+                  <div className="flex items-start gap-2 p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40 text-xs text-blue-700 dark:text-blue-300">
+                    <TrendingDown className="size-3.5 shrink-0 mt-0.5" />
+                    <span>⚠️ Your price is below market rate. You may be undervaluing your property.</span>
+                  </div>
+                )}
+
+                {/* Use suggested price button */}
+                <div className="flex gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setPricePerNight(String(priceSuggestion.suggestedPrice))}
+                    className="flex-1 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                  >
+                    ✓ Use {priceSuggestion.suggestedPrice.toLocaleString()} ETB
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPriceSuggestion(null)}
+                    className="px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-700 text-neutral-500 dark:text-neutral-400 text-xs font-semibold hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                  >
+                    Keep my price
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Image Upload */}
             <div className="space-y-2">

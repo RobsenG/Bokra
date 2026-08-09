@@ -11,6 +11,11 @@ export async function approveProperty(propertyId: string) {
     return { error: "Unauthorized" };
   }
 
+  const property = await prisma.property.findUnique({
+    where: { id: propertyId },
+    select: { title: true },
+  });
+
   await prisma.property.update({
     where: { id: propertyId },
     data: {
@@ -20,7 +25,21 @@ export async function approveProperty(propertyId: string) {
     },
   });
 
+  // Create audit log notification (marked read as admin performed it)
+  if (property) {
+    await prisma.adminNotification.create({
+      data: {
+        type: "PROPERTY_APPROVED",
+        message: `Property "${property.title}" was approved and published.`,
+        propertyId,
+        isRead: true,
+      },
+    });
+  }
+
   revalidatePath("/admin/verifications");
+  revalidatePath(`/admin/verifications/${propertyId}`);
+  revalidatePath("/admin/dashboard");
   revalidatePath("/host/dashboard");
   revalidatePath("/host/properties");
   revalidatePath("/");
@@ -58,16 +77,19 @@ export async function rejectProperty(propertyId: string, reason: string) {
     },
   });
 
-  // Create admin notification record
+  // Create admin audit log notification (isRead: true so it doesn't trigger unread attention alerts on admin dashboard)
   await prisma.adminNotification.create({
     data: {
       type: "PROPERTY_REJECTED",
       message: `Property "${property.title}" was rejected. Reason: ${reason.trim()}`,
       propertyId,
+      isRead: true,
     },
   });
 
   revalidatePath("/admin/verifications");
+  revalidatePath(`/admin/verifications/${propertyId}`);
+  revalidatePath("/admin/dashboard");
   revalidatePath("/host/dashboard");
   revalidatePath("/host/properties");
   revalidatePath("/");
@@ -99,6 +121,7 @@ export async function approveDocument(documentId: string) {
   });
 
   revalidatePath("/admin/verifications");
+  revalidatePath("/admin/dashboard");
   revalidatePath("/host/dashboard");
   revalidatePath("/host/verification");
 }
@@ -121,5 +144,6 @@ export async function rejectDocument(documentId: string) {
   });
 
   revalidatePath("/admin/verifications");
+  revalidatePath("/admin/dashboard");
   revalidatePath("/host/verification");
 }
