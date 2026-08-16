@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { bookProperty } from "./actions";
-import { Calendar, CreditCard, Sparkles } from "lucide-react";
+import { Calendar, CreditCard } from "lucide-react";
 
 export default function BookingForm({ 
   propertyId, 
@@ -47,15 +47,15 @@ export default function BookingForm({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4 font-sans">
       {error && (
-        <div className="p-3 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 rounded-xl text-xs font-semibold">
+        <div className="p-3 bg-red-50 border border-red-200 text-red-600 rounded-xl text-xs font-semibold">
           {error}
         </div>
       )}
       
       <div className="space-y-1.5">
-        <label htmlFor="checkIn" className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+        <label htmlFor="checkIn" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
           Check-in Date
         </label>
         <div className="relative">
@@ -66,14 +66,14 @@ export default function BookingForm({
             value={checkIn}
             onChange={(e) => setCheckIn(e.target.value)}
             min={new Date().toISOString().split("T")[0]}
-            className="w-full h-11 px-4 pl-10 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none text-neutral-800 dark:text-neutral-100"
+            className="w-full h-11 px-4 pl-10 rounded-xl border border-[#e5e7eb] bg-white text-sm text-[#111827] focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/20 outline-none transition-all"
           />
-          <Calendar className="size-4 text-neutral-400 absolute left-3.5 top-3.5" />
+          <Calendar className="w-4 h-4 text-[#6b7280] absolute left-3.5 top-3.5" />
         </div>
       </div>
 
       <div className="space-y-1.5">
-        <label htmlFor="checkOut" className="text-[10px] font-bold uppercase tracking-wider text-neutral-500">
+        <label htmlFor="checkOut" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
           Check-out Date
         </label>
         <div className="relative">
@@ -84,16 +84,16 @@ export default function BookingForm({
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
             min={checkIn || new Date().toISOString().split("T")[0]}
-            className="w-full h-11 px-4 pl-10 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none text-neutral-800 dark:text-neutral-100"
+            className="w-full h-11 px-4 pl-10 rounded-xl border border-[#e5e7eb] bg-white text-sm text-[#111827] focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/20 outline-none transition-all"
           />
-          <Calendar className="size-4 text-neutral-400 absolute left-3.5 top-3.5" />
+          <Calendar className="w-4 h-4 text-[#6b7280] absolute left-3.5 top-3.5" />
         </div>
       </div>
 
       {totalPrice > 0 && (
-        <div className="flex justify-between items-center py-3.5 border-t border-b border-neutral-100 dark:border-neutral-800 text-sm">
-          <span className="font-semibold text-neutral-600 dark:text-neutral-400">Total Price</span>
-          <span className="text-lg font-black text-teal-700 dark:text-teal-300">
+        <div className="flex justify-between items-center py-3.5 border-t border-b border-[#e5e7eb] text-sm">
+          <span className="font-semibold text-[#6b7280]">Total Price</span>
+          <span className="text-lg font-black text-[#7c3aed]">
             {totalPrice.toLocaleString()} ETB
           </span>
         </div>
@@ -102,9 +102,9 @@ export default function BookingForm({
       <button 
         type="submit" 
         disabled={loading || totalPrice <= 0}
-        className="w-full h-11 rounded-xl text-xs font-semibold bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white shadow-md shadow-teal-600/10 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+        className="w-full bg-[#7c3aed] hover:bg-[#5b21b6] active:bg-[#4c1d95] text-white font-semibold text-xs py-3 rounded-xl shadow-[0_4px_14px_0_rgb(124_58_237_/0.25)] flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 cursor-pointer"
       >
-        <CreditCard className="size-4" />
+        <CreditCard className="w-4 h-4" />
         <span>{loading ? "Initializing payment..." : "Reserve & Pay with Chapa"}</span>
       </button>
     </form>

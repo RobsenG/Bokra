@@ -4,9 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { registerUser } from "../actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -68,35 +65,35 @@ export default function RegisterPage() {
 
   return (
     <>
-      <Card className="w-full border-teal-100 dark:border-neutral-800 shadow-xl bg-white/90 dark:bg-neutral-900/90 backdrop-blur-sm">
+      <Card className="w-full border-[#e5e7eb] shadow-[0_1px_3px_0_rgb(0_0_0_/_0.08)] bg-white rounded-2xl p-2 sm:p-4">
         <CardHeader className="space-y-2 text-center pb-4">
-          <div className="mx-auto h-10 w-10 rounded-full bg-teal-50 dark:bg-teal-950/30 flex items-center justify-center mb-1">
-            <Sparkles className="size-5 text-teal-600 dark:text-teal-400" />
+          <div className="mx-auto h-10 w-10 rounded-full bg-[#7c3aed]/10 flex items-center justify-center mb-1">
+            <Sparkles className="w-5 h-5 text-[#7c3aed]" />
           </div>
-          <CardTitle className="text-3xl font-extrabold tracking-tight text-teal-950 dark:text-neutral-50">
+          <CardTitle className="text-3xl font-extrabold tracking-tight text-[#111827]">
             Create an account
           </CardTitle>
-          <CardDescription className="text-neutral-500 dark:text-neutral-400">
+          <CardDescription className="text-[#6b7280]">
             Join Bokra Stay to discover or host premium properties in Ethiopia
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {error && (
-              <div className="flex items-center gap-2.5 p-3 text-sm text-red-800 bg-red-50 dark:bg-red-950/20 dark:text-red-400 border border-red-100 dark:border-red-900/30 rounded-lg">
-                <AlertCircle className="size-4 shrink-0 text-red-600" />
+              <div className="flex items-center gap-2.5 p-3 text-sm text-red-800 bg-red-50 border border-red-200 rounded-xl">
+                <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
                 <span>{error}</span>
               </div>
             )}
             
             <div className="space-y-1.5">
-              <Label htmlFor="name" className="text-teal-950 dark:text-neutral-300 font-medium">
+              <label htmlFor="name" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
                 Full Name
-              </Label>
-              <Input 
+              </label>
+              <input 
                 id="name" 
                 placeholder="e.g. Almaz Kebede" 
-                className="border-neutral-200 dark:border-neutral-800 focus:border-teal-500 focus:ring-teal-500/20 rounded-lg"
+                className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200"
                 {...register("name")} 
               />
               {errors.name && (
@@ -105,14 +102,14 @@ export default function RegisterPage() {
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="email" className="text-teal-950 dark:text-neutral-300 font-medium">
+              <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
                 Email Address
-              </Label>
-              <Input 
+              </label>
+              <input 
                 id="email" 
                 type="email" 
                 placeholder="name@example.com" 
-                className="border-neutral-200 dark:border-neutral-800 focus:border-teal-500 focus:ring-teal-500/20 rounded-lg"
+                className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200"
                 {...register("email")} 
               />
               {errors.email && (
@@ -122,14 +119,14 @@ export default function RegisterPage() {
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-teal-950 dark:text-neutral-300 font-medium">
+                <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
                   Password
-                </Label>
-                <Input 
+                </label>
+                <input 
                   id="password" 
                   type="password" 
                   placeholder="••••••"
-                  className="border-neutral-200 dark:border-neutral-800 focus:border-teal-500 focus:ring-teal-500/20 rounded-lg"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200"
                   {...register("password")} 
                 />
                 {errors.password && (
@@ -138,14 +135,14 @@ export default function RegisterPage() {
               </div>
 
               <div className="space-y-1.5">
-                <Label htmlFor="confirmPassword" className="text-teal-950 dark:text-neutral-300 font-medium">
+                <label htmlFor="confirmPassword" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
                   Confirm Password
-                </Label>
-                <Input 
+                </label>
+                <input 
                   id="confirmPassword" 
                   type="password" 
                   placeholder="••••••"
-                  className="border-neutral-200 dark:border-neutral-800 focus:border-teal-500 focus:ring-teal-500/20 rounded-lg"
+                  className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200"
                   {...register("confirmPassword")} 
                 />
                 {errors.confirmPassword && (
@@ -154,21 +151,21 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            <div className="space-y-2.5 pt-2 border-t border-neutral-100 dark:border-neutral-800/60">
-              <Label className="text-teal-950 dark:text-neutral-300 font-semibold text-sm">
+            <div className="space-y-2.5 pt-2 border-t border-[#e5e7eb]">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
                 I want to use Bokra Stay to...
-              </Label>
+              </label>
               <div className="grid grid-cols-2 gap-3">
                 <button 
                   type="button" 
                   onClick={() => setValue("role", "RENTER")}
                   className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${
                     selectedRole === "RENTER" 
-                      ? "border-teal-500 bg-teal-50/50 dark:bg-teal-950/20 text-teal-700 dark:text-teal-300 ring-2 ring-teal-500/20" 
-                      : "border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/40 text-neutral-600 dark:text-neutral-400"
+                      ? "border-[#7c3aed] bg-[#7c3aed]/10 text-[#7c3aed] ring-2 ring-[#7c3aed]/20 font-semibold" 
+                      : "border-[#e5e7eb] hover:bg-[#f8fafc] text-[#6b7280]"
                   }`}
                 >
-                  <User className="size-5 mb-1.5" />
+                  <User className="w-5 h-5 mb-1.5" />
                   <span className="font-semibold text-xs">Rent places</span>
                   <span className="text-[10px] opacity-75 mt-0.5">I am a traveler/guest</span>
                 </button>
@@ -177,11 +174,11 @@ export default function RegisterPage() {
                   onClick={() => setValue("role", "HOST")}
                   className={`flex flex-col items-center justify-center p-3 rounded-xl border text-center transition-all cursor-pointer ${
                     selectedRole === "HOST" 
-                      ? "border-teal-500 bg-teal-50/50 dark:bg-teal-950/20 text-teal-700 dark:text-teal-300 ring-2 ring-teal-500/20" 
-                      : "border-neutral-200 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-800/40 text-neutral-600 dark:text-neutral-400"
+                      ? "border-[#7c3aed] bg-[#7c3aed]/10 text-[#7c3aed] ring-2 ring-[#7c3aed]/20 font-semibold" 
+                      : "border-[#e5e7eb] hover:bg-[#f8fafc] text-[#6b7280]"
                   }`}
                 >
-                  <Building className="size-5 mb-1.5" />
+                  <Building className="w-5 h-5 mb-1.5" />
                   <span className="font-semibold text-xs">Host guests</span>
                   <span className="text-[10px] opacity-75 mt-0.5">I own short-term rentals</span>
                 </button>
@@ -191,21 +188,21 @@ export default function RegisterPage() {
               )}
             </div>
 
-            {/* MODIFICATION 1: Required Terms & Conditions Checkbox */}
-            <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800/60 space-y-1.5">
+            {/* Terms & Conditions Checkbox */}
+            <div className="pt-2 border-t border-[#e5e7eb] space-y-1.5">
               <div className="flex items-start gap-2.5">
                 <input
                   type="checkbox"
                   id="acceptTerms"
-                  className="mt-1 h-4 w-4 rounded border-neutral-300 text-teal-600 focus:ring-teal-500 cursor-pointer accent-teal-600 shrink-0"
+                  className="mt-1 h-4 w-4 rounded border-[#e5e7eb] text-[#7c3aed] focus:ring-[#7c3aed] cursor-pointer accent-[#7c3aed] shrink-0"
                   {...register("acceptTerms")}
                 />
-                <label htmlFor="acceptTerms" className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed cursor-pointer">
-                  I agree to the <span className="font-semibold text-neutral-800 dark:text-neutral-200">Bokra Stay Terms & Conditions</span>, including the <span className="font-bold text-teal-700 dark:text-teal-300">3% platform service fee</span> applied to every booking transaction.{" "}
+                <label htmlFor="acceptTerms" className="text-xs text-[#6b7280] leading-relaxed cursor-pointer">
+                  I agree to the <span className="font-semibold text-[#111827]">Bokra Stay Terms & Conditions</span>, including the <span className="font-bold text-[#7c3aed]">3% platform service fee</span> applied to every booking transaction.{" "}
                   <button
                     type="button"
                     onClick={() => setShowTermsModal(true)}
-                    className="text-teal-600 dark:text-teal-400 underline font-semibold hover:text-teal-700 cursor-pointer"
+                    className="text-[#7c3aed] underline font-semibold hover:text-[#5b21b6] cursor-pointer"
                   >
                     View full terms
                   </button>
@@ -216,26 +213,26 @@ export default function RegisterPage() {
               )}
             </div>
             
-            <Button 
+            <button 
               type="submit" 
-              className="w-full bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold py-2 rounded-lg transition-all shadow-md shadow-teal-600/10 hover:shadow-lg hover:shadow-teal-600/20 mt-4 cursor-pointer" 
+              className="w-full bg-[#7c3aed] hover:bg-[#5b21b6] active:bg-[#4c1d95] text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-[0_4px_14px_0_rgb(124_58_237_/0.25)] hover:shadow-[0_6px_20px_0_rgb(124_58_237/_0.35)] transition-all duration-200 disabled:opacity-50 mt-4 cursor-pointer flex items-center justify-center gap-2" 
               disabled={isSubmitting}
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin text-white" />
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
                   Creating account...
                 </>
               ) : (
                 "Sign Up"
               )}
-            </Button>
+            </button>
           </form>
         </CardContent>
-        <CardFooter className="flex flex-col items-center justify-center space-y-4 pt-4 border-t border-neutral-100 dark:border-neutral-800/60">
-          <div className="text-sm text-neutral-600 dark:text-neutral-400">
+        <CardFooter className="flex flex-col items-center justify-center space-y-4 pt-4 border-t border-[#e5e7eb]">
+          <div className="text-sm text-[#6b7280]">
             Already have an account?{" "}
-            <Link href="/login" className="text-teal-600 hover:text-teal-700 dark:text-teal-400 dark:hover:text-teal-300 font-semibold hover:underline">
+            <Link href="/login" className="text-[#7c3aed] hover:text-[#5b21b6] font-semibold hover:underline">
               Sign in
             </Link>
           </div>
@@ -245,24 +242,24 @@ export default function RegisterPage() {
       {/* Terms & Conditions Modal */}
       {showTermsModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative max-h-[85vh] overflow-y-auto">
+          <div className="bg-white border border-[#e5e7eb] rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 relative max-h-[85vh] overflow-y-auto">
             <button
               onClick={() => setShowTermsModal(false)}
-              className="absolute top-4 right-4 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 p-1 rounded-lg transition-colors cursor-pointer"
+              className="absolute top-4 right-4 text-[#6b7280] hover:text-[#111827] p-1 rounded-lg transition-colors cursor-pointer"
             >
-              <X className="size-5" />
+              <X className="w-5 h-5" />
             </button>
 
-            <div className="flex items-center gap-2.5 text-teal-900 dark:text-white border-b border-neutral-100 dark:border-neutral-800 pb-3">
-              <FileText className="size-5 text-teal-600 dark:text-teal-400" />
+            <div className="flex items-center gap-2.5 text-[#111827] border-b border-[#e5e7eb] pb-3">
+              <FileText className="w-5 h-5 text-[#7c3aed]" />
               <h3 className="font-extrabold text-base tracking-tight">
                 BOKRA STAY PLATFORM TERMS & CONDITIONS
               </h3>
             </div>
 
-            <div className="space-y-3.5 text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed pr-1">
+            <div className="space-y-3.5 text-xs text-[#6b7280] leading-relaxed pr-1">
               <div>
-                <h4 className="font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px] mb-1">
+                <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
                   Platform Service Fee
                 </h4>
                 <p>
@@ -271,7 +268,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <h4 className="font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px] mb-1">
+                <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
                   Payment Processing
                 </h4>
                 <p>
@@ -280,7 +277,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <h4 className="font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px] mb-1">
+                <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
                   Withdrawal Policy
                 </h4>
                 <p>
@@ -289,7 +286,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <h4 className="font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px] mb-1">
+                <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
                   Cancellation Policy
                 </h4>
                 <p>
@@ -298,7 +295,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <h4 className="font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px] mb-1">
+                <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
                   Property Verification
                 </h4>
                 <p>
@@ -307,7 +304,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <h4 className="font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px] mb-1">
+                <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
                   Identity Verification
                 </h4>
                 <p>
@@ -316,7 +313,7 @@ export default function RegisterPage() {
               </div>
 
               <div>
-                <h4 className="font-bold text-neutral-900 dark:text-white uppercase tracking-wider text-[11px] mb-1">
+                <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
                   Conduct
                 </h4>
                 <p>
@@ -324,19 +321,19 @@ export default function RegisterPage() {
                 </p>
               </div>
 
-              <div className="pt-2 border-t border-neutral-100 dark:border-neutral-800 text-[10px] text-neutral-400 font-medium">
+              <div className="pt-2 border-t border-[#e5e7eb] text-[10px] text-[#6b7280] font-medium">
                 © 2026 Bokra Stay — Wachemo University Final Year Project
               </div>
             </div>
 
             <div className="pt-2">
-              <Button
+              <button
                 type="button"
                 onClick={() => setShowTermsModal(false)}
-                className="w-full bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs py-2 rounded-xl cursor-pointer"
+                className="w-full bg-[#7c3aed] hover:bg-[#5b21b6] text-white font-semibold text-xs py-2.5 rounded-xl cursor-pointer transition-all"
               >
                 I Understand & Agree
-              </Button>
+              </button>
             </div>
           </div>
         </div>

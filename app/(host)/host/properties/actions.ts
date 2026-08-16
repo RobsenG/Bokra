@@ -204,12 +204,29 @@ export async function deleteProperty(propertyId: string) {
     throw new Error("Unauthorized");
   }
 
-  const existing = await prisma.property.findFirst({
-    where: { id: propertyId, hostId: session.user.id },
+  const existing = await prisma.property.findUnique({
+    where: { id: propertyId },
   });
-  if (!existing) throw new Error("Property not found or access denied.");
 
-  await prisma.property.delete({ where: { id: propertyId } });
+  if (!existing) {
+    throw new Error("Property not found.");
+  }
+
+  if (session.user.role !== "ADMIN" && existing.hostId !== session.user.id) {
+    throw new Error("Access denied.");
+  }
+
+  // Safely delete dependent records first to satisfy relational integrity
+  await prisma.$transaction([
+    prisma.review.deleteMany({ where: { propertyId } }),
+    prisma.favorite.deleteMany({ where: { propertyId } }),
+    prisma.document.deleteMany({ where: { propertyId } }),
+    prisma.adminNotification.deleteMany({ where: { propertyId } }),
+    prisma.payment.deleteMany({ where: { booking: { propertyId } } }),
+    prisma.booking.deleteMany({ where: { propertyId } }),
+    prisma.property.delete({ where: { id: propertyId } }),
+  ]);
 
   revalidatePath("/host/properties");
+  revalidatePath("/admin/verifications");
 }

@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Users,
   DollarSign,
-  Lock,
   Home,
   CalendarDays,
   Settings,
@@ -19,9 +18,13 @@ import {
 interface AdminSidebarProps {
   pendingCount?: number;
   unreadCount?: number;
+  user?: {
+    name?: string | null;
+    email?: string | null;
+  };
 }
 
-export default function AdminSidebar({ pendingCount = 0, unreadCount = 0 }: AdminSidebarProps) {
+export default function AdminSidebar({ pendingCount = 0, user }: AdminSidebarProps) {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -40,74 +43,83 @@ export default function AdminSidebar({ pendingCount = 0, unreadCount = 0 }: Admi
     { name: "System", href: "/admin/system", icon: Settings },
   ];
 
+  const initials = user?.name
+    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
+    : "AD";
+
   return (
     <>
       {/* Mobile Toggle Button */}
       <div className="md:hidden fixed top-3 left-4 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 rounded-lg bg-neutral-900 text-white shadow-md hover:bg-neutral-800 transition-colors focus:outline-none"
+          className="p-2 rounded-xl bg-[#111827] text-white shadow-md hover:bg-[#1f2937] transition-colors focus:outline-none"
         >
           {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </div>
 
       {/* Sidebar */}
-      <aside className={`fixed inset-y-0 left-0 z-40 w-64 bg-neutral-900 text-white border-r border-neutral-800 flex flex-col justify-between transform transition-transform duration-300 md:translate-x-0 ${
+      <aside className={`w-64 min-h-screen bg-[#111827] flex flex-col fixed left-0 top-0 bottom-0 z-40 transform transition-transform duration-300 md:translate-x-0 ${
         isOpen ? "translate-x-0" : "-translate-x-full"
       }`}>
-        <div className="flex flex-col gap-6 py-6 px-4">
-          {/* Brand header */}
-          <div className="flex items-center gap-2 px-3">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-500 flex items-center justify-center shadow-md">
-              <span className="text-white font-extrabold text-lg">B</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-sm leading-none">Bokra Stay</span>
-              <span className="text-[10px] text-neutral-400 font-semibold tracking-wider uppercase mt-0.5 flex items-center gap-1">
-                <Lock className="size-2.5" /> Admin Console
-              </span>
-            </div>
-          </div>
-
-          {/* Navigation links */}
-          <nav className="space-y-1.5 pt-4">
-            {links.map((link) => {
-              const Icon = link.icon;
-              const isActive =
-                link.href === "/"
-                  ? pathname === "/"
-                  : pathname === link.href || pathname.startsWith(link.href + "/");
-              return (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
-                    isActive
-                      ? "bg-teal-500/20 text-teal-300 border-l-4 border-teal-500"
-                      : "text-neutral-300 hover:bg-neutral-800 hover:text-white"
-                  }`}
-                >
-                  <span className="flex items-center gap-3">
-                    <Icon className="size-4.5 shrink-0" />
-                    <span>{link.name}</span>
-                  </span>
-                  {"badge" in link && link.badge !== undefined && (
-                    <span className="bg-orange-500 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
-                      {link.badge}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+        {/* Sidebar Header */}
+        <div className="px-6 py-5 border-b border-[#374151] flex items-center justify-between">
+          <Link href="/" className="text-xl font-bold text-white">
+            Bokra<span className="text-[#a855f7]">Stay</span>
+          </Link>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#1f2937] text-white border border-[#374151]">
+            Admin
+          </span>
         </div>
 
-        {/* Footer info in sidebar */}
-        <div className="p-4 border-t border-neutral-800 bg-neutral-950/40 text-[10px] text-neutral-400">
-          <p className="font-semibold text-white mb-0.5">Bokra Stay System</p>
-          <p>© {new Date().getFullYear()} All rights reserved</p>
+        {/* Nav section label */}
+        <div className="px-6 pt-6 pb-2 text-[10px] font-bold uppercase tracking-widest text-[#6b7280]">
+          Admin Console
+        </div>
+
+        {/* Navigation links */}
+        <nav className="flex-1 space-y-1">
+          {links.map((link) => {
+            const Icon = link.icon;
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname === link.href || pathname.startsWith(link.href + "/");
+            return (
+              <Link
+                key={link.name}
+                href={link.href}
+                onClick={() => setIsOpen(false)}
+                className={
+                  isActive
+                    ? "flex items-center justify-between px-6 py-3 mx-3 rounded-xl text-sm font-semibold text-white bg-[#7c3aed] shadow-[0_4px_14px_0_rgb(124_58_237_/_0.3)]"
+                    : "flex items-center justify-between px-6 py-3 mx-3 rounded-xl text-sm font-medium text-[#9ca3af] hover:text-white hover:bg-[#1f2937] transition-all duration-150 cursor-pointer"
+                }
+              >
+                <span className="flex items-center gap-3">
+                  <Icon className="w-4 h-4 shrink-0" />
+                  <span>{link.name}</span>
+                </span>
+                {"badge" in link && link.badge !== undefined && (
+                  <span className="bg-amber-500 text-white text-[10px] font-extrabold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                    {link.badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Sidebar footer */}
+        <div className="mt-auto px-4 py-4 border-t border-[#374151] flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-[#7c3aed] flex items-center justify-center text-white text-xs font-bold shrink-0">
+            {initials}
+          </div>
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-xs font-semibold text-white truncate">{user?.name || "Admin User"}</span>
+            <span className="text-[10px] text-[#9ca3af] truncate">{user?.email || "admin@bokrastay.com"}</span>
+          </div>
         </div>
       </aside>
 
@@ -115,7 +127,7 @@ export default function AdminSidebar({ pendingCount = 0, unreadCount = 0 }: Admi
       {isOpen && (
         <div
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-30 bg-black/40 backdrop-blur-xs md:hidden"
+          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-xs md:hidden"
         />
       )}
     </>

@@ -46,30 +46,36 @@ export default function UserMenu({ user }: UserMenuProps) {
     ? user.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2)
     : user.email?.substring(0, 2).toUpperCase() || "US";
 
+  const getBadgeClass = () => {
+    if (user.role === "ADMIN") return "bg-[#1f2937] text-white border border-[#1f2937]";
+    if (user.role === "HOST") return "bg-[#7c3aed]/10 text-[#7c3aed] border border-[#7c3aed]/20";
+    return "bg-blue-50 text-blue-700 border border-blue-200";
+  };
+
   return (
     <div className="relative" ref={dropdownRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 p-1.5 rounded-full hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors focus:outline-none"
+        className="flex items-center gap-2 p-1.5 rounded-full hover:bg-[#f8fafc] transition-colors focus:outline-none cursor-pointer"
       >
-        <div className="h-8 w-8 rounded-full bg-gradient-to-tr from-teal-500 to-emerald-500 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+        <div className="w-8 h-8 rounded-full bg-[#7c3aed] flex items-center justify-center text-white text-xs font-bold shadow-xs">
           {initials}
         </div>
-        <span className="hidden sm:inline text-sm font-medium text-neutral-700 dark:text-neutral-300">
+        <span className="hidden sm:inline text-sm font-medium text-[#111827]">
           {user.name || user.email}
         </span>
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-56 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 shadow-xl py-2 z-50 animate-in fade-in-50 slide-in-from-top-2 duration-200">
-          <div className="px-4 py-2 border-b border-neutral-100 dark:border-neutral-800 mb-1">
-            <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200 truncate">
+        <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-[#e5e7eb] shadow-lg py-2 z-50 animate-in fade-in-50 slide-in-from-top-2 duration-200">
+          <div className="px-4 py-2 border-b border-[#e5e7eb] mb-1">
+            <p className="text-sm font-semibold text-[#111827] truncate">
               {user.name || "User"}
             </p>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 truncate">
+            <p className="text-xs text-[#6b7280] truncate">
               {user.email}
             </p>
-            <span className="inline-flex mt-1 items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-300">
+            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 mt-1 rounded-full text-xs font-semibold ${getBadgeClass()}`}>
               {user.role}
             </span>
           </div>
@@ -77,14 +83,14 @@ export default function UserMenu({ user }: UserMenuProps) {
           <Link
             href={getDashboardLink()}
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-teal-50/50 dark:hover:bg-neutral-800/60 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-[#111827] hover:bg-[#f8fafc] hover:text-[#7c3aed] transition-colors"
           >
             {user.role === "ADMIN" ? (
-              <ShieldCheck className="size-4" />
+              <ShieldCheck className="w-4 h-4 text-[#7c3aed]" />
             ) : user.role === "HOST" ? (
-              <LayoutDashboard className="size-4" />
+              <LayoutDashboard className="w-4 h-4 text-[#7c3aed]" />
             ) : (
-              <ClipboardList className="size-4" />
+              <ClipboardList className="w-4 h-4 text-[#7c3aed]" />
             )}
             <span>Dashboard</span>
           </Link>
@@ -92,26 +98,26 @@ export default function UserMenu({ user }: UserMenuProps) {
           <Link
             href={getProfileLink()}
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-teal-50/50 dark:hover:bg-neutral-800/60 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-[#111827] hover:bg-[#f8fafc] hover:text-[#7c3aed] transition-colors"
           >
-            <User className="size-4" />
+            <User className="w-4 h-4 text-[#7c3aed]" />
             <span>Profile</span>
           </Link>
 
           <Link
             href="/renter/favorites"
             onClick={() => setIsOpen(false)}
-            className="flex items-center gap-2 px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-teal-50/50 dark:hover:bg-neutral-800/60 hover:text-teal-700 dark:hover:text-teal-300 transition-colors"
+            className="flex items-center gap-2 px-4 py-2 text-sm text-[#111827] hover:bg-[#f8fafc] hover:text-[#7c3aed] transition-colors"
           >
-            <Heart className="size-4" />
+            <Heart className="w-4 h-4 text-[#7c3aed]" />
             <span>Favorites</span>
           </Link>
 
           <button
             onClick={handleSignOut}
-            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors text-left"
+            className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors text-left cursor-pointer"
           >
-            <LogOut className="size-4" />
+            <LogOut className="w-4 h-4" />
             <span>Sign Out</span>
           </button>
         </div>
