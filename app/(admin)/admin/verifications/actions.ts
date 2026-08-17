@@ -42,6 +42,7 @@ export async function approveProperty(propertyId: string) {
   revalidatePath("/admin/dashboard");
   revalidatePath("/host/dashboard");
   revalidatePath("/host/properties");
+  revalidatePath("/properties");
   revalidatePath("/");
 
   return { success: true };
@@ -77,7 +78,7 @@ export async function rejectProperty(propertyId: string, reason: string) {
     },
   });
 
-  // Create admin audit log notification (isRead: true so it doesn't trigger unread attention alerts on admin dashboard)
+  // Create admin audit log notification
   await prisma.adminNotification.create({
     data: {
       type: "PROPERTY_REJECTED",
@@ -92,6 +93,7 @@ export async function rejectProperty(propertyId: string, reason: string) {
   revalidatePath("/admin/dashboard");
   revalidatePath("/host/dashboard");
   revalidatePath("/host/properties");
+  revalidatePath("/properties");
   revalidatePath("/");
 
   return { success: true };
@@ -146,4 +148,35 @@ export async function rejectDocument(documentId: string) {
   revalidatePath("/admin/verifications");
   revalidatePath("/admin/dashboard");
   revalidatePath("/host/verification");
+}
+
+export async function assignTrustBadge(
+  userId: string,
+  trustBadge: string,
+  adminVerifiedName: string
+) {
+  const session = await auth();
+  if (!session?.user || session.user.role !== "ADMIN") {
+    return { error: "Unauthorized" };
+  }
+
+  if (!userId) {
+    return { error: "User ID is required" };
+  }
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      trustBadge: trustBadge.trim() || null,
+      trustBadgeAt: trustBadge.trim() ? new Date() : null,
+      adminVerifiedName: adminVerifiedName.trim() || null,
+    },
+  });
+
+  revalidatePath("/admin/users");
+  revalidatePath("/admin/verifications");
+  revalidatePath("/properties");
+  revalidatePath("/");
+
+  return { success: true };
 }

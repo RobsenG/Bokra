@@ -29,6 +29,9 @@ export default async function AdminVerificationDetailPage({
           selfieVerifiedAt: true,
           isVerified: true,
           termsAcceptedAt: true,
+          trustBadge: true,
+          trustBadgeAt: true,
+          adminVerifiedName: true,
           createdAt: true,
           documents: {
             orderBy: { uploadedAt: "desc" },
@@ -49,6 +52,9 @@ export default async function AdminVerificationDetailPage({
             take: 5,
             orderBy: { createdAt: "desc" },
             include: { property: { select: { title: true } } },
+          },
+          reviews: {
+            select: { rating: true },
           },
           _count: {
             select: {
@@ -81,6 +87,22 @@ export default async function AdminVerificationDetailPage({
     notFound();
   }
 
+  const hostReviewCount = property.host.reviews.length;
+  const hostAvgRating =
+    hostReviewCount > 0
+      ? (
+          property.host.reviews.reduce((acc, r) => acc + r.rating, 0) /
+          hostReviewCount
+        ).toFixed(1)
+      : "N/A";
+
+  const hostConfirmedBookings = await prisma.booking.count({
+    where: {
+      property: { hostId: property.host.id },
+      status: "CONFIRMED",
+    },
+  });
+
   return (
     <VerificationDetailClient
       property={{
@@ -106,10 +128,17 @@ export default async function AdminVerificationDetailPage({
           phone: property.host.phone,
           avatar: property.host.avatar,
           selfieUrl: property.host.selfieUrl,
-          selfieVerifiedAt: property.host.selfieVerifiedAt?.toISOString() ?? null,
+          selfieVerifiedAt:
+            property.host.selfieVerifiedAt?.toISOString() ?? null,
           isVerified: property.host.isVerified,
-          termsAcceptedAt: property.host.termsAcceptedAt?.toISOString() ?? null,
+          termsAcceptedAt:
+            property.host.termsAcceptedAt?.toISOString() ?? null,
+          trustBadge: property.host.trustBadge,
+          trustBadgeAt: property.host.trustBadgeAt?.toISOString() ?? null,
+          adminVerifiedName: property.host.adminVerifiedName,
           createdAt: property.host.createdAt.toISOString(),
+          confirmedBookings: hostConfirmedBookings,
+          avgRating: hostAvgRating,
           documents: property.host.documents.map((d) => ({
             id: d.id,
             type: d.type,

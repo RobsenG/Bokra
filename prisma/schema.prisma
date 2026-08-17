@@ -21,6 +21,10 @@ model User {
   selfieVerifiedAt  DateTime?
   termsAcceptedAt   DateTime?
   isVerified        Boolean   @default(false)
+  trustBadge        String?   // Admin assigned: "Verified Host", "Top Host", etc.
+  trustBadgeAt      DateTime? // When badge was assigned
+  adminVerifiedName String?   // Custom name admin gives to verified host
+  shortBio          String?   // Host short bio
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

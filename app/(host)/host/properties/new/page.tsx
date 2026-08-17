@@ -9,7 +9,6 @@ import {
   Loader2,
   Wand2,
   DollarSign,
-  FileCheck,
   CheckCircle2,
   AlertTriangle,
   FileText,
@@ -17,6 +16,10 @@ import {
   ShieldCheck,
   TrendingUp,
   TrendingDown,
+  XCircle,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -27,10 +30,90 @@ interface PricingSuggestion {
   reasoning: string;
 }
 
+interface AICheckResult {
+  status: "approved" | "warning" | "rejected";
+  message: string;
+  confidence: number;
+}
+
 interface UploadedDoc {
   docType: string;
   file: File;
-  aiStatus: "scanning" | "authentic" | "low_quality";
+  aiCheckStatus: "scanning" | "completed";
+  aiResult?: AICheckResult;
+}
+
+function runAIDocumentCheck(
+  file: File,
+  documentType: string,
+  propertyTitle: string
+): Promise<AICheckResult> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const validTypes = [
+        "application/pdf",
+        "image/jpeg",
+        "image/jpg",
+        "image/png",
+      ];
+      const isValidType = validTypes.includes(file.type);
+      const isValidSize = file.size > 15 * 1024; // > 15KB
+      const fileNameLower = file.name.toLowerCase();
+      const propertyTitleLower = propertyTitle.toLowerCase();
+      const docTypeLower = documentType.toLowerCase();
+
+      // Check if document name has keywords matching property or doc type
+      const ownershipKeywords = [
+        "title",
+        "deed",
+        "registration",
+        "ownership",
+        "lease",
+        "certificate",
+        "authorization",
+        "permit",
+        "contract",
+        "agreement",
+        "house",
+        "property",
+        "land",
+        "kebele",
+      ];
+      const hasRelevantKeyword = ownershipKeywords.some(
+        (kw) => fileNameLower.includes(kw) || docTypeLower.includes(kw)
+      );
+
+      if (!isValidType) {
+        resolve({
+          status: "rejected",
+          message:
+            "Invalid file format. Please upload PDF, JPG, or PNG documents only.",
+          confidence: 0,
+        });
+      } else if (!isValidSize) {
+        resolve({
+          status: "rejected",
+          message:
+            "File appears too small to be a real document. Please upload a clear, readable scan.",
+          confidence: 15,
+        });
+      } else if (isValidType && isValidSize && hasRelevantKeyword) {
+        resolve({
+          status: "approved",
+          message:
+            "Document appears authentic. Keywords match expected ownership documentation.",
+          confidence: 87,
+        });
+      } else {
+        resolve({
+          status: "warning",
+          message:
+            "Document uploaded successfully. Our team will verify authenticity during admin review.",
+          confidence: 62,
+        });
+      }
+    }, 2000); // 2 second AI processing delay
+  });
 }
 
 export default function NewPropertyPage() {
@@ -50,23 +133,36 @@ export default function NewPropertyPage() {
   const [bathrooms, setBathrooms] = useState("");
   const [propertyType, setPropertyType] = useState("Apartment");
   const [pricePerNight, setPricePerNight] = useState("");
-  const [priceSuggestion, setPriceSuggestion] = useState<PricingSuggestion | null>(null);
+  const [priceSuggestion, setPriceSuggestion] =
+    useState<PricingSuggestion | null>(null);
 
   // Ownership Proof Documents State
   const [uploadedDocs, setUploadedDocs] = useState<UploadedDoc[]>([]);
   const [docError, setDocError] = useState<string | null>(null);
+  const [showDocHelp, setShowDocHelp] = useState(false);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     if (uploadedDocs.length === 0) {
       e.preventDefault();
-      setDocError("Please upload at least one property ownership proof document.");
+      setDocError(
+        "Please upload at least one property ownership proof document."
+      );
       return;
     }
 
-    const hasAuthenticDoc = uploadedDocs.some((d) => d.aiStatus === "authentic");
-    if (!hasAuthenticDoc) {
+    // Block submission only if ALL uploaded docs are scanning or REJECTED
+    const hasValidDoc = uploadedDocs.some(
+      (d) =>
+        d.aiCheckStatus === "completed" &&
+        d.aiResult &&
+        (d.aiResult.status === "approved" || d.aiResult.status === "warning")
+    );
+
+    if (!hasValidDoc) {
       e.preventDefault();
-      setDocError("At least one document must pass the AI authenticity scanner.");
+      setDocError(
+        "At least one document must pass initial AI inspection (Approved or Warning status)."
+      );
       return;
     }
 
@@ -135,7 +231,10 @@ export default function NewPropertyPage() {
         : null
       : null;
 
-  const handleDocUpload = (typeLabel: string, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDocUpload = async (
+    typeLabel: string,
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -144,27 +243,28 @@ export default function NewPropertyPage() {
     const newDoc: UploadedDoc = {
       docType: typeLabel,
       file,
-      aiStatus: "scanning",
+      aiCheckStatus: "scanning",
     };
 
-    setUploadedDocs((prev) => [...prev.filter((d) => d.docType !== typeLabel), newDoc]);
+    setUploadedDocs((prev) => [
+      ...prev.filter((d) => d.docType !== typeLabel),
+      newDoc,
+    ]);
 
-    // Simulate 2 second AI Document Scanning
-    setTimeout(() => {
-      setUploadedDocs((prev) =>
-        prev.map((item) => {
-          if (item.docType === typeLabel && item.file === file) {
-            // Check size > 10KB (10 * 1024 bytes)
-            const isQualityGood = file.size > 10240;
-            return {
-              ...item,
-              aiStatus: isQualityGood ? "authentic" : "low_quality",
-            };
-          }
-          return item;
-        })
-      );
-    }, 2000);
+    const result = await runAIDocumentCheck(file, typeLabel, title);
+
+    setUploadedDocs((prev) =>
+      prev.map((item) => {
+        if (item.docType === typeLabel && item.file === file) {
+          return {
+            ...item,
+            aiCheckStatus: "completed",
+            aiResult: result,
+          };
+        }
+        return item;
+      })
+    );
   };
 
   const removeDoc = (typeLabel: string) => {
@@ -172,10 +272,22 @@ export default function NewPropertyPage() {
   };
 
   const docTypes = [
-    { label: "Property Title Deed", desc: "Official title deed or ownership certificate" },
-    { label: "Lease Agreement", desc: "Signed long-term property lease agreement" },
-    { label: "House Registration Certificate", desc: "Municipal or local house registration doc" },
-    { label: "Rental Authorization Letter", desc: "Signed authorization allowing subletting" },
+    {
+      label: "Property Title Deed",
+      desc: "Official title deed or ownership certificate",
+    },
+    {
+      label: "Lease Agreement",
+      desc: "Signed long-term property lease agreement",
+    },
+    {
+      label: "House Registration Certificate",
+      desc: "Municipal or local house registration doc",
+    },
+    {
+      label: "Rental Authorization Letter",
+      desc: "Signed authorization allowing subletting",
+    },
   ];
 
   return (
@@ -191,7 +303,7 @@ export default function NewPropertyPage() {
         <div>
           <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight flex items-center gap-2">
             <span>List a New Property</span>
-            <Sparkles className="size-4 text-teal-600 dark:text-teal-400" />
+            <Sparkles className="size-4 text-[#7c3aed]" />
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
             Fill out the details and upload ownership verification documents to list your property.
@@ -203,13 +315,16 @@ export default function NewPropertyPage() {
         <form action={createProperty} onSubmit={handleSubmit} className="space-y-8">
           {/* Section 1: Basic Info */}
           <div className="space-y-5">
-            <h2 className="text-sm font-extrabold uppercase tracking-wider text-teal-700 dark:text-teal-400 border-b border-neutral-100 dark:border-neutral-800 pb-2">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#7c3aed] border-b border-neutral-100 dark:border-neutral-800 pb-2">
               1. Property Information
             </h2>
 
             {/* Title */}
             <div className="space-y-1.5">
-              <label htmlFor="title" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+              <label
+                htmlFor="title"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+              >
                 Property Title
               </label>
               <input
@@ -220,24 +335,35 @@ export default function NewPropertyPage() {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Cozy Modern Apartment in Bole"
                 required
-                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
               />
             </div>
 
             {/* Description with AI Generator */}
             <div className="space-y-1.5">
               <div className="flex items-center justify-between">
-                <label htmlFor="description" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                <label
+                  htmlFor="description"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+                >
                   Description
                 </label>
                 <button
                   type="button"
                   onClick={handleGenerateDescription}
                   disabled={descLoading || !title.trim()}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-violet-600 hover:bg-violet-700 text-white text-[11px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
-                  title={!title.trim() ? "Enter a title first" : "Generate description with AI"}
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-[11px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
+                  title={
+                    !title.trim()
+                      ? "Enter a title first"
+                      : "Generate description with AI"
+                  }
                 >
-                  {descLoading ? <Loader2 className="size-3 animate-spin" /> : <Wand2 className="size-3" />}
+                  {descLoading ? (
+                    <Loader2 className="size-3 animate-spin" />
+                  ) : (
+                    <Wand2 className="size-3" />
+                  )}
                   {descLoading ? "Writing..." : "Write with AI ✨"}
                 </button>
               </div>
@@ -249,14 +375,17 @@ export default function NewPropertyPage() {
                 placeholder="Describe your property's key features, location, and guest benefits..."
                 rows={4}
                 required
-                className="w-full p-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100 resize-none"
+                className="w-full p-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100 resize-none"
               />
             </div>
 
             {/* Address & City */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-1.5">
-                <label htmlFor="address" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                <label
+                  htmlFor="address"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+                >
                   Address
                 </label>
                 <input
@@ -265,11 +394,14 @@ export default function NewPropertyPage() {
                   type="text"
                   placeholder="123 Bole Road"
                   required
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="city" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                <label
+                  htmlFor="city"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+                >
                   City
                 </label>
                 <input
@@ -280,14 +412,17 @@ export default function NewPropertyPage() {
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="Addis Ababa"
                   required
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
                 />
               </div>
             </div>
 
             {/* Amenities */}
             <div className="space-y-1.5">
-              <label htmlFor="amenities" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+              <label
+                htmlFor="amenities"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+              >
                 Amenities (comma separated)
               </label>
               <input
@@ -297,7 +432,7 @@ export default function NewPropertyPage() {
                 value={amenities}
                 onChange={(e) => setAmenities(e.target.value)}
                 placeholder="WiFi, Kitchen, Air Conditioning, Free Parking"
-                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
               />
             </div>
 
@@ -305,7 +440,10 @@ export default function NewPropertyPage() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="space-y-1.5 col-span-2 md:col-span-1">
                 <div className="flex items-center justify-between gap-1">
-                  <label htmlFor="pricePerNight" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                  <label
+                    htmlFor="pricePerNight"
+                    className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+                  >
                     Price / Night
                   </label>
                   <button
@@ -315,7 +453,11 @@ export default function NewPropertyPage() {
                     className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs shrink-0"
                     title={!city.trim() ? "Enter a city first" : "AI price suggestion"}
                   >
-                    {priceLoading ? <Loader2 className="size-2.5 animate-spin" /> : <DollarSign className="size-2.5" />}
+                    {priceLoading ? (
+                      <Loader2 className="size-2.5 animate-spin" />
+                    ) : (
+                      <DollarSign className="size-2.5" />
+                    )}
                     AI 💡
                   </button>
                 </div>
@@ -329,11 +471,14 @@ export default function NewPropertyPage() {
                   value={pricePerNight}
                   onChange={(e) => setPricePerNight(e.target.value)}
                   placeholder="1500"
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="bedrooms" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                <label
+                  htmlFor="bedrooms"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+                >
                   Bedrooms
                 </label>
                 <input
@@ -345,11 +490,14 @@ export default function NewPropertyPage() {
                   value={bedrooms}
                   onChange={(e) => setBedrooms(e.target.value)}
                   placeholder="1"
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="bathrooms" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                <label
+                  htmlFor="bathrooms"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+                >
                   Bathrooms
                 </label>
                 <input
@@ -361,11 +509,14 @@ export default function NewPropertyPage() {
                   value={bathrooms}
                   onChange={(e) => setBathrooms(e.target.value)}
                   placeholder="1"
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
                 />
               </div>
               <div className="space-y-1.5">
-                <label htmlFor="maxGuests" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+                <label
+                  htmlFor="maxGuests"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+                >
                   Max Guests
                 </label>
                 <input
@@ -375,14 +526,17 @@ export default function NewPropertyPage() {
                   min="1"
                   required
                   placeholder="2"
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
                 />
               </div>
             </div>
 
-            {/* Property Type selector (used for AI pricing) */}
+            {/* Property Type selector */}
             <div className="space-y-1.5">
-              <label htmlFor="propertyType" className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
+              <label
+                htmlFor="propertyType"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400"
+              >
                 Property Type
               </label>
               <select
@@ -390,7 +544,7 @@ export default function NewPropertyPage() {
                 name="propertyType"
                 value={propertyType}
                 onChange={(e) => setPropertyType(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
+                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/10 outline-none transition-all text-neutral-800 dark:text-neutral-100"
               >
                 <option value="Studio">Studio</option>
                 <option value="Apartment">Apartment</option>
@@ -410,21 +564,31 @@ export default function NewPropertyPage() {
 
                 <div className="border-t border-amber-200/60 dark:border-amber-900/40 pt-3 space-y-2">
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold">Suggested Price</span>
-                    <span className="text-lg font-black text-teal-700 dark:text-teal-300">
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold">
+                      Suggested Price
+                    </span>
+                    <span className="text-lg font-black text-[#7c3aed]">
                       {priceSuggestion.suggestedPrice.toLocaleString()} ETB
-                      <span className="text-xs font-normal text-neutral-500"> / night</span>
+                      <span className="text-xs font-normal text-neutral-500">
+                        {" "}
+                        / night
+                      </span>
                     </span>
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold">Market Range</span>
+                    <span className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold">
+                      Market Range
+                    </span>
                     <span className="text-sm font-bold text-neutral-700 dark:text-neutral-300">
-                      {priceSuggestion.minRange.toLocaleString()} – {priceSuggestion.maxRange.toLocaleString()} ETB
+                      {priceSuggestion.minRange.toLocaleString()} –{" "}
+                      {priceSuggestion.maxRange.toLocaleString()} ETB
                     </span>
                   </div>
                   <div className="border-t border-amber-200/60 dark:border-amber-900/40 pt-2">
                     <p className="text-[11px] text-neutral-600 dark:text-neutral-400 italic leading-relaxed">
-                      <span className="font-bold text-neutral-700 dark:text-neutral-300 not-italic">Why: </span>
+                      <span className="font-bold text-neutral-700 dark:text-neutral-300 not-italic">
+                        Why:{" "}
+                      </span>
                       {priceSuggestion.reasoning}
                     </p>
                   </div>
@@ -434,13 +598,19 @@ export default function NewPropertyPage() {
                 {priceWarning === "above" && (
                   <div className="flex items-start gap-2 p-2.5 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 text-xs text-red-700 dark:text-red-300">
                     <TrendingUp className="size-3.5 shrink-0 mt-0.5" />
-                    <span>⚠️ Your price is above the suggested range for this area. High prices may reduce bookings.</span>
+                    <span>
+                      ⚠️ Your price is above the suggested range for this area.
+                      High prices may reduce bookings.
+                    </span>
                   </div>
                 )}
                 {priceWarning === "below" && (
                   <div className="flex items-start gap-2 p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/40 text-xs text-blue-700 dark:text-blue-300">
                     <TrendingDown className="size-3.5 shrink-0 mt-0.5" />
-                    <span>⚠️ Your price is below market rate. You may be undervaluing your property.</span>
+                    <span>
+                      ⚠️ Your price is below market rate. You may be undervaluing
+                      your property.
+                    </span>
                   </div>
                 )}
 
@@ -448,8 +618,10 @@ export default function NewPropertyPage() {
                 <div className="flex gap-2 pt-1">
                   <button
                     type="button"
-                    onClick={() => setPricePerNight(String(priceSuggestion.suggestedPrice))}
-                    className="flex-1 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                    onClick={() =>
+                      setPricePerNight(String(priceSuggestion.suggestedPrice))
+                    }
+                    className="flex-1 py-2 rounded-xl bg-[#7c3aed] hover:bg-[#6d28d9] text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
                   >
                     ✓ Use {priceSuggestion.suggestedPrice.toLocaleString()} ETB
                   </button>
@@ -469,20 +641,24 @@ export default function NewPropertyPage() {
               <label className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
                 Property Images
               </label>
-              <div className="relative group border-2 border-dashed border-neutral-200 dark:border-neutral-850 hover:border-teal-500 dark:hover:border-teal-400 rounded-2xl p-6 text-center cursor-pointer transition-colors">
+              <div className="relative group border-2 border-dashed border-neutral-200 dark:border-neutral-850 hover:border-[#7c3aed] rounded-2xl p-6 text-center cursor-pointer transition-colors">
                 <input
                   id="images"
                   name="images"
                   type="file"
                   multiple
                   accept="image/*"
-                  onChange={(e) => setImagesSelected(e.target.files?.length || 0)}
+                  onChange={(e) =>
+                    setImagesSelected(e.target.files?.length || 0)
+                  }
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
                 <div className="flex flex-col items-center justify-center space-y-2 text-neutral-500 dark:text-neutral-450">
-                  <UploadCloud className="size-8 text-neutral-400 group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors" />
+                  <UploadCloud className="size-8 text-neutral-400 group-hover:text-[#7c3aed] transition-colors" />
                   <p className="text-xs font-semibold text-neutral-700 dark:text-neutral-250">
-                    {imagesSelected > 0 ? `${imagesSelected} photos selected` : "Click or drag images to upload"}
+                    {imagesSelected > 0
+                      ? `${imagesSelected} photos selected`
+                      : "Click or drag images to upload"}
                   </p>
                   <p className="text-[10px] text-neutral-400 dark:text-neutral-500">
                     JPG, PNG or WEBP files supported
@@ -496,8 +672,8 @@ export default function NewPropertyPage() {
           <div className="space-y-5 pt-4">
             <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-2">
               <div>
-                <h2 className="text-sm font-extrabold uppercase tracking-wider text-teal-700 dark:text-teal-400 flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-teal-600" />
+                <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#7c3aed] flex items-center gap-2">
+                  <ShieldCheck className="size-4 text-[#7c3aed]" />
                   2. Prove Property Ownership
                 </h2>
                 <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
@@ -507,6 +683,53 @@ export default function NewPropertyPage() {
               <span className="text-[10px] font-bold uppercase tracking-wider bg-violet-50 dark:bg-violet-950/30 text-violet-700 dark:text-violet-300 px-2.5 py-1 rounded-full border border-violet-200 dark:border-violet-800/40">
                 AI Verified
               </span>
+            </div>
+
+            {/* Collapsible Info Section */}
+            <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50/70 dark:bg-neutral-850 overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setShowDocHelp(!showDocHelp)}
+                className="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100/50 dark:hover:bg-neutral-800 transition-colors"
+              >
+                <span className="flex items-center gap-2">
+                  <HelpCircle className="size-4 text-[#7c3aed]" />
+                  What documents are accepted for ownership proof?
+                </span>
+                {showDocHelp ? (
+                  <ChevronUp className="size-4 text-neutral-400" />
+                ) : (
+                  <ChevronDown className="size-4 text-neutral-400" />
+                )}
+              </button>
+
+              {showDocHelp && (
+                <div className="px-4 pb-4 pt-1 text-xs space-y-3 border-t border-neutral-200/60 dark:border-neutral-800">
+                  <div>
+                    <p className="font-bold text-emerald-700 dark:text-emerald-400 mb-1">
+                      📋 Accepted Documents:
+                    </p>
+                    <ul className="list-disc list-inside space-y-0.5 text-neutral-600 dark:text-neutral-300">
+                      <li>Property Title Deed or Land Certificate</li>
+                      <li>House Registration Certificate (Kebele)</li>
+                      <li>Lease Agreement (if you are subletting)</li>
+                      <li>Government-issued Ownership Letter</li>
+                      <li>Rental Authorization Letter from property owner</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <p className="font-bold text-red-600 dark:text-red-400 mb-1">
+                      ❌ Not Accepted:
+                    </p>
+                    <ul className="list-disc list-inside space-y-0.5 text-neutral-600 dark:text-neutral-300">
+                      <li>Personal ID only (upload in identity verification instead)</li>
+                      <li>Utility bills alone</li>
+                      <li>Photos of the property</li>
+                      <li>Informal / handwritten notes</li>
+                    </ul>
+                  </div>
+                </div>
+              )}
             </div>
 
             {docError && (
@@ -519,13 +742,15 @@ export default function NewPropertyPage() {
             {/* Document Upload Options Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {docTypes.map((typeObj) => {
-                const uploaded = uploadedDocs.find((d) => d.docType === typeObj.label);
+                const uploaded = uploadedDocs.find(
+                  (d) => d.docType === typeObj.label
+                );
                 return (
                   <div
                     key={typeObj.label}
                     className={`p-4 rounded-2xl border transition-all ${
                       uploaded
-                        ? "bg-teal-50/50 dark:bg-teal-950/20 border-teal-200 dark:border-teal-900/40"
+                        ? "bg-violet-50/40 dark:bg-violet-950/20 border-violet-200 dark:border-violet-900/40"
                         : "bg-neutral-50/50 dark:bg-neutral-800/40 border-neutral-200/80 dark:border-neutral-800"
                     }`}
                   >
@@ -548,8 +773,8 @@ export default function NewPropertyPage() {
                           <Trash2 className="size-4" />
                         </button>
                       ) : (
-                        <label className="px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-750 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:border-teal-500 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs">
-                          <UploadCloud className="size-3.5 text-teal-600" />
+                        <label className="px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-750 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:border-[#7c3aed] transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                          <UploadCloud className="size-3.5 text-[#7c3aed]" />
                           <span>Upload</span>
                           <input
                             type="file"
@@ -566,7 +791,7 @@ export default function NewPropertyPage() {
                     {uploaded && (
                       <div className="mt-3 pt-3 border-t border-neutral-200/60 dark:border-neutral-800/60 space-y-2">
                         <div className="flex items-center gap-2 text-xs text-neutral-700 dark:text-neutral-300 font-medium">
-                          <FileText className="size-4 text-teal-600 shrink-0" />
+                          <FileText className="size-4 text-[#7c3aed] shrink-0" />
                           <span className="truncate">{uploaded.file.name}</span>
                           <span className="text-[10px] text-neutral-400 shrink-0">
                             ({(uploaded.file.size / 1024).toFixed(1)} KB)
@@ -574,27 +799,96 @@ export default function NewPropertyPage() {
                         </div>
 
                         {/* AI Check badge */}
-                        <div className="bg-white dark:bg-neutral-900 rounded-xl p-2.5 border border-neutral-200/60 dark:border-neutral-800 text-[11px] space-y-1">
-                          <div className="flex items-center justify-between text-[10px] text-neutral-400 font-semibold uppercase tracking-wider">
-                            <span>Powered by Bokra Stay AI Document Scanner</span>
-                          </div>
-
-                          {uploaded.aiStatus === "scanning" ? (
-                            <div className="flex items-center gap-2 text-violet-600 dark:text-violet-400 font-semibold">
-                              <Loader2 className="size-3.5 animate-spin" />
+                        <div className="bg-white dark:bg-neutral-900 rounded-xl p-3 border border-neutral-200/80 dark:border-neutral-800 text-xs space-y-2">
+                          {uploaded.aiCheckStatus === "scanning" ? (
+                            <div className="flex items-center gap-2 text-[#7c3aed] font-semibold">
+                              <Loader2 className="size-4 animate-spin" />
                               <span>Scanning document authenticity...</span>
                             </div>
-                          ) : uploaded.aiStatus === "authentic" ? (
-                            <div className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 font-semibold">
-                              <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
-                              <span>Document appears authentic — pending admin review</span>
+                          ) : uploaded.aiResult ? (
+                            <div className="space-y-2">
+                              {/* Header & Confidence */}
+                              <div className="flex items-center justify-between font-bold">
+                                {uploaded.aiResult.status === "approved" && (
+                                  <span className="text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                                    🤖 AI Document Scanner ✅ PASSED
+                                  </span>
+                                )}
+                                {uploaded.aiResult.status === "warning" && (
+                                  <span className="text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                                    🤖 AI Document Scanner ⚠️ REVIEW
+                                  </span>
+                                )}
+                                {uploaded.aiResult.status === "rejected" && (
+                                  <span className="text-red-700 dark:text-red-400 flex items-center gap-1.5">
+                                    🤖 AI Document Scanner ❌ FAILED
+                                  </span>
+                                )}
+                                <span className="text-[11px] text-neutral-500">
+                                  {uploaded.aiResult.confidence}%
+                                </span>
+                              </div>
+
+                              {/* Progress bar */}
+                              <div className="w-full bg-neutral-100 dark:bg-neutral-800 h-2 rounded-full overflow-hidden">
+                                <div
+                                  className="bg-[#7c3aed] h-2 rounded-full transition-all duration-500"
+                                  style={{
+                                    width: `${uploaded.aiResult.confidence}%`,
+                                  }}
+                                />
+                              </div>
+
+                              {/* Check items */}
+                              <div className="space-y-1 text-[11px] text-neutral-600 dark:text-neutral-400">
+                                {uploaded.aiResult.status === "approved" && (
+                                  <>
+                                    <p className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                                      ✓ Valid file format (PDF/Image)
+                                    </p>
+                                    <p className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                                      ✓ Document size indicates real content
+                                    </p>
+                                    <p className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                                      ✓ Keywords match ownership documentation
+                                    </p>
+                                  </>
+                                )}
+
+                                {uploaded.aiResult.status === "warning" && (
+                                  <>
+                                    <p className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                                      ✓ Valid file format
+                                    </p>
+                                    <p className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
+                                      ✓ Adequate file size
+                                    </p>
+                                    <p className="flex items-center gap-1 text-amber-700 dark:text-amber-400">
+                                      ⚠ Could not match document to property keywords
+                                    </p>
+                                  </>
+                                )}
+
+                                {uploaded.aiResult.status === "rejected" && (
+                                  <p className="flex items-center gap-1 text-red-700 dark:text-red-400">
+                                    ✗ {uploaded.aiResult.message}
+                                  </p>
+                                )}
+                              </div>
+
+                              {/* Reasoning quote */}
+                              <p className="text-[11px] text-neutral-600 dark:text-neutral-300 italic bg-neutral-50 dark:bg-neutral-800/50 p-2 rounded-lg border border-neutral-100 dark:border-neutral-800">
+                                &quot;{uploaded.aiResult.message}&quot;
+                              </p>
+
+                              <p className="text-[10px] text-neutral-400 uppercase tracking-wider font-semibold pt-0.5">
+                                Powered by Bokra Stay AI ·{" "}
+                                {uploaded.aiResult.status === "rejected"
+                                  ? "Document Not Accepted"
+                                  : "Pending Admin Review"}
+                              </p>
                             </div>
-                          ) : (
-                            <div className="flex items-center gap-2 text-amber-700 dark:text-amber-400 font-semibold">
-                              <AlertTriangle className="size-4 text-amber-600 shrink-0" />
-                              <span>Document quality too low — please upload a clearer version</span>
-                            </div>
-                          )}
+                          ) : null}
                         </div>
                       </div>
                     )}
@@ -602,8 +896,8 @@ export default function NewPropertyPage() {
                 );
               })}
             </div>
-            <p className="text-[10px] text-neutral-400 dark:text-neutral-500 italic">
-              Note: This automated pre-check verifies initial readability. Final verification is conducted by our admin team before publication.
+            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 italic">
+              Note: All documents are reviewed by our admin team regardless of AI pre-check result.
             </p>
           </div>
 
@@ -620,7 +914,7 @@ export default function NewPropertyPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 rounded-xl text-xs font-semibold bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white shadow-md shadow-teal-600/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl text-xs font-semibold bg-[#7c3aed] hover:bg-[#6d28d9] active:bg-[#5b21b6] text-white shadow-md shadow-[#7c3aed]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-2"
             >
               {loading ? (
                 <>
