@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { updateProfile } from "@/lib/profile-actions";
-import { User, Phone, Camera, CheckCircle, AlertCircle, Shield } from "lucide-react";
+import { User, Phone, Camera, CheckCircle, AlertCircle, Shield, Award, FileText } from "lucide-react";
 
 interface ProfileFormProps {
   user: {
@@ -11,6 +11,8 @@ interface ProfileFormProps {
     phone?: string | null;
     avatar?: string | null;
     role?: string | null;
+    shortBio?: string | null;
+    trustBadge?: string | null;
   } | null;
 }
 
@@ -57,17 +59,18 @@ export default function ProfileForm({ user }: ProfileFormProps) {
   const nameVal = user.name || "";
   const emailVal = user.email || "";
   const phoneVal = user.phone || "";
+  const shortBioVal = user.shortBio || "";
   const roleVal = user.role || "RENTER";
-  
+  const trustBadgeVal = user.trustBadge;
+
   const initials = (nameVal || emailVal || "U")[0].toUpperCase();
 
-  // Role Badge Styles
   const getRoleBadgeClass = (role: string) => {
     switch (role) {
       case "ADMIN":
-        return "bg-red-50 text-red-800 border-red-200";
+        return "bg-violet-50 text-violet-800 border-violet-200";
       case "HOST":
-        return "bg-amber-50 text-amber-800 border-amber-200";
+        return "bg-purple-50 text-[#7c3aed] border-purple-200";
       default:
         return "bg-[#7c3aed]/10 text-[#7c3aed] border-[#7c3aed]/20";
     }
@@ -112,11 +115,18 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           <p className="text-sm text-[#6b7280]">
             {emailVal}
           </p>
-          <div className="pt-0.5">
+          <div className="pt-0.5 flex flex-wrap items-center gap-2">
             <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border ${getRoleBadgeClass(roleVal)}`}>
               {roleVal === "ADMIN" && <Shield className="w-3 h-3" />}
               {roleVal}
             </span>
+
+            {trustBadgeVal && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-extrabold bg-purple-50 text-[#7c3aed] border border-purple-200">
+                <Award className="w-3 h-3" />
+                {trustBadgeVal}
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -156,6 +166,27 @@ export default function ProfileForm({ user }: ProfileFormProps) {
           />
           <Phone className="w-4 h-4 text-[#6b7280] absolute left-3.5 top-3.5" />
         </div>
+      </div>
+
+      {/* Short Bio (Host & Renter) */}
+      <div className="space-y-1.5">
+        <label htmlFor="shortBio" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
+          Short Bio (About You)
+        </label>
+        <div className="relative">
+          <textarea
+            id="shortBio"
+            name="shortBio"
+            rows={3}
+            defaultValue={shortBioVal}
+            placeholder="Share a short bio with guests and hosts (e.g. Hospitable host living in Addis Ababa, passionate about local travel)..."
+            className="w-full p-3.5 pl-10 rounded-xl border border-[#e5e7eb] bg-white text-sm text-[#111827] focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/20 outline-none transition-all resize-none"
+          />
+          <FileText className="w-4 h-4 text-[#6b7280] absolute left-3.5 top-3.5" />
+        </div>
+        <p className="text-[11px] text-[#6b7280]">
+          This will be visible on your property listings and profile page.
+        </p>
       </div>
 
       {/* Email (Read-Only) */}

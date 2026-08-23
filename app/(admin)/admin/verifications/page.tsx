@@ -2,8 +2,9 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { approveDocument, rejectDocument } from "./actions";
-import { ShieldCheck, FileText, CheckCircle2, Camera, ExternalLink } from "lucide-react";
+import { ShieldCheck, FileText, CheckCircle2, Camera } from "lucide-react";
 import PropertyVerificationCard from "./PropertyVerificationCard";
+import DocumentLink from "@/components/common/DocumentLink";
 
 export default async function VerificationsPage() {
   const session = await auth();
@@ -134,15 +135,7 @@ export default async function VerificationsPage() {
                         </span>
                         <div className="h-28 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-2 flex flex-col justify-between items-center text-center">
                           <FileText className="size-6 text-teal-600 mt-2" />
-                          <a 
-                            href={doc.fileUrl} 
-                            target="_blank" 
-                            rel="noopener noreferrer" 
-                            className="text-[11px] font-bold text-teal-600 hover:underline inline-flex items-center gap-1"
-                          >
-                            <span>View ID</span>
-                            <ExternalLink className="size-3" />
-                          </a>
+                          <DocumentLink fileUrl={doc.fileUrl} label="View ID" />
                         </div>
                       </div>
 

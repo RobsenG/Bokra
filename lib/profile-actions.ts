@@ -4,7 +4,6 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { uploadToSupabase } from "@/lib/supabase-server";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function updateProfile(formData: FormData) {
   const session = await auth();
@@ -12,6 +11,7 @@ export async function updateProfile(formData: FormData) {
 
   const name = (formData.get("name") as string)?.trim();
   const phone = (formData.get("phone") as string)?.trim() || null;
+  const shortBio = (formData.get("shortBio") as string)?.trim() || null;
   const avatarFile = formData.get("avatar") as File | null;
 
   if (!name) throw new Error("Name is required.");
@@ -27,10 +27,12 @@ export async function updateProfile(formData: FormData) {
     data: {
       name,
       phone,
+      shortBio,
       ...(avatarUrl ? { avatar: avatarUrl } : {}),
     },
   });
 
   const role = session.user.role;
   revalidatePath(role === "HOST" ? "/host/profile" : "/renter/profile");
+  revalidatePath("/properties");
 }

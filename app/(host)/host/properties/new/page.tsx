@@ -22,6 +22,7 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { useState } from "react";
+import { uploadFile } from "@/lib/storage";
 
 interface PricingSuggestion {
   suggestedPrice: number;
@@ -39,6 +40,7 @@ interface AICheckResult {
 interface UploadedDoc {
   docType: string;
   file: File;
+  publicUrl?: string;
   aiCheckStatus: "scanning" | "completed";
   aiResult?: AICheckResult;
 }
@@ -59,7 +61,6 @@ function runAIDocumentCheck(
       const isValidType = validTypes.includes(file.type);
       const isValidSize = file.size > 15 * 1024; // > 15KB
       const fileNameLower = file.name.toLowerCase();
-      const propertyTitleLower = propertyTitle.toLowerCase();
       const docTypeLower = documentType.toLowerCase();
 
       // Check if document name has keywords matching property or doc type
@@ -251,6 +252,14 @@ export default function NewPropertyPage() {
       newDoc,
     ]);
 
+    // Client-side browser upload to "property-documents" bucket
+    let publicUrl: string | undefined;
+    try {
+      publicUrl = await uploadFile("property-documents", file, "host");
+    } catch (err) {
+      console.error("Client document upload error:", err);
+    }
+
     const result = await runAIDocumentCheck(file, typeLabel, title);
 
     setUploadedDocs((prev) =>
@@ -258,6 +267,7 @@ export default function NewPropertyPage() {
         if (item.docType === typeLabel && item.file === file) {
           return {
             ...item,
+            publicUrl,
             aiCheckStatus: "completed",
             aiResult: result,
           };
@@ -313,6 +323,19 @@ export default function NewPropertyPage() {
 
       <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl shadow-xs p-6 sm:p-8">
         <form action={createProperty} onSubmit={handleSubmit} className="space-y-8">
+          {/* Hidden inputs for pre-uploaded document URLs */}
+          {uploadedDocs.map(
+            (doc) =>
+              doc.publicUrl && (
+                <input
+                  key={doc.docType}
+                  type="hidden"
+                  name="ownershipDocUrls"
+                  value={doc.publicUrl}
+                />
+              )
+          )}
+
           {/* Section 1: Basic Info */}
           <div className="space-y-5">
             <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#7c3aed] border-b border-neutral-100 dark:border-neutral-800 pb-2">

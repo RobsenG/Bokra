@@ -2,19 +2,15 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Camera, RefreshCw, CheckCircle2, AlertCircle, Loader2 } from "lucide-react";
-import { createClient } from "@supabase/supabase-js";
-
-// Client-side Supabase instance (uses public anon key — safe for browser use)
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
+import { uploadFile } from "@/lib/storage";
+import { useSession } from "next-auth/react";
 
 interface WebcamCaptureProps {
   onCaptureConfirm: (selfieUrl: string) => void;
 }
 
 export default function WebcamCapture({ onCaptureConfirm }: WebcamCaptureProps) {
+  const { data: session } = useSession();
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -35,7 +31,7 @@ export default function WebcamCapture({ onCaptureConfirm }: WebcamCaptureProps) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stream]);
 
-  // KEY FIX: set srcObject AFTER the video element is rendered (cameraActive=true triggers render)
+  // Attach stream to video element when active
   useEffect(() => {
     if (cameraActive && stream && videoRef.current) {
       videoRef.current.srcObject = stream;
@@ -55,13 +51,13 @@ export default function WebcamCapture({ onCaptureConfirm }: WebcamCaptureProps) 
         audio: false,
       });
 
-      // Set stream first — the useEffect above will attach it once the video element renders
       setStream(mediaStream);
       setCameraActive(true);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Webcam access error:", err);
+      const errorObj = err as { name?: string };
       setErrorMsg(
-        err.name === "NotAllowedError" || err.name === "PermissionDeniedError"
+        errorObj.name === "NotAllowedError" || errorObj.name === "PermissionDeniedError"
           ? "Camera permission denied. Please allow camera access in your browser settings."
           : "Webcam not found or unsupported by your device."
       );
@@ -125,24 +121,15 @@ export default function WebcamCapture({ onCaptureConfirm }: WebcamCaptureProps) 
       const blob = await response.blob();
       const fileName = `selfie-${Date.now()}.jpg`;
       const file = new File([blob], fileName, { type: "image/jpeg" });
+      const userId = session?.user?.id || "user-selfie";
 
-      // Upload via Supabase client-side SDK
-      const { data, error } = await supabase.storage
-        .from("selfies")
-        .upload(fileName, file, { cacheControl: "3600", upsert: false });
-
-      if (error) {
-        console.warn("[Storage Warning] Supabase upload failed, using dataUrl as fallback:", error.message);
-        onCaptureConfirm(capturedImage);
-        return;
-      }
-
-      const { data: publicUrlData } = supabase.storage.from("selfies").getPublicUrl(data.path);
-      onCaptureConfirm(publicUrlData.publicUrl);
-    } catch (err: any) {
-      console.error("Error uploading selfie:", err);
-      // Fallback: pass the dataUrl directly so the flow is never blocked
-      onCaptureConfirm(capturedImage);
+      // Upload via lib/storage helper using browser client to "selfies" bucket (Rule 1, Rule 2, Rule 3)
+      const publicUrl = await uploadFile("selfies", file, userId);
+      onCaptureConfirm(publicUrl);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("[Storage Error] Supabase selfie upload failed:", message);
+      setErrorMsg(`Failed to upload selfie to storage: ${message}`);
     } finally {
       setUploading(false);
     }

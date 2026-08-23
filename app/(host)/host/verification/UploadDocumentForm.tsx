@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { uploadDocument } from "./actions";
-import { UploadCloud, CheckCircle, AlertCircle } from "lucide-react";
+import { UploadCloud, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { uploadFile } from "@/lib/storage";
+import { useSession } from "next-auth/react";
+import { DocumentType } from "@prisma/client";
 
 const DOC_TYPES = [
   { value: "ID_CARD", label: "National ID / Passport" },
@@ -12,25 +15,46 @@ const DOC_TYPES = [
 ] as const;
 
 export default function UploadDocumentForm() {
+  const { data: session } = useSession();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [fileName, setFileName] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<string>("");
+  const [fileObject, setFileObject] = useState<File | null>(null);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!selectedType) {
+      setError("Please select a document type.");
+      return;
+    }
+    if (!fileObject) {
+      setError("Please select a file to upload.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setSuccess(false);
 
     try {
-      const formData = new FormData(e.currentTarget);
-      await uploadDocument(formData);
+      const userId = session?.user?.id || "host-user";
+      
+      // Upload using browser Supabase client (Rule 1 & Rule 2) to "documents" bucket (Rule 3)
+      const publicUrl = await uploadFile("documents", fileObject, userId);
+
+      // Save public URL to DB via server action
+      await uploadDocument(selectedType as DocumentType, publicUrl);
+
       setSuccess(true);
       setFileName(null);
+      setFileObject(null);
+      setSelectedType("");
       (e.target as HTMLFormElement).reset();
-    } catch (err: any) {
-      setError(err.message || "Upload failed.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Upload failed.";
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -63,6 +87,8 @@ export default function UploadDocumentForm() {
             id="type"
             name="type"
             required
+            value={selectedType}
+            onChange={(e) => setSelectedType(e.target.value)}
             className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none text-neutral-800 dark:text-neutral-100"
           >
             <option value="">Select document type...</option>
@@ -82,7 +108,11 @@ export default function UploadDocumentForm() {
               name="file"
               required
               accept="image/*,.pdf"
-              onChange={(e) => setFileName(e.target.files?.[0]?.name || null)}
+              onChange={(e) => {
+                const file = e.target.files?.[0] || null;
+                setFileObject(file);
+                setFileName(file?.name || null);
+              }}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
             <div className="flex flex-col items-center gap-2 text-neutral-500">
@@ -97,10 +127,17 @@ export default function UploadDocumentForm() {
 
         <button
           type="submit"
-          disabled={loading}
-          className="w-full h-11 rounded-xl text-xs font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-600/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+          disabled={loading || !selectedType || !fileObject}
+          className="w-full h-11 rounded-xl text-xs font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-600/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
-          {loading ? "Uploading..." : "Submit Document"}
+          {loading ? (
+            <>
+              <Loader2 className="size-4 animate-spin" />
+              <span>Uploading to Storage...</span>
+            </>
+          ) : (
+            "Submit Document"
+          )}
         </button>
       </form>
     </div>

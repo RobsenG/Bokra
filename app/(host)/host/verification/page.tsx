@@ -3,13 +3,25 @@ import prisma from "@/lib/prisma";
 import { ShieldCheck, FileText, Clock, AlertTriangle } from "lucide-react";
 import UploadDocumentForm from "./UploadDocumentForm";
 import SelfieVerificationSection from "./SelfieVerificationSection";
+import DocumentLink from "@/components/common/DocumentLink";
 
 export default async function HostVerificationPage() {
   const session = await auth();
   if (!session?.user) return null;
 
-  let hostUser: any = null;
-  let documents: any[] = [];
+  let hostUser: {
+    isVerified: boolean;
+    selfieUrl: string | null;
+    selfieVerifiedAt: Date | null;
+  } | null = null;
+  let documents: Array<{
+    id: string;
+    userId: string;
+    type: string;
+    fileUrl: string;
+    status: string;
+    uploadedAt: Date;
+  }> = [];
   try {
     hostUser = await prisma.user.findUnique({
       where: { id: session.user.id },
@@ -89,15 +101,18 @@ export default async function HostVerificationPage() {
                     <p className="text-xs text-neutral-400 dark:text-neutral-500">{new Date(doc.uploadedAt).toLocaleDateString()}</p>
                   </div>
                 </div>
-                <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                  doc.status === "APPROVED"
-                    ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
-                    : doc.status === "REJECTED"
-                    ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400"
-                    : "bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400"
-                }`}>
-                  {doc.status}
-                </span>
+                <div className="flex items-center gap-3">
+                  <DocumentLink fileUrl={doc.fileUrl} label="View Document" />
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    doc.status === "APPROVED"
+                      ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
+                      : doc.status === "REJECTED"
+                      ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400"
+                      : "bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400"
+                  }`}>
+                    {doc.status}
+                  </span>
+                </div>
               </div>
             ))}
           </div>

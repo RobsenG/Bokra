@@ -17,6 +17,10 @@ import {
   Clock,
   FileEdit,
   ArrowLeft,
+  Award,
+  ShieldCheck,
+  Calendar,
+  UserCheck,
 } from "lucide-react";
 
 // Page for viewing a single property
@@ -33,9 +37,26 @@ export default async function PropertyDetailPage({
     property = await prisma.property.findUnique({
       where: { id },
       include: {
-        host: { select: { id: true, name: true, avatar: true, email: true } },
+        host: {
+          select: {
+            id: true,
+            name: true,
+            avatar: true,
+            email: true,
+            isVerified: true,
+            trustBadge: true,
+            trustBadgeAt: true,
+            adminVerifiedName: true,
+            shortBio: true,
+            createdAt: true,
+          },
+        },
         reviews: {
-          include: { renter: { select: { name: true, avatar: true, email: true } } },
+          include: {
+            renter: {
+              select: { name: true, avatar: true, email: true },
+            },
+          },
           orderBy: { createdAt: "desc" },
         },
       },
@@ -54,13 +75,15 @@ export default async function PropertyDetailPage({
     property.status !== "REJECTED" &&
     (property.isVerified || property.status === "APPROVED");
 
-  // Hide rejected properties from general public, but allow owner host and admin to view details
   if (!isPubliclyViewable && !isOwner && !isAdmin) {
     notFound();
   }
 
   // Generate AI Summary
-  const aiSummary = await generateReviewSummary(property.title, property.reviews);
+  const aiSummary = await generateReviewSummary(
+    property.title,
+    property.reviews
+  );
 
   let isFavorited = false;
   if (session?.user) {
@@ -79,6 +102,21 @@ export default async function PropertyDetailPage({
     }
   }
 
+  const host = property.host;
+  const hostDisplayName =
+    host.adminVerifiedName || host.name || host.email.split("@")[0];
+  const hostBadge =
+    host.trustBadge || (host.isVerified ? "Verified Host" : null);
+
+  const totalRating = property.reviews.reduce(
+    (acc: number, r: any) => acc + r.rating,
+    0
+  );
+  const avgRating =
+    property.reviews.length > 0
+      ? (totalRating / property.reviews.length).toFixed(1)
+      : null;
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 font-sans">
       {/* Navigation Breadcrumb */}
@@ -91,7 +129,10 @@ export default async function PropertyDetailPage({
           <span>Home</span>
         </Link>
         <span>/</span>
-        <Link href="/properties" className="hover:text-[#7c3aed] transition-colors">
+        <Link
+          href="/properties"
+          className="hover:text-[#7c3aed] transition-colors"
+        >
           Stays
         </Link>
         <span>/</span>
@@ -147,86 +188,179 @@ export default async function PropertyDetailPage({
         </div>
       )}
 
-      {/* Title & Location */}
-      <div className="space-y-2">
-        <h1 className="text-3xl md:text-5xl font-extrabold tracking-tight text-[#111827]">
-          {property.title}
-        </h1>
-        <div className="flex items-center gap-4 text-sm font-medium text-[#6b7280]">
-          <span className="flex items-center gap-1">
+      {/* Header Info */}
+      <div className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-[#111827]">
+            {property.title}
+          </h1>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-[#6b7280]">
+          <span className="flex items-center gap-1 text-[#111827] font-semibold">
             <MapPin className="w-4 h-4 text-[#7c3aed]" />
             {property.address}, {property.city}
           </span>
-          {property.reviews.length > 0 && (
-            <span className="flex items-center gap-1">
+          {avgRating ? (
+            <span className="flex items-center gap-1 text-[#111827] font-bold">
               <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-              {(
-                property.reviews.reduce((s: number, r: any) => s + r.rating, 0) /
-                property.reviews.length
-              ).toFixed(1)}{" "}
-              ({property.reviews.length} reviews)
+              {avgRating} ({property.reviews.length}{" "}
+              {property.reviews.length === 1 ? "review" : "reviews"})
+            </span>
+          ) : (
+            <span className="text-xs font-semibold text-neutral-400">
+              New property
+            </span>
+          )}
+
+          {/* Host Badge Inline */}
+          {hostBadge && (
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-[#7c3aed] text-xs font-extrabold border border-purple-200">
+              <Award className="size-3.5" />
+              {hostBadge}
             </span>
           )}
         </div>
       </div>
 
-      {/* Image Gallery */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 h-[300px] md:h-[450px] rounded-3xl overflow-hidden relative">
+      {/* Modern Gallery Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 h-[320px] md:h-[440px] rounded-3xl overflow-hidden relative shadow-sm">
         <div
-          className="h-full w-full bg-cover bg-center bg-[#f8fafc] hover:scale-105 transition-transform duration-500 relative"
+          className="md:col-span-2 h-full w-full bg-cover bg-center bg-[#f8fafc] relative group overflow-hidden"
           style={{ backgroundImage: `url(${property.images[0] || ""})` }}
         >
+          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
           <FavoriteButton propertyId={property.id} initialIsFavorited={isFavorited} />
         </div>
-        <div className="hidden md:grid grid-cols-2 gap-4">
-          {property.images.slice(1, 5).map((img: string, i: number) => (
-            <div
-              key={i}
-              className="h-full w-full bg-cover bg-center rounded-xl bg-[#f8fafc] hover:scale-105 transition-transform duration-500"
-              style={{ backgroundImage: `url(${img})` }}
-            />
-          ))}
+        <div className="hidden md:grid col-span-2 grid-cols-2 gap-3 h-full">
+          {Array.from({ length: 4 }).map((_, i) => {
+            const img = property.images[i + 1] || property.images[0];
+            return (
+              <div
+                key={i}
+                className="h-full w-full bg-cover bg-center bg-[#f8fafc] hover:scale-102 transition-transform duration-300 rounded-xl"
+                style={{ backgroundImage: `url(${img || ""})` }}
+              />
+            );
+          })}
         </div>
       </div>
 
-      {/* Main Content & Booking Form */}
+      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Left Col: Details */}
+        {/* Left Column (Property & Host Details) */}
         <div className="lg:col-span-2 space-y-10">
-          <div className="flex justify-between items-center pb-8 border-b border-[#e5e7eb]">
-            <div className="space-y-3">
-              <h2 className="text-xl md:text-2xl font-bold text-[#111827]">
-                Hosted by {property.host.name || property.host.email}
-              </h2>
-              <div className="flex flex-wrap items-center gap-4 text-sm text-[#6b7280]">
-                <span className="flex items-center gap-1.5">
-                  <Users className="w-4 h-4" /> {property.maxGuests} guests
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <BedDouble className="w-4 h-4" /> {property.bedrooms} bedrooms
-                </span>
-                <span className="flex items-center gap-1.5">
-                  <Bath className="w-4 h-4" /> {property.bathrooms} baths
-                </span>
+          {/* Key Specs Bar */}
+          <div className="flex flex-wrap items-center justify-between gap-4 p-6 bg-white border border-[#e5e7eb] rounded-2xl shadow-2xs">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#7c3aed]/10 text-[#7c3aed] flex items-center justify-center">
+                <Users className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs text-[#6b7280]">Capacity</p>
+                <p className="text-sm font-bold text-[#111827]">
+                  Up to {property.maxGuests} guests
+                </p>
               </div>
             </div>
-            <div className="w-16 h-16 rounded-full bg-[#7c3aed]/10 overflow-hidden shrink-0">
-              {property.host.avatar ? (
-                <img
-                  src={property.host.avatar}
-                  alt="Host Avatar"
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-[#7c3aed] font-bold text-xl">
-                  {(property.host.name || property.host.email)[0].toUpperCase()}
-                </div>
-              )}
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#7c3aed]/10 text-[#7c3aed] flex items-center justify-center">
+                <BedDouble className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs text-[#6b7280]">Bedrooms</p>
+                <p className="text-sm font-bold text-[#111827]">
+                  {property.bedrooms} {property.bedrooms === 1 ? "Bedroom" : "Bedrooms"}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-[#7c3aed]/10 text-[#7c3aed] flex items-center justify-center">
+                <Bath className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-xs text-[#6b7280]">Bathrooms</p>
+                <p className="text-sm font-bold text-[#111827]">
+                  {property.bathrooms} {property.bathrooms === 1 ? "Bath" : "Baths"}
+                </p>
+              </div>
             </div>
           </div>
 
+          {/* Host Profile Card (FIX 6) */}
+          <div className="bg-white rounded-3xl border border-[#e5e7eb] p-6 sm:p-8 space-y-6 shadow-xs">
+            <div className="flex items-start justify-between gap-4 border-b border-[#e5e7eb] pb-6">
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-2xl bg-[#7c3aed] text-white overflow-hidden flex items-center justify-center text-xl font-bold border-2 border-white shadow-md">
+                    {host.avatar ? (
+                      <img
+                        src={host.avatar}
+                        alt={hostDisplayName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      hostDisplayName[0].toUpperCase()
+                    )}
+                  </div>
+                  {host.isVerified && (
+                    <div
+                      className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-1 border-2 border-white"
+                      title="Verified Identity"
+                    >
+                      <ShieldCheck className="size-3.5" />
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-xl font-extrabold text-[#111827]">
+                      Hosted by {hostDisplayName}
+                    </h3>
+                  </div>
+
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-[#6b7280]">
+                    {hostBadge && (
+                      <span className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-purple-50 text-[#7c3aed] border border-purple-200">
+                        <Award className="size-3" />
+                        {hostBadge}
+                      </span>
+                    )}
+                    <span>·</span>
+                    <span className="flex items-center gap-1">
+                      <Calendar className="size-3 text-[#7c3aed]" />
+                      Member since{" "}
+                      {new Date(host.createdAt).toLocaleDateString(undefined, {
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Host Bio */}
+            {host.shortBio ? (
+              <div className="space-y-1.5">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">
+                  About your host
+                </h4>
+                <p className="text-sm text-[#111827] leading-relaxed italic bg-neutral-50 dark:bg-neutral-800/30 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+                  &quot;{host.shortBio}&quot;
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs text-[#6b7280] italic">
+                {hostDisplayName} is a dedicated host committed to providing great stays for guests in {property.city}.
+              </p>
+            )}
+          </div>
+
+          {/* Description */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-[#111827]">
+            <h3 className="text-xl font-extrabold text-[#111827]">
               About this space
             </h3>
             <p className="text-[#6b7280] whitespace-pre-line leading-relaxed text-sm md:text-base">
@@ -234,17 +368,18 @@ export default async function PropertyDetailPage({
             </p>
           </div>
 
+          {/* Amenities */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-[#111827]">
+            <h3 className="text-xl font-extrabold text-[#111827]">
               What this place offers
             </h3>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {property.amenities.map((amenity: string, idx: number) => (
                 <li
                   key={idx}
-                  className="flex items-center gap-3 text-[#6b7280] text-sm"
+                  className="flex items-center gap-3 p-3.5 rounded-xl bg-white border border-[#e5e7eb] text-sm text-[#111827] font-medium shadow-2xs"
                 >
-                  <div className="w-2 h-2 rounded-full bg-[#7c3aed]" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-[#7c3aed]" />
                   {amenity}
                 </li>
               ))}
@@ -255,11 +390,11 @@ export default async function PropertyDetailPage({
 
           {/* Location Map */}
           <div className="space-y-4">
-            <h3 className="text-xl font-bold text-[#111827]">Location</h3>
+            <h3 className="text-xl font-extrabold text-[#111827]">Location</h3>
             <p className="text-sm text-[#6b7280] mb-4">
               {property.address}, {property.city}
             </p>
-            <div className="w-full h-[300px] rounded-3xl overflow-hidden border border-[#e5e7eb] shadow-xs relative">
+            <div className="w-full h-[320px] rounded-3xl overflow-hidden border border-[#e5e7eb] shadow-xs relative">
               <iframe
                 width="100%"
                 height="100%"
@@ -280,35 +415,38 @@ export default async function PropertyDetailPage({
           {/* AI Review Summary */}
           <div className="bg-[#7c3aed]/5 rounded-3xl p-6 md:p-8 border border-[#7c3aed]/20 space-y-4">
             <div className="flex items-center gap-2 text-[#7c3aed] font-bold">
-              <Sparkles className="w-5 h-5" />
+              <Sparkles className="w-5 h-5 text-[#7c3aed]" />
               <h3 className="text-lg">AI Review Summary</h3>
             </div>
             <p className="text-sm md:text-base text-[#111827] leading-relaxed font-medium">
               {aiSummary}
             </p>
-            <p className="text-xs text-[#7c3aed]">
-              Generated by Groq LLM
+            <p className="text-xs text-[#7c3aed] font-semibold">
+              Powered by Groq AI
             </p>
           </div>
 
           {/* Reviews List */}
           <div className="space-y-6">
-            <h3 className="text-xl font-bold text-[#111827] flex items-center gap-2">
+            <h3 className="text-xl font-extrabold text-[#111827] flex items-center gap-2">
               <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
-              {property.reviews.length} Reviews
+              {property.reviews.length}{" "}
+              {property.reviews.length === 1 ? "Review" : "Reviews"}
             </h3>
 
             {property.reviews.length === 0 ? (
-              <p className="text-[#6b7280] text-sm">No reviews yet.</p>
+              <p className="text-[#6b7280] text-sm italic">
+                No reviews yet. Be the first guest to review this stay!
+              </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {property.reviews.map((review: any) => (
                   <div
                     key={review.id}
-                    className="space-y-3 p-5 rounded-2xl border border-[#e5e7eb] bg-white shadow-xs"
+                    className="space-y-3 p-5 rounded-2xl border border-[#e5e7eb] bg-white shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#f8fafc] border border-[#e5e7eb] overflow-hidden shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-[#7c3aed]/10 border border-[#e5e7eb] overflow-hidden shrink-0">
                         {review.renter.avatar ? (
                           <img
                             src={review.renter.avatar}
@@ -316,7 +454,7 @@ export default async function PropertyDetailPage({
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#6b7280] font-bold text-sm">
+                          <div className="w-full h-full flex items-center justify-center text-[#7c3aed] font-bold text-sm">
                             {(review.renter.name || review.renter.email)[0].toUpperCase()}
                           </div>
                         )}
@@ -326,10 +464,13 @@ export default async function PropertyDetailPage({
                           {review.renter.name || review.renter.email}
                         </p>
                         <p className="text-xs text-[#6b7280]">
-                          {new Date(review.createdAt).toLocaleDateString(undefined, {
-                            month: "long",
-                            year: "numeric",
-                          })}
+                          {new Date(review.createdAt).toLocaleDateString(
+                            undefined,
+                            {
+                              month: "long",
+                              year: "numeric",
+                            }
+                          )}
                         </p>
                       </div>
                     </div>
@@ -370,21 +511,21 @@ export default async function PropertyDetailPage({
           )}
         </div>
 
-        {/* Right Col: Booking Form */}
+        {/* Right Column: Sticky Booking Widget (FIX 5 & 6) */}
         <div className="relative">
           <div className="sticky top-24">
             <div className="bg-white rounded-3xl border border-[#e5e7eb] shadow-xl p-6 md:p-8 space-y-6">
               {session?.user?.role === "ADMIN" || isOwner ? (
-                <div className="text-center py-6 space-y-2">
-                  <p className="text-sm font-semibold text-[#6b7280]">
+                <div className="text-center py-6 space-y-3">
+                  <p className="text-sm font-bold text-[#111827]">
                     {isOwner
-                      ? "You are viewing your own property listing."
-                      : "Administrators cannot make bookings"}
+                      ? "You own this property listing."
+                      : "Administrators view mode"}
                   </p>
                   {isOwner && (
                     <Link
                       href={`/host/properties/${property.id}/edit`}
-                      className="inline-block px-4 py-2 rounded-xl text-xs font-bold bg-[#7c3aed] hover:bg-[#5b21b6] text-white transition-colors"
+                      className="inline-block px-5 py-2.5 rounded-xl text-xs font-bold bg-[#7c3aed] hover:bg-[#6d28d9] text-white shadow-xs transition-colors"
                     >
                       Edit Property Details
                     </Link>
@@ -392,7 +533,7 @@ export default async function PropertyDetailPage({
                 </div>
               ) : (
                 <>
-                  <div className="space-y-1">
+                  <div className="space-y-1 border-b border-[#e5e7eb] pb-5">
                     <h3 className="text-2xl font-black text-[#111827] flex items-baseline gap-1">
                       {Number(property.pricePerNight).toLocaleString()} ETB
                       <span className="text-sm font-medium text-[#6b7280]">
@@ -401,7 +542,7 @@ export default async function PropertyDetailPage({
                       </span>
                     </h3>
                     <p className="text-xs text-[#6b7280]">
-                      Select dates to check availability
+                      Select dates to calculate total and reserve via Chapa
                     </p>
                   </div>
                   <BookingForm

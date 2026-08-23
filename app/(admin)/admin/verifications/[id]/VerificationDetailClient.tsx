@@ -9,17 +9,15 @@ import {
   XCircle,
   AlertCircle,
   FileText,
-  ExternalLink,
   Camera,
   Star,
   Loader2,
   UserCheck,
-  Sparkles,
   Award,
   Info,
-  ShieldCheck,
   Check,
 } from "lucide-react";
+import DocumentLink from "@/components/common/DocumentLink";
 
 interface VerificationDetailClientProps {
   property: {
@@ -219,9 +217,6 @@ export default function VerificationDetailClient({
 
   const ownershipDocs = property.host.documents.filter(
     (d) => d.type === "OWNERSHIP_PROOF" || d.type === "HOUSE_REGISTRATION"
-  );
-  const identityDocs = property.host.documents.filter(
-    (d) => d.type === "ID_CARD" || d.type === "OTHER"
   );
 
   return (
@@ -448,15 +443,11 @@ export default function VerificationDetailClient({
                 <div className="text-[11px] text-neutral-500 space-y-0.5">
                   <p>Uploaded: {new Date(doc.uploadedAt).toLocaleDateString()}</p>
                 </div>
-                <a
-                  href={doc.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-bold text-xs shadow-xs transition-colors cursor-pointer"
-                >
-                  <span>📄 View Document</span>
-                  <ExternalLink className="size-3" />
-                </a>
+                <DocumentLink
+                  fileUrl={doc.fileUrl}
+                  label="View Document"
+                  documentType={doc.type.replace(/_/g, " ")}
+                />
               </div>
             ))}
           </div>
@@ -499,7 +490,7 @@ export default function VerificationDetailClient({
                 className="w-full h-10 px-3 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-xs font-medium text-neutral-800 dark:text-neutral-100 focus:border-[#7c3aed] outline-none"
               >
                 <option value="Verified Host">Verified Host (Default)</option>
-                <option value="Top Host">Top Host (4.5+ Rating & 5+ Bookings)</option>
+                <option value="Top Host">Top Host (4.5+ Rating &amp; 5+ Bookings)</option>
                 <option value="Trusted Partner">Trusted Partner</option>
                 <option value="Premium Host">Premium Host</option>
                 <option value="Custom">Custom Badge...</option>
@@ -615,12 +606,12 @@ export default function VerificationDetailClient({
         <div className="flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800 pb-3">
           <UserCheck className="size-5 text-[#7c3aed]" />
           <h2 className="font-bold text-neutral-800 dark:text-white text-base">
-            Host Identity Details
+            Host Identity Details &amp; Documents
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-          <div className="space-y-2">
+          <div className="space-y-3">
             <div className="flex justify-between py-1">
               <span className="text-neutral-500">Host Name</span>
               <span className="font-bold text-neutral-800 dark:text-white">
@@ -639,37 +630,53 @@ export default function VerificationDetailClient({
                 {property.host.phone || "Not provided"}
               </span>
             </div>
+
+            {/* Identity Documents Listing */}
+            <div className="pt-2 space-y-2">
+              <span className="font-bold text-neutral-700 dark:text-neutral-300 block">
+                Identity Documents
+              </span>
+              {property.host.documents.length > 0 ? (
+                <div className="space-y-2">
+                  {property.host.documents.map((doc) => (
+                    <div key={doc.id} className="flex items-center justify-between">
+                      <DocumentLink
+                        fileUrl={doc.fileUrl}
+                        label="View ID Document"
+                        documentType={doc.type}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-700 text-sm font-medium">
+                  ⚠️ This host has not uploaded any identity documents yet.
+                </div>
+              )}
+            </div>
           </div>
 
           <div className="space-y-2">
-            <span className="font-bold text-neutral-700 dark:text-neutral-300">
-              Live Selfie Capture
+            <span className="font-bold text-neutral-700 dark:text-neutral-300 block">
+              Live Selfie Verification
             </span>
-            {property.host.selfieUrl ? (
-              <div className="flex items-center gap-4 bg-neutral-50 dark:bg-neutral-800/40 p-3 rounded-xl border border-neutral-100 dark:border-neutral-800">
+            {property.host.selfieUrl && property.host.selfieUrl.startsWith("https://") ? (
+              <div className="space-y-2">
                 <img
                   src={property.host.selfieUrl}
-                  alt="Host Selfie"
-                  className="w-16 h-16 rounded-xl object-cover border border-[#7c3aed]"
+                  alt="Host selfie"
+                  className="w-32 h-32 rounded-2xl object-cover border-2 border-[#7c3aed]/20 shadow-md"
                 />
-                <div className="text-xs space-y-1">
-                  <p className="font-bold text-emerald-600 dark:text-emerald-400">
-                    Selfie Captured
-                  </p>
-                  <p className="text-[10px] text-neutral-400">
-                    Verified at:{" "}
-                    {property.host.selfieVerifiedAt
-                      ? new Date(
-                          property.host.selfieVerifiedAt
-                        ).toLocaleDateString()
-                      : "Pending"}
-                  </p>
-                </div>
+                <p className="text-[10px] text-neutral-400">
+                  Verified at:{" "}
+                  {property.host.selfieVerifiedAt
+                    ? new Date(property.host.selfieVerifiedAt).toLocaleDateString()
+                    : "Pending"}
+                </p>
               </div>
             ) : (
-              <div className="p-3 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-xl text-xs text-amber-700 dark:text-amber-400 flex items-center gap-2">
-                <Camera className="size-4 shrink-0" />
-                <span>⚠️ Host has not completed selfie verification</span>
+              <div className="w-32 h-32 rounded-2xl bg-amber-50 border-2 border-amber-200 flex items-center justify-center text-amber-600 text-xs text-center p-2 font-medium">
+                ⚠️ No selfie captured yet
               </div>
             )}
           </div>

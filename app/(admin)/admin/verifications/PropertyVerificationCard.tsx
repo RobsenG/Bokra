@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { approveProperty, rejectProperty } from "./actions";
-import { FileText, ExternalLink, AlertCircle, Loader2, X, ArrowRight } from "lucide-react";
+import { FileText, AlertCircle, Loader2, X, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import DocumentLink from "@/components/common/DocumentLink";
 
 interface PropertyVerificationCardProps {
   property: {
@@ -110,15 +111,7 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
                 <span className="font-medium text-neutral-700 dark:text-neutral-300 truncate max-w-[180px]">
                   {doc.type.replace(/_/g, " ")}
                 </span>
-                <a
-                  href={doc.fileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-teal-600 dark:text-teal-400 font-bold hover:underline inline-flex items-center gap-1 text-[11px]"
-                >
-                  <span>View Document</span>
-                  <ExternalLink className="size-3" />
-                </a>
+                <DocumentLink fileUrl={doc.fileUrl} label="View Document" />
               </div>
             ))}
           </div>
