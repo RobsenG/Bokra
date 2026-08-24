@@ -1,46 +1,31 @@
-"use client";
-
 import { createClient } from "@supabase/supabase-js";
 
-// Buckets are set to public in Supabase dashboard
-// RLS is disabled for public read access
-// Uploads use anon key which has insert permission
+// Browser-only Supabase client using NEXT_PUBLIC_ keys
+// Buckets exist in Supabase dashboard and are public with correct RLS policies
+// - "property-images"  : property listing photos
+// - "property-documents": ownership proof documents
+// - "documents"        : host identity documents
+// - "selfies"          : host live selfie photos
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
 const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-export async function ensureBucketExists(
-  bucketName: "property-images" | "property-documents" | "documents" | "selfies"
-): Promise<void> {
-  try {
-    const { data: buckets } = await supabase.storage.listBuckets();
-    const exists = buckets?.some((b) => b.name === bucketName);
-
-    if (!exists) {
-      await supabase.storage.createBucket(bucketName, {
-        public: true,
-        allowedMimeTypes:
-          bucketName === "property-documents" || bucketName === "documents"
-            ? ["application/pdf", "image/jpeg", "image/jpg", "image/png"]
-            : ["image/jpeg", "image/jpg", "image/png", "image/webp"],
-        fileSizeLimit: 10 * 1024 * 1024,
-      });
-    }
-  } catch (err) {
-    console.warn(`[Storage Utility] Bucket existence check warning for ${bucketName}:`, err);
-  }
-}
-
+/**
+ * Uploads a file to the specified Supabase Storage bucket using the browser
+ * (anon key) client. Returns the full public HTTPS URL.
+ *
+ * @param bucketName - One of the four known bucket names
+ * @param file       - The File object to upload
+ * @param userId     - Used as a path prefix to namespace files per user
+ * @returns          - Full public https:// URL for the uploaded file
+ */
 export async function uploadFile(
   bucketName: "property-images" | "property-documents" | "documents" | "selfies",
   file: File,
   userId: string
 ): Promise<string> {
-  // Ensure bucket exists prior to upload
-  await ensureBucketExists(bucketName);
-
   const fileExt = file.name.split(".").pop();
   const fileName = `${userId}/${Date.now()}.${fileExt}`;
 
@@ -52,7 +37,7 @@ export async function uploadFile(
     });
 
   if (error) {
-    console.error(`Upload error for bucket ${bucketName}:`, error);
+    console.error(`[Storage] Upload error for bucket "${bucketName}":`, error);
     throw new Error(`Failed to upload file: ${error.message}`);
   }
 
@@ -60,9 +45,17 @@ export async function uploadFile(
     data: { publicUrl },
   } = supabase.storage.from(bucketName).getPublicUrl(data.path);
 
+  if (!publicUrl || !publicUrl.startsWith("https://")) {
+    throw new Error("Failed to generate a valid public URL after upload.");
+  }
+
   return publicUrl;
 }
 
+/**
+ * Derives the public URL for an already-uploaded path without making a network
+ * request (uses the SDK's synchronous getPublicUrl).
+ */
 export function getPublicUrl(
   bucketName: "property-images" | "property-documents" | "documents" | "selfies",
   path: string

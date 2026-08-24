@@ -5,6 +5,7 @@ import Link from "next/link";
 import BookingForm from "./BookingForm";
 import ReviewForm from "./ReviewForm";
 import FavoriteButton from "@/components/common/FavoriteButton";
+import PropertyGallery from "./PropertyGallery";
 import { generateReviewSummary } from "@/lib/groq";
 import {
   Star,
@@ -20,8 +21,64 @@ import {
   Award,
   ShieldCheck,
   Calendar,
-  UserCheck,
+  // Amenity icons
+  Wifi,
+  Car,
+  Wind,
+  Droplets,
+  Tv,
+  UtensilsCrossed,
+  Zap,
+  Shield,
+  Building2,
+  Trees,
+  WashingMachine,
+  Coffee,
+  Dumbbell,
+  Dog,
+  Snowflake,
+  Flame,
+  MonitorSpeaker,
+  Bath as BathIcon,
+  CheckCircle2,
 } from "lucide-react";
+
+// ─── Amenity icon map ───────────────────────────────────────────────────────────
+const amenityIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  WiFi: Wifi,
+  Wifi: Wifi,
+  "Free WiFi": Wifi,
+  Kitchen: UtensilsCrossed,
+  "Full Kitchen": UtensilsCrossed,
+  Parking: Car,
+  "Free Parking": Car,
+  "Air Conditioning": Wind,
+  AC: Wind,
+  "Air Con": Wind,
+  "Hot Water": Droplets,
+  TV: Tv,
+  Television: Tv,
+  "Washing Machine": WashingMachine,
+  Washer: WashingMachine,
+  Generator: Zap,
+  "Power Backup": Zap,
+  Security: Shield,
+  CCTV: Shield,
+  Balcony: Building2,
+  Garden: Trees,
+  Gym: Dumbbell,
+  Coffee: Coffee,
+  "Pet Friendly": Dog,
+  Heating: Flame,
+  Freezer: Snowflake,
+  "Sound System": MonitorSpeaker,
+  Bathtub: BathIcon,
+  "Extra Beds": BedDouble,
+};
+
+function getAmenityIcon(amenity: string): React.ComponentType<{ className?: string }> {
+  return amenityIconMap[amenity] ?? CheckCircle2;
+}
 
 // Page for viewing a single property
 export default async function PropertyDetailPage({
@@ -32,6 +89,7 @@ export default async function PropertyDetailPage({
   const { id } = await params;
   const session = await auth();
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let property: any = null;
   try {
     property = await prisma.property.findUnique({
@@ -80,10 +138,7 @@ export default async function PropertyDetailPage({
   }
 
   // Generate AI Summary
-  const aiSummary = await generateReviewSummary(
-    property.title,
-    property.reviews
-  );
+  const aiSummary = await generateReviewSummary(property.title, property.reviews);
 
   let isFavorited = false;
   if (session?.user) {
@@ -103,15 +158,24 @@ export default async function PropertyDetailPage({
   }
 
   const host = property.host;
-  const hostDisplayName =
-    host.adminVerifiedName || host.name || host.email.split("@")[0];
-  const hostBadge =
-    host.trustBadge || (host.isVerified ? "Verified Host" : null);
 
-  const totalRating = property.reviews.reduce(
-    (acc: number, r: any) => acc + r.rating,
-    0
-  );
+  // FIX 2 — Real host name (never hardcoded)
+  const hostDisplayName = host.name || "Your Host";
+  // Trust badge from DB only — never hardcoded
+  const hostBadge = host.trustBadge || (host.isVerified ? "Verified Host" : null);
+  // adminVerifiedName from DB only
+  const hostSubtitle = host.adminVerifiedName || null;
+
+  // Host avatar: show real avatar or initials
+  const hostInitial = (host.name || "H")[0].toUpperCase();
+  const hasValidAvatar =
+    host.avatar && typeof host.avatar === "string" && host.avatar.startsWith("https://");
+
+  // FIX 1 — Deduplicate images
+  const uniqueImages = [...new Set(property.images as string[])].filter(Boolean);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const totalRating = property.reviews.reduce((acc: number, r: any) => acc + r.rating, 0);
   const avgRating =
     property.reviews.length > 0
       ? (totalRating / property.reviews.length).toFixed(1)
@@ -129,17 +193,14 @@ export default async function PropertyDetailPage({
           <span>Home</span>
         </Link>
         <span>/</span>
-        <Link
-          href="/properties"
-          className="hover:text-[#7c3aed] transition-colors"
-        >
+        <Link href="/properties" className="hover:text-[#7c3aed] transition-colors">
           Stays
         </Link>
         <span>/</span>
         <span className="text-[#111827] truncate max-w-xs">{property.title}</span>
       </div>
 
-      {/* Property Status Banners for Owner / Admin */}
+      {/* Property Status Banners */}
       {property.status === "REJECTED" && (
         <div className="bg-red-50 border-2 border-red-200 rounded-2xl p-5 shadow-xs space-y-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -181,7 +242,8 @@ export default async function PropertyDetailPage({
                 ⏳ Pending Admin Verification
               </p>
               <p className="text-xs text-amber-700/80 mt-0.5">
-                This listing is currently being reviewed by platform administrators. It will become visible to guests once approved.
+                This listing is currently being reviewed by platform administrators. It
+                will become visible to guests once approved.
               </p>
             </div>
           </div>
@@ -208,12 +270,9 @@ export default async function PropertyDetailPage({
               {property.reviews.length === 1 ? "review" : "reviews"})
             </span>
           ) : (
-            <span className="text-xs font-semibold text-neutral-400">
-              New property
-            </span>
+            <span className="text-xs font-semibold text-neutral-400">New property</span>
           )}
 
-          {/* Host Badge Inline */}
           {hostBadge && (
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50 text-[#7c3aed] text-xs font-extrabold border border-purple-200">
               <Award className="size-3.5" />
@@ -223,32 +282,18 @@ export default async function PropertyDetailPage({
         </div>
       </div>
 
-      {/* Modern Gallery Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 h-[320px] md:h-[440px] rounded-3xl overflow-hidden relative shadow-sm">
-        <div
-          className="md:col-span-2 h-full w-full bg-cover bg-center bg-[#f8fafc] relative group overflow-hidden"
-          style={{ backgroundImage: `url(${property.images[0] || ""})` }}
-        >
-          <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors" />
+      {/* FIX 1 — Gallery with lightbox (client component) + favorite button overlay */}
+      <div className="relative">
+        <PropertyGallery images={uniqueImages} title={property.title} />
+        {/* Favorite button positioned absolutely over the gallery */}
+        <div className="absolute top-4 left-4 z-10">
           <FavoriteButton propertyId={property.id} initialIsFavorited={isFavorited} />
-        </div>
-        <div className="hidden md:grid col-span-2 grid-cols-2 gap-3 h-full">
-          {Array.from({ length: 4 }).map((_, i) => {
-            const img = property.images[i + 1] || property.images[0];
-            return (
-              <div
-                key={i}
-                className="h-full w-full bg-cover bg-center bg-[#f8fafc] hover:scale-102 transition-transform duration-300 rounded-xl"
-                style={{ backgroundImage: `url(${img || ""})` }}
-              />
-            );
-          })}
         </div>
       </div>
 
       {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Left Column (Property & Host Details) */}
+        {/* Left Column */}
         <div className="lg:col-span-2 space-y-10">
           {/* Key Specs Bar */}
           <div className="flex flex-wrap items-center justify-between gap-4 p-6 bg-white border border-[#e5e7eb] rounded-2xl shadow-2xs">
@@ -287,20 +332,21 @@ export default async function PropertyDetailPage({
             </div>
           </div>
 
-          {/* Host Profile Card (FIX 6) */}
+          {/* FIX 2 — Host Profile Card with real name/photo */}
           <div className="bg-white rounded-3xl border border-[#e5e7eb] p-6 sm:p-8 space-y-6 shadow-xs">
             <div className="flex items-start justify-between gap-4 border-b border-[#e5e7eb] pb-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="w-16 h-16 rounded-2xl bg-[#7c3aed] text-white overflow-hidden flex items-center justify-center text-xl font-bold border-2 border-white shadow-md">
-                    {host.avatar ? (
+                  {/* FIX 2 — Avatar: real photo or initials */}
+                  <div className="w-24 h-24 rounded-full ring-4 ring-[#7c3aed]/20 overflow-hidden flex items-center justify-center bg-[#7c3aed] text-white text-3xl font-bold border-2 border-white shadow-md shrink-0">
+                    {hasValidAvatar ? (
                       <img
                         src={host.avatar}
                         alt={hostDisplayName}
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      hostDisplayName[0].toUpperCase()
+                      hostInitial
                     )}
                   </div>
                   {host.isVerified && (
@@ -315,10 +361,16 @@ export default async function PropertyDetailPage({
 
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
+                    {/* FIX 2 — Real host name from DB */}
                     <h3 className="text-xl font-extrabold text-[#111827]">
                       Hosted by {hostDisplayName}
                     </h3>
                   </div>
+
+                  {/* FIX 2 — adminVerifiedName only if set in DB */}
+                  {hostSubtitle && (
+                    <p className="text-xs text-[#6b7280] font-medium">{hostSubtitle}</p>
+                  )}
 
                   <div className="flex flex-wrap items-center gap-2 text-xs text-[#6b7280]">
                     {hostBadge && (
@@ -347,42 +399,44 @@ export default async function PropertyDetailPage({
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">
                   About your host
                 </h4>
-                <p className="text-sm text-[#111827] leading-relaxed italic bg-neutral-50 dark:bg-neutral-800/30 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+                <p className="text-sm text-[#111827] leading-relaxed italic bg-neutral-50 p-4 rounded-2xl border border-neutral-100">
                   &quot;{host.shortBio}&quot;
                 </p>
               </div>
             ) : (
               <p className="text-xs text-[#6b7280] italic">
-                {hostDisplayName} is a dedicated host committed to providing great stays for guests in {property.city}.
+                {hostDisplayName} is a dedicated host committed to providing great stays
+                for guests in {property.city}.
               </p>
             )}
           </div>
 
           {/* Description */}
           <div className="space-y-4">
-            <h3 className="text-xl font-extrabold text-[#111827]">
-              About this space
-            </h3>
+            <h3 className="text-xl font-extrabold text-[#111827]">About this space</h3>
             <p className="text-[#6b7280] whitespace-pre-line leading-relaxed text-sm md:text-base">
               {property.description}
             </p>
           </div>
 
-          {/* Amenities */}
+          {/* FIX 3 — Amenities with icons */}
           <div className="space-y-4">
             <h3 className="text-xl font-extrabold text-[#111827]">
               What this place offers
             </h3>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {property.amenities.map((amenity: string, idx: number) => (
-                <li
-                  key={idx}
-                  className="flex items-center gap-3 p-3.5 rounded-xl bg-white border border-[#e5e7eb] text-sm text-[#111827] font-medium shadow-2xs"
-                >
-                  <div className="w-2.5 h-2.5 rounded-full bg-[#7c3aed]" />
-                  {amenity}
-                </li>
-              ))}
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y divide-[#f3f4f6] border border-[#e5e7eb] rounded-2xl overflow-hidden bg-white shadow-2xs">
+              {property.amenities.map((amenity: string, idx: number) => {
+                const Icon = getAmenityIcon(amenity);
+                return (
+                  <li
+                    key={idx}
+                    className="flex items-center gap-3 px-5 py-3.5 text-sm text-[#111827] font-medium hover:bg-[#f9fafb] transition-colors"
+                  >
+                    <Icon className="w-5 h-5 text-[#7c3aed] flex-shrink-0" />
+                    {amenity}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 
@@ -421,9 +475,7 @@ export default async function PropertyDetailPage({
             <p className="text-sm md:text-base text-[#111827] leading-relaxed font-medium">
               {aiSummary}
             </p>
-            <p className="text-xs text-[#7c3aed] font-semibold">
-              Powered by Groq AI
-            </p>
+            <p className="text-xs text-[#7c3aed] font-semibold">Powered by Groq AI</p>
           </div>
 
           {/* Reviews List */}
@@ -440,6 +492,7 @@ export default async function PropertyDetailPage({
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                 {property.reviews.map((review: any) => (
                   <div
                     key={review.id}
@@ -464,13 +517,10 @@ export default async function PropertyDetailPage({
                           {review.renter.name || review.renter.email}
                         </p>
                         <p className="text-xs text-[#6b7280]">
-                          {new Date(review.createdAt).toLocaleDateString(
-                            undefined,
-                            {
-                              month: "long",
-                              year: "numeric",
-                            }
-                          )}
+                          {new Date(review.createdAt).toLocaleDateString(undefined, {
+                            month: "long",
+                            year: "numeric",
+                          })}
                         </p>
                       </div>
                     </div>
@@ -511,7 +561,7 @@ export default async function PropertyDetailPage({
           )}
         </div>
 
-        {/* Right Column: Sticky Booking Widget (FIX 5 & 6) */}
+        {/* Right Column: Sticky Booking Widget */}
         <div className="relative">
           <div className="sticky top-24">
             <div className="bg-white rounded-3xl border border-[#e5e7eb] shadow-xl p-6 md:p-8 space-y-6">
@@ -536,10 +586,7 @@ export default async function PropertyDetailPage({
                   <div className="space-y-1 border-b border-[#e5e7eb] pb-5">
                     <h3 className="text-2xl font-black text-[#111827] flex items-baseline gap-1">
                       {Number(property.pricePerNight).toLocaleString()} ETB
-                      <span className="text-sm font-medium text-[#6b7280]">
-                        {" "}
-                        / night
-                      </span>
+                      <span className="text-sm font-medium text-[#6b7280]"> / night</span>
                     </h3>
                     <p className="text-xs text-[#6b7280]">
                       Select dates to calculate total and reserve via Chapa

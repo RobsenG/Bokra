@@ -72,10 +72,9 @@ export async function createProperty(formData: FormData) {
   const imageFiles = formData.getAll("images") as File[];
   for (const file of imageFiles) {
     if (file.size > 0) {
-      const fileName = `${Date.now()}-${file.name.replace(
-        /[^a-zA-Z0-9.-]/g,
-        "_"
-      )}`;
+      // Include userId subfolder to match RLS policy (userId/timestamp.ext)
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${session.user.id}/${Date.now()}.${fileExt}`;
       const url = await uploadToSupabase(file, "property-images", fileName);
       if (url && url.startsWith("https://")) {
         imageUrls.push(url);
@@ -116,10 +115,9 @@ export async function createProperty(formData: FormData) {
   const docFiles = formData.getAll("ownershipDocs") as File[];
   for (const file of docFiles) {
     if (file.size > 0) {
-      const fileName = `doc-${Date.now()}-${file.name.replace(
-        /[^a-zA-Z0-9.-]/g,
-        "_"
-      )}`;
+      // Include userId subfolder to match RLS policy (userId/timestamp.ext)
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${session.user.id}/${Date.now()}.${fileExt}`;
       const url = await uploadToSupabase(
         file,
         "property-documents",
@@ -194,10 +192,9 @@ export async function updateProperty(
   if (newFiles.length > 0) {
     const uploaded: string[] = [];
     for (const file of newFiles) {
-      const fileName = `${Date.now()}-${file.name.replace(
-        /[^a-zA-Z0-9.-]/g,
-        "_"
-      )}`;
+      // Include userId subfolder to match RLS policy (userId/timestamp.ext)
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${session.user.id}/${Date.now()}.${fileExt}`;
       const url = await uploadToSupabase(file, "property-images", fileName);
       if (url && url.startsWith("https://")) {
         uploaded.push(url);
