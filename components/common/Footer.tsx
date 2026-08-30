@@ -13,7 +13,7 @@ export default function Footer() {
               Bokra<span className="text-[#a855f7]">Stay</span>
             </Link>
             <p className="text-sm text-[#9ca3af] leading-relaxed">
-              Ethiopia&apos;s premier AI-powered short-term rental platform. Connecting travelers with authentic stays and verified hosts.
+              Find homes, apartments, and guest stays across Ethiopia.
             </p>
           </div>
 
@@ -41,23 +41,23 @@ export default function Footer() {
             <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Hosting</h3>
             <ul className="space-y-2 text-sm text-[#9ca3af]">
               <li>
-                <Link href="/register?role=HOST" className="hover:text-[#a855f7] transition-colors">List Your Property</Link>
+                <Link href="/register?role=HOST" className="hover:text-[#a855f7] transition-colors">List your property</Link>
               </li>
               <li>
-                <Link href="/host/dashboard" className="hover:text-[#a855f7] transition-colors">Host Dashboard</Link>
+                <Link href="/host/dashboard" className="hover:text-[#a855f7] transition-colors">Host dashboard</Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-[#a855f7] transition-colors">Host Guidelines</Link>
+                <Link href="#" className="hover:text-[#a855f7] transition-colors">Host guidelines</Link>
               </li>
               <li>
-                <Link href="#" className="hover:text-[#a855f7] transition-colors">Safety & Security</Link>
+                <Link href="#" className="hover:text-[#a855f7] transition-colors">Safety &amp; security</Link>
               </li>
             </ul>
           </div>
 
           {/* Contact */}
           <div className="space-y-3">
-            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Contact Us</h3>
+            <h3 className="text-white font-semibold text-sm uppercase tracking-wider mb-4">Contact</h3>
             <ul className="space-y-2.5 text-sm text-[#9ca3af]">
               <li className="flex items-start gap-2.5">
                 <MapPin className="size-4 shrink-0 text-[#a855f7] mt-0.5" />

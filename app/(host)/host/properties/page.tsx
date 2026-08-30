@@ -23,15 +23,15 @@ export default async function PropertiesPage() {
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">
-            My Properties
+            Your properties
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-            Manage your Bokra Stay listings.
+            Manage your property listings.
           </p>
         </div>
         <Link href="/host/properties/new">
-          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-600/10 transition-all cursor-pointer">
-            + Add Property
+          <button className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-[#7c3aed] hover:bg-[#5b21b6] text-white shadow-md shadow-[#7c3aed]/10 transition-all cursor-pointer">
+            + List property
           </button>
         </Link>
       </div>
@@ -44,7 +44,7 @@ export default async function PropertiesPage() {
           </p>
           <Link href="/host/properties/new">
             <button className="px-4 py-2 rounded-xl text-sm font-semibold border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors">
-              Create your first listing
+              List a property
             </button>
           </Link>
         </div>
@@ -80,13 +80,13 @@ export default async function PropertiesPage() {
                     <span
                       className={`shrink-0 px-2.5 py-0.5 text-[10px] rounded-full font-bold uppercase ${
                         isApproved
-                          ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40"
+                          ? "bg-purple-50 text-[#7c3aed] border border-purple-200"
                           : isRejected
-                          ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-900/40"
-                          : "bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/40"
+                          ? "bg-red-50 text-red-700 border border-red-200"
+                          : "bg-orange-50 text-orange-700 border border-orange-200"
                       }`}
                     >
-                      {isApproved ? "Verified" : isRejected ? "REJECTED" : "Pending"}
+                      {isApproved ? "Verified" : isRejected ? "REJECTED" : "Waiting for review"}
                     </span>
                   </div>
 
@@ -96,7 +96,7 @@ export default async function PropertiesPage() {
                     </p>
                   )}
 
-                  <p className="font-extrabold text-teal-700 dark:text-teal-300">
+                  <p className="font-extrabold text-[#7c3aed]">
                     {Number(property.pricePerNight).toLocaleString()} ETB{" "}
                     <span className="text-xs font-normal text-neutral-500">/ night</span>
                   </p>
@@ -110,7 +110,7 @@ export default async function PropertiesPage() {
                       <button
                         className={`w-full text-xs py-1.5 rounded-lg border font-semibold transition-colors cursor-pointer ${
                           isRejected
-                            ? "bg-teal-600 hover:bg-teal-700 text-white border-teal-600 shadow-xs"
+                            ? "bg-[#7c3aed] hover:bg-[#5b21b6] text-white border-[#7c3aed] shadow-xs"
                             : "border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-800"
                         }`}
                       >

@@ -4,14 +4,11 @@ import Link from "next/link";
 import {
   Building2,
   CalendarDays,
-  Star,
   Plus,
   ArrowRight,
   Wallet,
   Clock,
-  User,
   AlertTriangle,
-  FileEdit,
 } from "lucide-react";
 
 export default async function HostDashboardPage() {
@@ -28,25 +25,21 @@ export default async function HostDashboardPage() {
     recentBookings,
     rejectedProperties,
   ] = await Promise.all([
-    // Total properties
     prisma.property.count({
       where: { hostId },
     }),
-    // Confirmed + Completed bookings
     prisma.booking.count({
       where: {
         property: { hostId },
         status: { in: ["CONFIRMED", "COMPLETED"] },
       },
     }),
-    // Pending bookings
     prisma.booking.count({
       where: {
         property: { hostId },
         status: "PENDING",
       },
     }),
-    // Total revenue from successful payments
     prisma.payment.aggregate({
       where: {
         status: "SUCCESS",
@@ -56,7 +49,6 @@ export default async function HostDashboardPage() {
       },
       _sum: { amount: true },
     }),
-    // Last 5 recent bookings
     prisma.booking.findMany({
       where: {
         property: { hostId },
@@ -69,7 +61,6 @@ export default async function HostDashboardPage() {
         payment: { select: { status: true } },
       },
     }),
-    // Fetch rejected properties needing attention
     prisma.property.findMany({
       where: {
         hostId,
@@ -90,28 +81,28 @@ export default async function HostDashboardPage() {
 
   const stats = [
     {
-      label: "Total Properties",
+      label: "Properties",
       value: totalProperties,
       icon: Building2,
-      color: "teal",
+      color: "purple",
       href: "/host/properties",
     },
     {
-      label: "Confirmed Bookings",
+      label: "Confirmed bookings",
       value: confirmedBookings,
       icon: CalendarDays,
-      color: "emerald",
+      color: "purple",
       href: "/host/bookings",
     },
     {
-      label: "Total Revenue (ETB)",
+      label: "Total earnings",
       value: `${totalRevenue.toLocaleString()} ETB`,
       icon: Wallet,
-      color: "violet",
+      color: "purple",
       href: "/host/revenue",
     },
     {
-      label: "Pending Bookings",
+      label: "Pending bookings",
       value: pendingBookings,
       icon: Clock,
       color: "orange",
@@ -120,10 +111,8 @@ export default async function HostDashboardPage() {
   ];
 
   const colorMap: Record<string, string> = {
-    teal: "bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400",
-    emerald: "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400",
-    violet: "bg-violet-50 dark:bg-violet-950/30 text-violet-600 dark:text-violet-400",
-    orange: "bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400",
+    purple: "bg-[#7c3aed]/10 text-[#7c3aed]",
+    orange: "bg-orange-50 text-orange-600",
   };
 
   return (
@@ -135,24 +124,24 @@ export default async function HostDashboardPage() {
             Welcome back, {session.user.name?.split(" ")[0] || "Host"} 👋
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-            Here&apos;s your live hosting activity and earnings performance.
+            Here&apos;s your hosting overview.
           </p>
         </div>
         <Link
           href="/host/properties/new"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-600/10 transition-all cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold bg-[#7c3aed] hover:bg-[#5b21b6] text-white shadow-md shadow-[#7c3aed]/10 transition-all cursor-pointer"
         >
           <Plus className="size-4" />
-          Add Property
+          List property
         </Link>
       </div>
 
-      {/* MODIFICATION 4: Rejected Properties Alert Section */}
+      {/* Rejected Properties Alert Section */}
       {rejectedProperties.length > 0 && (
         <div className="bg-amber-50 dark:bg-amber-950/30 border-2 border-amber-200 dark:border-amber-900/50 rounded-2xl p-5 shadow-xs space-y-4">
           <div className="flex items-center gap-2 text-amber-800 dark:text-amber-300 font-extrabold text-sm">
             <AlertTriangle className="size-5 text-amber-600 dark:text-amber-400 shrink-0" />
-            <span>⚠️ Action Required — {rejectedProperties.length} {rejectedProperties.length === 1 ? "Property Needs" : "Properties Need"} Attention</span>
+            <span>⚠️ Action required — {rejectedProperties.length} {rejectedProperties.length === 1 ? "property needs" : "properties need"} attention</span>
           </div>
           <div className="space-y-3">
             {rejectedProperties.map((prop) => (
@@ -173,7 +162,7 @@ export default async function HostDashboardPage() {
                 <div className="flex gap-2.5 pt-1">
                   <Link
                     href={`/host/properties/${prop.id}/edit`}
-                    className="px-3.5 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-colors"
+                    className="px-3.5 py-1.5 rounded-lg bg-[#7c3aed] hover:bg-[#5b21b6] text-white font-bold text-xs shadow-xs transition-colors"
                   >
                     Edit &amp; Resubmit
                   </Link>
@@ -181,7 +170,7 @@ export default async function HostDashboardPage() {
                     href={`/properties/${prop.id}`}
                     className="px-3.5 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 text-neutral-700 dark:text-neutral-300 font-semibold text-xs transition-colors"
                   >
-                    View Details
+                    View details
                   </Link>
                 </div>
               </div>
@@ -224,15 +213,15 @@ export default async function HostDashboardPage() {
         <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
           <div>
             <h2 className="font-bold text-neutral-800 dark:text-white text-sm">
-              Recent Bookings
+              Recent bookings
             </h2>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
-              Latest 5 reservation requests across your properties
+              Latest 5 booking requests for your properties
             </p>
           </div>
           <Link
             href="/host/bookings"
-            className="text-xs font-semibold text-teal-600 dark:text-teal-400 hover:underline"
+            className="text-xs font-semibold text-[#7c3aed] hover:underline"
           >
             View all
           </Link>
@@ -245,7 +234,7 @@ export default async function HostDashboardPage() {
               No bookings yet
             </p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">
-              Bookings will appear here once guests reserve your listings.
+              Bookings will show up here when guests book your places.
             </p>
           </div>
         ) : (
@@ -256,8 +245,8 @@ export default async function HostDashboardPage() {
                   <th className="px-6 py-3">Renter</th>
                   <th className="px-6 py-3">Property</th>
                   <th className="px-6 py-3">Dates</th>
-                  <th className="px-6 py-3">Total Price</th>
-                  <th className="px-6 py-3">Booking Status</th>
+                  <th className="px-6 py-3">Total price</th>
+                  <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Payment</th>
                 </tr>
               </thead>
@@ -267,7 +256,7 @@ export default async function HostDashboardPage() {
                   return (
                     <tr key={booking.id} className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30 transition-colors">
                       <td className="px-6 py-4 font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-teal-100 dark:bg-teal-900/40 text-teal-700 dark:text-teal-300 flex items-center justify-center text-[10px] font-bold shrink-0">
+                        <div className="w-6 h-6 rounded-full bg-[#7c3aed]/10 text-[#7c3aed] flex items-center justify-center text-[10px] font-bold shrink-0">
                           {(booking.renter.name || "G")[0].toUpperCase()}
                         </div>
                         <span className="truncate">{booking.renter.name || booking.renter.email}</span>
@@ -278,17 +267,17 @@ export default async function HostDashboardPage() {
                       <td className="px-6 py-4 whitespace-nowrap text-neutral-500 dark:text-neutral-400">
                         {new Date(booking.checkIn).toLocaleDateString(undefined, { month: "short", day: "numeric" })} - {new Date(booking.checkOut).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
                       </td>
-                      <td className="px-6 py-4 font-bold text-teal-700 dark:text-teal-400 whitespace-nowrap">
+                      <td className="px-6 py-4 font-bold text-[#7c3aed] whitespace-nowrap">
                         {Number(booking.totalPrice).toLocaleString()} ETB
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                             booking.status === "CONFIRMED" || booking.status === "COMPLETED"
-                              ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40"
+                              ? "bg-purple-50 text-[#7c3aed] border border-purple-200"
                               : booking.status === "PENDING"
-                              ? "bg-orange-50 dark:bg-orange-950/40 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-900/40"
-                              : "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border border-red-200 dark:border-red-900/40"
+                              ? "bg-orange-50 text-orange-700 border border-orange-200"
+                              : "bg-red-50 text-red-700 border border-red-200"
                           }`}
                         >
                           {booking.status}
@@ -298,10 +287,10 @@ export default async function HostDashboardPage() {
                         <span
                           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                             paymentStatus === "SUCCESS"
-                              ? "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300"
+                              ? "bg-purple-50 text-[#7c3aed]"
                               : paymentStatus === "FAILED"
-                              ? "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300"
-                              : "bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300"
+                              ? "bg-red-100 text-red-800"
+                              : "bg-amber-100 text-amber-800"
                           }`}
                         >
                           {paymentStatus}
@@ -322,12 +311,12 @@ export default async function HostDashboardPage() {
           href="/host/properties"
           className="flex items-center gap-3 p-4 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs hover:shadow-md transition-all group cursor-pointer"
         >
-          <div className="p-2.5 rounded-xl bg-teal-50 dark:bg-teal-950/30 text-teal-600 dark:text-teal-400 shrink-0">
+          <div className="p-2.5 rounded-xl bg-[#7c3aed]/10 text-[#7c3aed] shrink-0">
             <Building2 className="size-5" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200 group-hover:text-teal-600 transition-colors">
-              Manage Properties
+            <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200 group-hover:text-[#7c3aed] transition-colors">
+              Your properties
             </p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
               Edit listings, pricing &amp; details
@@ -339,12 +328,12 @@ export default async function HostDashboardPage() {
           href="/host/bookings"
           className="flex items-center gap-3 p-4 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs hover:shadow-md transition-all group cursor-pointer"
         >
-          <div className="p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 shrink-0">
+          <div className="p-2.5 rounded-xl bg-[#7c3aed]/10 text-[#7c3aed] shrink-0">
             <CalendarDays className="size-5" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200 group-hover:text-teal-600 transition-colors">
-              View Bookings
+            <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200 group-hover:text-[#7c3aed] transition-colors">
+              Your bookings
             </p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
               Track reservations &amp; guests
@@ -356,12 +345,12 @@ export default async function HostDashboardPage() {
           href="/host/revenue"
           className="flex items-center gap-3 p-4 bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs hover:shadow-md transition-all group cursor-pointer"
         >
-          <div className="p-2.5 rounded-xl bg-violet-50 dark:bg-violet-950/30 text-violet-600 dark:text-violet-400 shrink-0">
+          <div className="p-2.5 rounded-xl bg-[#7c3aed]/10 text-[#7c3aed] shrink-0">
             <Wallet className="size-5" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200 group-hover:text-teal-600 transition-colors">
-              Revenue &amp; Withdrawals
+            <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200 group-hover:text-[#7c3aed] transition-colors">
+              Earnings &amp; withdrawals
             </p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
               Manage payouts &amp; balance

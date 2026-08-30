@@ -5,13 +5,7 @@ import {
   Wallet,
   ArrowUpRight,
   ArrowDownLeft,
-  Clock,
   CheckCircle2,
-  AlertCircle,
-  Building,
-  CreditCard,
-  Smartphone,
-  Plus,
   Percent,
 } from "lucide-react";
 import WithdrawalModal from "@/components/dashboard/WithdrawalModal";
@@ -74,19 +68,19 @@ export default function RevenueClient({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">
-            Revenue &amp; Payouts 💰
+            Earnings &amp; payouts 💰
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-            Track deposit earnings from guest bookings and manage automatic payouts.
+            Track your earnings and manage payouts.
           </p>
         </div>
         <button
           onClick={() => setIsModalOpen(true)}
           disabled={stats.availableBalance <= 0}
-          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white shadow-md shadow-teal-600/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold bg-[#7c3aed] hover:bg-[#5b21b6] active:bg-[#4c1d95] text-white shadow-md shadow-[#7c3aed]/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
         >
           <ArrowUpRight className="size-4" />
-          Withdraw Funds
+          Withdraw earnings
         </button>
       </div>
 
@@ -135,21 +129,21 @@ export default function RevenueClient({
         </div>
 
         {/* Your Earnings (97%) */}
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl p-4.5 shadow-xs border border-emerald-100 dark:border-emerald-900/40 flex flex-col justify-between">
+        <div className="bg-white dark:bg-neutral-900 rounded-2xl p-4.5 shadow-xs border border-purple-100 dark:border-purple-900/40 flex flex-col justify-between">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-[#7c3aed]">
               Your Earnings (97%)
             </span>
-            <div className="p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-xl text-emerald-600 dark:text-emerald-400">
+            <div className="p-2 bg-purple-50 dark:bg-purple-950/30 rounded-xl text-[#7c3aed]">
               <CheckCircle2 className="size-4" />
             </div>
           </div>
           <div className="mt-3">
-            <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
+            <p className="text-xl font-black text-[#7c3aed]">
               {stats.hostEarnings.toLocaleString()}{" "}
-              <span className="text-xs font-semibold text-emerald-500">ETB</span>
+              <span className="text-xs font-semibold text-[#7c3aed]">ETB</span>
             </p>
-            <p className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80 mt-0.5 font-medium">
+            <p className="text-[10px] text-[#7c3aed]/80 mt-0.5 font-medium">
               Net revenue earned
             </p>
           </div>
@@ -176,22 +170,22 @@ export default function RevenueClient({
           </div>
         </div>
 
-        {/* Available Balance (Large, Teal) */}
-        <div className="bg-gradient-to-br from-teal-900 to-teal-950 text-white rounded-2xl p-4.5 shadow-md border border-teal-800 flex flex-col justify-between sm:col-span-2 lg:col-span-1">
+        {/* Available Balance */}
+        <div className="bg-gradient-to-br from-[#7c3aed] to-[#5b21b6] text-white rounded-2xl p-4.5 shadow-md border border-[#7c3aed] flex flex-col justify-between sm:col-span-2 lg:col-span-1">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-teal-300">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-purple-100">
               Available Balance
             </span>
-            <div className="p-2 bg-teal-500/20 rounded-xl text-teal-300">
+            <div className="p-2 bg-white/20 rounded-xl text-white">
               <Wallet className="size-4" />
             </div>
           </div>
           <div className="mt-3">
             <p className="text-2xl font-black text-white">
               {stats.availableBalance.toLocaleString()}{" "}
-              <span className="text-xs font-semibold text-teal-300">ETB</span>
+              <span className="text-xs font-semibold text-purple-200">ETB</span>
             </p>
-            <p className="text-[10px] text-teal-300/90 mt-0.5 font-medium">Ready for instant payout</p>
+            <p className="text-[10px] text-purple-100 mt-0.5 font-medium">Ready for instant payout</p>
           </div>
         </div>
       </div>
@@ -207,7 +201,7 @@ export default function RevenueClient({
               Successful guest booking payments with 3% platform fee and net earnings calculation
             </p>
           </div>
-          <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/30 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-bold text-[#7c3aed] bg-purple-50 dark:bg-purple-950/30 px-2.5 py-1 rounded-lg">
             {deposits.length} Received
           </span>
         </div>
@@ -233,7 +227,7 @@ export default function RevenueClient({
                   <th className="px-6 py-3">Stay</th>
                   <th className="px-6 py-3">Total Paid</th>
                   <th className="px-6 py-3 text-orange-600 dark:text-orange-400">Platform Fee (3%)</th>
-                  <th className="px-6 py-3 text-emerald-600 dark:text-emerald-400">Your Earnings (97%)</th>
+                  <th className="px-6 py-3 text-[#7c3aed]">Your Earnings (97%)</th>
                   <th className="px-6 py-3">Status</th>
                 </tr>
               </thead>
@@ -266,11 +260,11 @@ export default function RevenueClient({
                       <td className="px-6 py-4 font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">
                         - {fee.toLocaleString()} ETB
                       </td>
-                      <td className="px-6 py-4 font-extrabold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                      <td className="px-6 py-4 font-extrabold text-[#7c3aed] whitespace-nowrap">
                         + {net.toLocaleString()} ETB
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-[#7c3aed] border border-purple-200">
                           <CheckCircle2 className="size-3" /> SUCCESS
                         </span>
                       </td>
@@ -291,10 +285,10 @@ export default function RevenueClient({
               Withdrawal History
             </h2>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
-              Auto-approved payout transfer requests
+              Payout transfer requests
             </p>
           </div>
-          <span className="text-xs font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/30 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-bold text-[#7c3aed] bg-purple-50 dark:bg-purple-950/30 px-2.5 py-1 rounded-lg">
             {withdrawals.length} Requests
           </span>
         </div>
@@ -306,7 +300,7 @@ export default function RevenueClient({
               No withdrawal requests yet
             </p>
             <p className="text-xs text-neutral-400 dark:text-neutral-500">
-              Click &quot;Withdraw Funds&quot; above to request an instant payout transfer.
+              Click &quot;Withdraw earnings&quot; above to request a payout transfer.
             </p>
           </div>
         ) : (
@@ -317,7 +311,7 @@ export default function RevenueClient({
                   <th className="px-6 py-3">Date Requested</th>
                   <th className="px-6 py-3">Requested</th>
                   <th className="px-6 py-3 text-orange-600">Fee (3%)</th>
-                  <th className="px-6 py-3 text-emerald-600">Net Transferred</th>
+                  <th className="px-6 py-3 text-[#7c3aed]">Net Transferred</th>
                   <th className="px-6 py-3">Destination</th>
                   <th className="px-6 py-3">Status</th>
                   <th className="px-6 py-3">Chapa Ref</th>
@@ -341,7 +335,7 @@ export default function RevenueClient({
                     <td className="px-6 py-4 font-semibold text-orange-600 dark:text-orange-400 whitespace-nowrap">
                       - {item.platformFee.toLocaleString()} ETB
                     </td>
-                    <td className="px-6 py-4 font-extrabold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">
+                    <td className="px-6 py-4 font-extrabold text-[#7c3aed] whitespace-nowrap">
                       {item.netAmount.toLocaleString()} ETB
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -349,7 +343,7 @@ export default function RevenueClient({
                       <span className="text-neutral-400 font-mono">({maskAccountNumber(item.accountNumber)})</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/40">
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-50 text-[#7c3aed] border border-purple-200">
                         <CheckCircle2 className="size-3" /> COMPLETED
                       </span>
                     </td>

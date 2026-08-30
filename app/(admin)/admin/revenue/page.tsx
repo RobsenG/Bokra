@@ -2,7 +2,7 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { PLATFORM_FEE_PERCENT, calculatePlatformFee, calculateNetAmount } from "@/lib/platform";
-import { DollarSign, TrendingUp, CreditCard, Building2, Calendar, FileText } from "lucide-react";
+import { DollarSign, TrendingUp, CreditCard, Building2, FileText } from "lucide-react";
 
 export default async function AdminRevenuePage() {
   const session = await auth();
@@ -47,13 +47,13 @@ export default async function AdminRevenuePage() {
   const totalWithdrawalFees = withdrawals.reduce((sum, w) => sum + Number(w.platformFee), 0);
   const totalPlatformRevenue = Math.round((totalBookingCommissions + totalWithdrawalFees) * 100) / 100;
 
-  // Revenue-generating hosts (unique hosts with at least 1 SUCCESS payment)
+  // Revenue-generating hosts
   const activeHostIds = new Set(
     payments.map((p) => p.booking?.property?.host?.id).filter(Boolean)
   );
   const activeHostsCount = activeHostIds.size;
 
-  // Monthly breakdown for last 6 months (CSS Bar Chart)
+  // Monthly breakdown for last 6 months
   const monthlyData: { [key: string]: number } = {};
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   const now = new Date();
@@ -82,10 +82,10 @@ export default async function AdminRevenuePage() {
       {/* Header */}
       <div>
         <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">
-          Platform Revenue &amp; Commissions
+          Revenue
         </h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-          Real-time tracking of platform earnings ({PLATFORM_FEE_PERCENT}% fee model across bookings and host payouts).
+          Platform earnings overview.
         </p>
       </div>
 
@@ -94,14 +94,14 @@ export default async function AdminRevenuePage() {
         {/* Card 1: Total Platform Revenue */}
         <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-teal-600 dark:text-teal-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-[#7c3aed] uppercase tracking-wider">
               Total Platform Revenue
             </span>
-            <div className="p-2 rounded-xl bg-teal-50 dark:bg-teal-950/30 text-teal-600">
+            <div className="p-2 rounded-xl bg-purple-50 text-[#7c3aed]">
               <DollarSign className="size-4" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-teal-700 dark:text-teal-300 mt-3">
+          <p className="text-2xl font-extrabold text-[#7c3aed] mt-3">
             {totalPlatformRevenue.toLocaleString()} ETB
           </p>
           <p className="text-[10px] text-neutral-400 mt-1 font-medium">
@@ -115,7 +115,7 @@ export default async function AdminRevenuePage() {
             <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">
               Total Booking Volume
             </span>
-            <div className="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/30 text-blue-600">
+            <div className="p-2 rounded-xl bg-blue-50 text-blue-600">
               <CreditCard className="size-4" />
             </div>
           </div>
@@ -133,7 +133,7 @@ export default async function AdminRevenuePage() {
             <span className="text-xs font-semibold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
               Withdrawal Fees Collected
             </span>
-            <div className="p-2 rounded-xl bg-amber-50 dark:bg-amber-950/30 text-amber-600">
+            <div className="p-2 rounded-xl bg-amber-50 text-amber-600">
               <TrendingUp className="size-4" />
             </div>
           </div>
@@ -148,14 +148,14 @@ export default async function AdminRevenuePage() {
         {/* Card 4: Active Hosts */}
         <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-5 shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-violet-600 dark:text-violet-400 uppercase tracking-wider">
+            <span className="text-xs font-semibold text-purple-600 uppercase tracking-wider">
               Revenue-Generating Hosts
             </span>
-            <div className="p-2 rounded-xl bg-violet-50 dark:bg-violet-950/30 text-violet-600">
+            <div className="p-2 rounded-xl bg-purple-50 text-[#7c3aed]">
               <Building2 className="size-4" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-violet-700 dark:text-violet-300 mt-3">
+          <p className="text-2xl font-extrabold text-[#7c3aed] mt-3">
             {activeHostsCount}
           </p>
           <p className="text-[10px] text-neutral-400 mt-1 font-medium">
@@ -164,18 +164,18 @@ export default async function AdminRevenuePage() {
         </div>
       </div>
 
-      {/* Revenue Breakdown Chart (CSS Vertical Bar Chart) */}
+      {/* Revenue Breakdown Chart */}
       <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="font-bold text-neutral-800 dark:text-white text-base">
-              Monthly Platform Commissions (Last 6 Months)
+              Monthly Commissions (Last 6 Months)
             </h2>
             <p className="text-xs text-neutral-400">
-              Visual breakdown of {PLATFORM_FEE_PERCENT}% booking commissions over time
+              Breakdown of {PLATFORM_FEE_PERCENT}% booking commissions over time
             </p>
           </div>
-          <span className="text-xs font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/30 px-3 py-1 rounded-full">
+          <span className="text-xs font-bold text-[#7c3aed] bg-purple-50 px-3 py-1 rounded-full">
             {PLATFORM_FEE_PERCENT}% Service Fee
           </span>
         </div>
@@ -190,7 +190,7 @@ export default async function AdminRevenuePage() {
                   {amount.toLocaleString()} ETB
                 </span>
                 <div
-                  className="w-full max-w-[48px] bg-gradient-to-t from-teal-600 to-teal-400 rounded-t-lg transition-all group-hover:brightness-110"
+                  className="w-full max-w-[48px] bg-gradient-to-t from-[#7c3aed] to-[#5b21b6] rounded-t-lg transition-all group-hover:brightness-110"
                   style={{ height: `${heightPercent}%` }}
                 />
                 <span className="text-[10px] font-semibold text-neutral-500 dark:text-neutral-400 mt-1">
@@ -258,7 +258,7 @@ export default async function AdminRevenuePage() {
                       <td className="px-5 py-4 font-bold text-neutral-800 dark:text-white whitespace-nowrap">
                         {gross.toLocaleString()} ETB
                       </td>
-                      <td className="px-5 py-4 font-extrabold text-teal-600 dark:text-teal-400 whitespace-nowrap bg-teal-50/40 dark:bg-teal-950/20">
+                      <td className="px-5 py-4 font-extrabold text-[#7c3aed] whitespace-nowrap bg-purple-50/40">
                         +{fee.toLocaleString()} ETB
                       </td>
                       <td className="px-5 py-4 font-semibold text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
@@ -314,7 +314,7 @@ export default async function AdminRevenuePage() {
                     <td className="px-5 py-4 font-bold text-neutral-800 dark:text-white whitespace-nowrap">
                       {Number(w.amount).toLocaleString()} ETB
                     </td>
-                    <td className="px-5 py-4 font-extrabold text-teal-600 dark:text-teal-400 whitespace-nowrap bg-teal-50/40 dark:bg-teal-950/20">
+                    <td className="px-5 py-4 font-extrabold text-[#7c3aed] whitespace-nowrap bg-purple-50/40">
                       +{Number(w.platformFee).toLocaleString()} ETB
                     </td>
                     <td className="px-5 py-4 font-semibold text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
@@ -331,10 +331,10 @@ export default async function AdminRevenuePage() {
         </div>
       </div>
 
-      {/* Summary Card at Bottom */}
+      {/* Summary Card */}
       <div className="bg-gradient-to-br from-neutral-900 to-neutral-800 text-white rounded-2xl p-6 shadow-md max-w-xl ml-auto space-y-4">
         <h3 className="font-extrabold text-base border-b border-neutral-700 pb-3 flex items-center gap-2">
-          <FileText className="size-4 text-teal-400" />
+          <FileText className="size-4 text-[#7c3aed]" />
           <span>Platform Revenue Summary</span>
         </h3>
         <div className="space-y-2 text-xs">
@@ -346,9 +346,9 @@ export default async function AdminRevenuePage() {
             <span>Withdrawal Fees Collected:</span>
             <span className="font-mono font-bold text-white">{totalWithdrawalFees.toLocaleString()} ETB</span>
           </div>
-          <div className="pt-3 border-t border-neutral-700 flex justify-between items-center text-sm font-extrabold text-teal-300">
+          <div className="pt-3 border-t border-neutral-700 flex justify-between items-center text-sm font-extrabold text-purple-300">
             <span>Total Platform Revenue:</span>
-            <span className="text-xl font-mono text-teal-300">{totalPlatformRevenue.toLocaleString()} ETB</span>
+            <span className="text-xl font-mono text-purple-300">{totalPlatformRevenue.toLocaleString()} ETB</span>
           </div>
         </div>
       </div>

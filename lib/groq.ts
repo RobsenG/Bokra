@@ -6,7 +6,7 @@ import { PLATFORM_FEE_PERCENT } from "@/lib/platform";
 
 function getGemini() {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey.startsWith("YOUR_") || apiKey.startsWith("AQ.")) return null;
+  if (!apiKey || apiKey.startsWith("YOUR_")) return null;
   return new GoogleGenerativeAI(apiKey).getGenerativeModel({ model: "gemini-1.5-flash" });
 }
 
@@ -233,7 +233,14 @@ YOUR PERSONALITY:
 - Warm but professional
 - Ethiopian context aware
 
-YOUR KNOWLEDGE:
+CRITICAL RULES:
+1. Never give the same response twice in a conversation
+2. Read the user message carefully and answer ONLY what was asked
+3. Keep responses between 2-4 sentences maximum
+4. Be conversational and natural, not robotic
+5. Never start with "Great question" or "Certainly" or "Of course"
+6. If the question is unclear, ask one specific clarifying question
+7. Always stay within Bokra Stay topics only
 
 ABOUT BOKRA STAY:
 Bokra Stay is an AI-powered short-term home rental platform built for Ethiopia. It connects verified property hosts with renters including students, tourists, business travelers, and families. The platform was built by Information Systems students at Wachemo University, Hossana.
@@ -275,86 +282,119 @@ PRICING IN ETHIOPIA:
 function getMockChatbotResponse(message: string): string {
   const msg = message.toLowerCase().trim();
 
-  // About Bokra Stay / Creators
-  if (msg.includes("what is bokra stay") || msg.includes("about bokra stay") || msg.includes("who built") || msg.includes("wachemo")) {
-    return "Bokra Stay is an Ethiopian short-term rental platform developed by Information Systems students at Wachemo University, Hossana. It connects verified hosts with renters across Ethiopian cities with secure Chapa payments and AI support.";
+  // Booking related
+  if (msg.includes("book") || msg.includes("reserv") || msg.includes("stay")) {
+    return "To book a property, find one you like on the properties page, pick your dates, and click Reserve. You will be taken to Chapa to complete payment. Once paid, your booking is confirmed instantly.";
   }
 
-  // Greetings & Pleasantries
-  if (msg.match(/\b(hi|hello|hey|greetings|good morning|good afternoon|good evening)\b/)) {
-    return "Hello! I'm your Bokra Stay AI Assistant. How can I assist you with short-term stays, host listings, or platform payments today?";
-  }
-
-  if (msg.match(/\b(thanks|thank you|awesome|great|cool|perfect)\b/)) {
-    return "You're very welcome! Let me know if you have any other questions about booking or hosting on Bokra Stay.";
-  }
-
-  // Cancellation & Refund
+  // Cancellation
   if (msg.includes("cancel") || msg.includes("refund")) {
-    return "You can cancel any confirmed booking up to 48 hours prior to check-in for a 100% full refund from your 'My Bookings' page in your renter dashboard.";
+    return "You can cancel a booking up to 48 hours before check-in and get a full refund. Just go to My Bookings and click Cancel. Cancellations within 48 hours of check-in are not refundable.";
   }
 
-  // Payments / Chapa / Telebirr
-  if (msg.includes("pay") || msg.includes("payment") || msg.includes("chapa") || msg.includes("telebirr") || msg.includes("cbe")) {
-    return `Bokra Stay processes all payments in ETB via Chapa, supporting Telebirr, CBE Birr, bank cards, and transfer. A standard ${PLATFORM_FEE_PERCENT}% service fee is applied to bookings to maintain platform security.`;
+  // Payment
+  if (msg.includes("pay") || msg.includes("chapa") || msg.includes("payment") || msg.includes("fee")) {
+    return "Bokra Stay uses Chapa for secure payments. You can pay with Telebirr, bank card, or bank transfer. A 3% platform fee applies — hosts receive 97% of the booking amount.";
   }
 
-  // Booking & Reservations
-  if (msg.includes("book") || msg.includes("reserve") || msg.includes("check-in") || msg.includes("check in") || msg.includes("check out")) {
-    return "To book a stay:\n1. Search for available properties in your destination city.\n2. Select your check-in and check-out dates.\n3. Click Reserve and complete payment via Chapa within 15 minutes.\nYour booking will immediately be confirmed!";
+  // Listing a property
+  if (
+    msg.includes("list") ||
+    msg.includes("host") ||
+    msg.includes("add property") ||
+    msg.includes("my property") ||
+    msg.includes("become a host")
+  ) {
+    return "To list your property, register as a Host, complete identity verification with your ID and a live selfie, then add your property with photos and ownership documents. Admin will verify and approve it within 48 hours.";
   }
 
-  // Host Listing & Become Host
-  if (msg.includes("host") || msg.includes("list") || msg.includes("add property") || msg.includes("become a host")) {
-    return "To list a property as a Host:\n1. Complete identity verification (valid ID & selfie).\n2. Go to 'My Properties' in your Host Dashboard and click 'Add New Property'.\n3. Upload clear photos and property ownership proof.\nAdmin verifies listings within 48 hours before publication.";
+  // Withdrawal
+  if (msg.includes("withdraw") || msg.includes("earnings") || msg.includes("revenue")) {
+    return "Hosts can withdraw their available balance anytime from the Revenue page in the dashboard. Withdrawals are processed automatically. Minimum withdrawal amount is 100 ETB.";
   }
 
-  // Verification & ID
-  if (msg.includes("verify") || msg.includes("verification") || msg.includes("id") || msg.includes("selfie") || msg.includes("kebele") || msg.includes("document")) {
-    return "Host verification requires uploading a government-issued ID (Kebele ID, Passport, or Driver's License) and a live selfie. Property listings also require proof of property ownership for guest safety.";
+  // Reviews
+  if (msg.includes("review") || msg.includes("rating") || msg.includes("feedback")) {
+    return "You can leave a review after completing a stay. Go to My Bookings, find the completed booking, and submit your rating and comment. Each stay allows one review.";
   }
 
-  // Earnings & Withdrawal
-  if (msg.includes("withdraw") || msg.includes("revenue") || msg.includes("earning") || msg.includes("payout") || msg.includes("balance")) {
-    return "Hosts can withdraw their balance anytime from the 'Revenue' page in the host dashboard. The minimum withdrawal is 100 ETB, and funds are processed directly to your registered account.";
+  // Verification / documents
+  if (
+    msg.includes("verify") ||
+    msg.includes("document") ||
+    msg.includes("id") ||
+    msg.includes("passport") ||
+    msg.includes("identity")
+  ) {
+    return "Identity verification requires a valid government ID such as a Kebele ID, Passport, or Driver's License, plus a live selfie. Go to the Verification page in your host dashboard to complete this step.";
   }
 
-  // Pricing & Costs
-  if (msg.includes("price") || msg.includes("cost") || msg.includes("rate") || msg.includes("fee") || msg.includes("birr") || msg.includes("etb")) {
-    return `Nightly rates on Bokra Stay vary by city: Addis Ababa is generally 800 - 5,000 ETB/night, regional cities like Hawassa are 400 - 1,500 ETB/night, and university towns like Hossana are 200 - 800 ETB/night. A ${PLATFORM_FEE_PERCENT}% fee applies.`;
+  // Pricing
+  if (
+    msg.includes("price") ||
+    msg.includes("cost") ||
+    msg.includes("how much") ||
+    msg.includes("birr") ||
+    msg.includes("etb")
+  ) {
+    return "Prices depend on the city and property type. In Hossana, expect around 200 to 800 ETB per night. In Addis Ababa, prices typically range from 800 to 5,000 ETB per night.";
   }
 
-  // Reviews & Ratings
-  if (msg.includes("review") || msg.includes("rating") || msg.includes("star") || msg.includes("comment")) {
-    return "After completing a stay, renters can leave a 1-5 star rating and review. All reviews are summarized by AI to give future guests an honest, transparent summary of the stay.";
+  // Registration
+  if (
+    msg.includes("register") ||
+    msg.includes("sign up") ||
+    msg.includes("create account") ||
+    msg.includes("join")
+  ) {
+    return "To register, go to the Sign Up page, enter your name, email, and password, choose your role as Renter or Host, and accept the Terms and Conditions. After that, sign in with your credentials.";
   }
 
-  // Search & Locations
-  if (msg.includes("search") || msg.includes("find") || msg.includes("addis") || msg.includes("hawassa") || msg.includes("hossana") || msg.includes("location")) {
-    return "You can search for verified stays across Ethiopia by city, nightly budget, number of bedrooms, and amenities using the search filters on our home or search page.";
+  // Search
+  if (msg.includes("search") || msg.includes("find") || msg.includes("look for")) {
+    return "You can search properties by city, price range, and bedrooms using the filters on the Properties page. You can also use AI search by typing a natural description like quiet studio near university with WiFi.";
   }
 
-  // Account / Registration / Login
-  if (msg.includes("register") || msg.includes("sign up") || msg.includes("login") || msg.includes("account") || msg.includes("role")) {
-    return "Click 'Sign Up' to create an account as a Renter or Host. Enter your email, name, and password, and accept the Terms & Conditions to get started!";
+  // About Bokra Stay
+  if (
+    msg.includes("about") ||
+    msg.includes("what is bokra") ||
+    msg.includes("bokra stay") ||
+    msg.includes("platform")
+  ) {
+    return "Bokra Stay is an AI-powered short-term rental platform built for Ethiopia. It connects verified hosts with renters including students, tourists, and business travelers. Built by Information Systems students at Wachemo University.";
   }
 
-  // Safety & Security
-  if (msg.includes("safe") || msg.includes("security") || msg.includes("trust") || msg.includes("admin")) {
-    return "Every property and host on Bokra Stay undergoes manual admin review and identity verification before going live to prevent fraud and ensure guest safety.";
+  // Greetings
+  if (
+    msg.includes("hello") ||
+    msg.includes("hi") ||
+    msg.includes("hey") ||
+    msg.includes("good")
+  ) {
+    return "Hi there! I am your Bokra Stay assistant. I can help with bookings, property listings, payments, and anything about the platform. What would you like to know?";
   }
 
-  // Amenities
-  if (msg.includes("wifi") || msg.includes("kitchen") || msg.includes("parking") || msg.includes("ac") || msg.includes("generator")) {
-    return "Properties display available amenities like WiFi, Kitchen, Free Parking, Hot Water, and Power Generators on their details page. You can filter properties by these amenities during search.";
+  // Safety / trust
+  if (msg.includes("safe") || msg.includes("trust") || msg.includes("scam") || msg.includes("fake")) {
+    return "Every property on Bokra Stay is verified by our admin team before going live. Hosts must provide identity documents and proof of property ownership. Payments go through Chapa, so your money is always secure.";
   }
 
-  // Outside knowledge fallback
-  if (msg.includes("weather") || msg.includes("president") || msg.includes("football") || msg.includes("code") || msg.includes("python")) {
-    return "I can only help with Bokra Stay related questions. For anything else, please contact our support team.";
+  // Admin / support
+  if (msg.includes("admin") || msg.includes("support") || msg.includes("contact") || msg.includes("help")) {
+    return "For disputes or technical issues, you can contact our support through the platform. Admins review all listings and handle any booking disputes between renters and hosts.";
   }
 
-  return "I'm here to help with Bokra Stay! Ask me about searching for properties, booking stays, Chapa payments, host registration, property verification, or platform rules.";
+  // Default — varied responses based on message length
+  const defaults = [
+    "I can help you with bookings, property listings, payments, and Bokra Stay policies. Could you give me a bit more detail about what you need?",
+    "That is a great area to explore on Bokra Stay. Could you tell me more specifically what you are looking for so I can point you in the right direction?",
+    "I am here to help with anything related to Bokra Stay. Try asking about booking a property, listing your home, payment methods, or verification steps.",
+  ];
+
+  // Pick default based on message length to add variety
+  const index = msg.length % defaults.length;
+  return defaults[index];
 }
 
 export async function getChatbotResponse(

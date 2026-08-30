@@ -17,10 +17,10 @@ const registerSchema = z.object({
   confirmPassword: z.string().min(6, "Confirm password is required"),
   role: z.enum(["RENTER", "HOST"]),
   acceptTerms: z.boolean().refine((val) => val === true, {
-    message: "You must agree to the Terms & Conditions to register",
+    message: "You must agree to the terms to create an account",
   }),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords do not match",
+  message: "Passwords don't match",
   path: ["confirmPassword"],
 });
 
@@ -56,10 +56,9 @@ export default function RegisterPage() {
         return;
       }
 
-      // SUCCESS: redirect to /login with success banner
       router.push("/login?registered=true");
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      setError("Something went wrong. Please try again.");
     }
   };
 
@@ -71,10 +70,10 @@ export default function RegisterPage() {
             <Sparkles className="w-5 h-5 text-[#7c3aed]" />
           </div>
           <CardTitle className="text-3xl font-extrabold tracking-tight text-[#111827]">
-            Create an account
+            Create account
           </CardTitle>
           <CardDescription className="text-[#6b7280]">
-            Join Bokra Stay to discover or host premium properties in Ethiopia
+            Find or host properties across Ethiopia
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -103,12 +102,12 @@ export default function RegisterPage() {
 
             <div className="space-y-1.5">
               <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
-                Email Address
+                Email
               </label>
               <input 
                 id="email" 
                 type="email" 
-                placeholder="name@example.com" 
+                placeholder="your@email.com" 
                 className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200"
                 {...register("email")} 
               />
@@ -167,7 +166,7 @@ export default function RegisterPage() {
                 >
                   <User className="w-5 h-5 mb-1.5" />
                   <span className="font-semibold text-xs">Rent places</span>
-                  <span className="text-[10px] opacity-75 mt-0.5">I am a traveler/guest</span>
+                  <span className="text-[10px] opacity-75 mt-0.5">I am a guest</span>
                 </button>
                 <button 
                   type="button" 
@@ -180,7 +179,7 @@ export default function RegisterPage() {
                 >
                   <Building className="w-5 h-5 mb-1.5" />
                   <span className="font-semibold text-xs">Host guests</span>
-                  <span className="text-[10px] opacity-75 mt-0.5">I own short-term rentals</span>
+                  <span className="text-[10px] opacity-75 mt-0.5">I own rentals</span>
                 </button>
               </div>
               {errors.role && (
@@ -198,13 +197,13 @@ export default function RegisterPage() {
                   {...register("acceptTerms")}
                 />
                 <label htmlFor="acceptTerms" className="text-xs text-[#6b7280] leading-relaxed cursor-pointer">
-                  I agree to the <span className="font-semibold text-[#111827]">Bokra Stay Terms & Conditions</span>, including the <span className="font-bold text-[#7c3aed]">3% platform service fee</span> applied to every booking transaction.{" "}
+                  I agree to the <span className="font-semibold text-[#111827]">Bokra Stay Terms & Conditions</span>, including the <span className="font-bold text-[#7c3aed]">3% service fee</span> on booking transactions.{" "}
                   <button
                     type="button"
                     onClick={() => setShowTermsModal(true)}
                     className="text-[#7c3aed] underline font-semibold hover:text-[#5b21b6] cursor-pointer"
                   >
-                    View full terms
+                    View terms
                   </button>
                 </label>
               </div>
@@ -224,7 +223,7 @@ export default function RegisterPage() {
                   Creating account...
                 </>
               ) : (
-                "Sign Up"
+                "Create account"
               )}
             </button>
           </form>
@@ -253,17 +252,17 @@ export default function RegisterPage() {
             <div className="flex items-center gap-2.5 text-[#111827] border-b border-[#e5e7eb] pb-3">
               <FileText className="w-5 h-5 text-[#7c3aed]" />
               <h3 className="font-extrabold text-base tracking-tight">
-                BOKRA STAY PLATFORM TERMS & CONDITIONS
+                Terms & Conditions
               </h3>
             </div>
 
             <div className="space-y-3.5 text-xs text-[#6b7280] leading-relaxed pr-1">
               <div>
                 <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
-                  Platform Service Fee
+                  Service Fee
                 </h4>
                 <p>
-                  Bokra Stay charges a 3% service fee on every successful booking payment. This fee is automatically deducted from host earnings before withdrawal. Renters pay the full listed price.
+                  Bokra Stay charges a 3% service fee on booking payments. This fee is automatically deducted from host earnings before withdrawal.
                 </p>
               </div>
 
@@ -272,57 +271,35 @@ export default function RegisterPage() {
                   Payment Processing
                 </h4>
                 <p>
-                  All payments are processed through Chapa payment gateway. Bokra Stay does not store card or bank details.
+                  All payments are processed safely through Chapa. We don&apos;t store your card or bank details.
                 </p>
               </div>
 
               <div>
                 <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
-                  Withdrawal Policy
+                  Withdrawals
                 </h4>
                 <p>
-                  Hosts may withdraw their available balance (total earnings minus 3% platform fee minus previous withdrawals) at any time. Withdrawals are processed automatically within 24 hours.
+                  Hosts can withdraw earnings at any time. Withdrawals are processed within 24 hours.
                 </p>
               </div>
 
               <div>
                 <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
-                  Cancellation Policy
+                  Cancellations
                 </h4>
                 <p>
-                  Renters may cancel bookings up to 48 hours before check-in for a full refund. Cancellations within 48 hours are non-refundable.
+                  Guests can cancel up to 48 hours before check-in for a full refund.
                 </p>
               </div>
 
               <div>
                 <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
-                  Property Verification
+                  Property Review
                 </h4>
                 <p>
-                  All properties must be verified by a Bokra Stay administrator before going live. Hosts must provide valid ownership documents.
+                  Properties are reviewed within 48 hours before going live. Hosts must upload valid ownership documents.
                 </p>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
-                  Identity Verification
-                </h4>
-                <p>
-                  Hosts must complete identity verification including a live selfie and valid government-issued ID before listing properties.
-                </p>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-[#111827] uppercase tracking-wider text-[11px] mb-1">
-                  Conduct
-                </h4>
-                <p>
-                  Any fraudulent activity, fake listings, or policy violations will result in immediate account suspension.
-                </p>
-              </div>
-
-              <div className="pt-2 border-t border-[#e5e7eb] text-[10px] text-[#6b7280] font-medium">
-                © 2026 Bokra Stay — Wachemo University Final Year Project
               </div>
             </div>
 
@@ -332,7 +309,7 @@ export default function RegisterPage() {
                 onClick={() => setShowTermsModal(false)}
                 className="w-full bg-[#7c3aed] hover:bg-[#5b21b6] text-white font-semibold text-xs py-2.5 rounded-xl cursor-pointer transition-all"
               >
-                I Understand & Agree
+                I agree
               </button>
             </div>
           </div>

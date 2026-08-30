@@ -76,8 +76,7 @@ const QUICK_REPLIES = [
 
 const GREETING_MESSAGE: Message = {
   role: "assistant",
-  content:
-    "Hi! I'm your Bokra Stay assistant. I can help with bookings, property listings, payments, and platform policies. What can I help you with?",
+  content: "Hi! How can I help you with Bokra Stay today?",
   timestamp: new Date().toISOString(),
 };
 
@@ -182,8 +181,8 @@ export default function AIChatbot() {
                 <Sparkles className="w-4 h-4 text-purple-200" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">Bokra Stay AI</h3>
-                <p className="text-[10px] text-purple-200">Policy & Help Assistant</p>
+                <h3 className="text-sm font-semibold text-white">Bokra Stay Assistant</h3>
+                <p className="text-[10px] text-purple-200">Help &amp; Support</p>
               </div>
             </div>
             <button
@@ -260,7 +259,7 @@ export default function AIChatbot() {
                     handleSend(input);
                   }
                 }}
-                placeholder="Ask about Bokra Stay..."
+                placeholder="Ask a question..."
                 maxLength={MAX_CHARS + 50}
                 className={`flex-1 px-4 py-2.5 rounded-xl border text-sm text-[#111827] bg-white placeholder:text-[#6b7280] focus:outline-none focus:ring-2 transition-all duration-200 ${
                   isOverLimit

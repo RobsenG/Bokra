@@ -37,10 +37,10 @@ export default async function AdminUsersPage() {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">
-            User Management
+            Users
           </h1>
           <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-            View and manage all Bokra Stay accounts and host trust badges.
+            Manage user accounts.
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2 shadow-xs">
@@ -78,10 +78,10 @@ export default async function AdminUsersPage() {
       <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
         <div className="px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
           <h2 className="font-bold text-sm text-neutral-800 dark:text-white">
-            All Users
+            All users
           </h2>
           <p className="text-xs text-neutral-400 mt-0.5">
-            Manage user accounts, view host trust badges, or suspend/activate access.
+            View and manage user accounts.
           </p>
         </div>
         <div className="overflow-x-auto">

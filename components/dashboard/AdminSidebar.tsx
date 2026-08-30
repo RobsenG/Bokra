@@ -21,6 +21,8 @@ interface AdminSidebarProps {
   user?: {
     name?: string | null;
     email?: string | null;
+    avatar?: string | null;
+    image?: string | null;
   };
 }
 
@@ -43,9 +45,7 @@ export default function AdminSidebar({ pendingCount = 0, user }: AdminSidebarPro
     { name: "System", href: "/admin/system", icon: Settings },
   ];
 
-  const initials = user?.name
-    ? user.name.split(" ").map((n) => n[0]).join("").toUpperCase().slice(0, 2)
-    : "AD";
+  const avatarSrc = user?.avatar || user?.image;
 
   return (
     <>
@@ -75,7 +75,7 @@ export default function AdminSidebar({ pendingCount = 0, user }: AdminSidebarPro
 
         {/* Nav section label */}
         <div className="px-6 pt-6 pb-2 text-[10px] font-bold uppercase tracking-widest text-[#6b7280]">
-          Admin Console
+          Admin menu
         </div>
 
         {/* Navigation links */}
@@ -113,9 +113,17 @@ export default function AdminSidebar({ pendingCount = 0, user }: AdminSidebarPro
 
         {/* Sidebar footer */}
         <div className="mt-auto px-4 py-4 border-t border-[#374151] flex items-center gap-3">
-          <div className="w-8 h-8 rounded-full bg-[#7c3aed] flex items-center justify-center text-white text-xs font-bold shrink-0">
-            {initials}
-          </div>
+          {avatarSrc ? (
+            <img
+              src={avatarSrc}
+              alt={user?.name || "User"}
+              className="w-9 h-9 rounded-full object-cover ring-2 ring-white/20 shrink-0"
+            />
+          ) : (
+            <div className="w-9 h-9 rounded-full bg-[#7c3aed] flex items-center justify-center text-white text-sm font-bold ring-2 ring-white/20 shrink-0">
+              {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || "U"}
+            </div>
+          )}
           <div className="flex flex-col min-w-0 flex-1">
             <span className="text-xs font-semibold text-white truncate">{user?.name || "Admin User"}</span>
             <span className="text-[10px] text-[#9ca3af] truncate">{user?.email || "admin@bokrastay.com"}</span>

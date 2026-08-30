@@ -3,7 +3,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import FavoriteButton from "@/components/common/FavoriteButton";
 import SearchForm from "@/components/common/SearchForm";
-import { MapPin, Compass, BadgeCheck, Star, Award, ShieldCheck } from "lucide-react";
+import { MapPin, Compass, BadgeCheck, Star, Award } from "lucide-react";
 
 export default async function PropertiesPage({
   searchParams,
@@ -22,6 +22,7 @@ export default async function PropertiesPage({
   const { city, checkIn, checkOut, guests, minPrice, maxPrice, bedrooms } =
     await searchParams;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const filters: any = {
     isVerified: true,
     isAvailable: true,
@@ -46,6 +47,7 @@ export default async function PropertiesPage({
     }
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let properties: any[] = [];
   let userFavoriteIds = new Set<string>();
 
@@ -87,7 +89,7 @@ export default async function PropertiesPage({
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full font-sans">
       <div className="max-w-4xl mx-auto mb-8">
         <h1 className="text-3xl font-extrabold text-[#111827] mb-6">
-          Search Properties
+          Browse properties
         </h1>
         <SearchForm />
       </div>
@@ -97,10 +99,10 @@ export default async function PropertiesPage({
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-3 mb-8">
         <div>
           <h2 className="text-xl font-bold text-[#111827]">
-            {city ? `Stays in "${city}"` : "All Verified Properties"}
+            {city ? `Stays in "${city}"` : "Verified properties"}
           </h2>
           <p className="text-sm text-[#6b7280]">
-            {properties.length} {properties.length === 1 ? "stay" : "stays"}{" "}
+            {properties.length} {properties.length === 1 ? "property" : "properties"}{" "}
             found
           </p>
         </div>
@@ -109,7 +111,7 @@ export default async function PropertiesPage({
             href="/properties"
             className="border-2 border-[#7c3aed] text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white font-semibold text-xs px-4 py-2 rounded-xl transition-all duration-200"
           >
-            Clear Filters
+            Clear filters
           </Link>
         )}
       </div>
@@ -118,16 +120,16 @@ export default async function PropertiesPage({
         <div className="text-center py-16 border border-dashed border-[#e5e7eb] rounded-3xl bg-white max-w-lg mx-auto">
           <Compass className="w-10 h-10 text-[#6b7280] mx-auto mb-3.5" />
           <h3 className="text-lg font-bold text-[#111827] mb-1">
-            No Stays Found
+            No properties found
           </h3>
           <p className="text-[#6b7280] text-sm max-w-sm mx-auto px-4">
-            We couldn&apos;t find any properties matching your search criteria.
-            Try adjusting your filters.
+            No properties match your search. Try different filters.
           </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {properties.map((property) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const totalRating = property.reviews.reduce(
               (acc: number, review: any) => acc + review.rating,
               0
@@ -138,6 +140,12 @@ export default async function PropertiesPage({
                 : null;
 
             const host = property.host;
+            const hostDisplayName = host?.name || "Host";
+            const hostInitial = (host?.name || "H")[0].toUpperCase();
+            const hasValidAvatar =
+              host?.avatar &&
+              typeof host.avatar === "string" &&
+              host.avatar.startsWith("https://");
             const hostBadge = host?.trustBadge || (host?.isVerified ? "Verified Host" : null);
 
             return (
@@ -183,18 +191,18 @@ export default async function PropertiesPage({
                       <div className="absolute bottom-3 left-3 right-3 bg-black/60 backdrop-blur-md text-white px-3 py-1.5 rounded-xl flex items-center justify-between text-xs">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-[#7c3aed] text-white font-bold text-[10px] flex items-center justify-center overflow-hidden border border-white/40 shrink-0">
-                            {host.avatar ? (
+                            {hasValidAvatar ? (
                               <img
                                 src={host.avatar}
-                                alt={host.name || "Host"}
+                                alt={hostDisplayName}
                                 className="w-full h-full object-cover"
                               />
                             ) : (
-                              (host.name || "H")[0].toUpperCase()
+                              hostInitial
                             )}
                           </div>
                           <span className="font-medium text-[11px] truncate max-w-[120px]">
-                            {host.adminVerifiedName || host.name || "Host"}
+                            {hostDisplayName}
                           </span>
                         </div>
                         {hostBadge && (

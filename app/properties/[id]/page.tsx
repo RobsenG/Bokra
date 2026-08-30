@@ -21,7 +21,6 @@ import {
   Award,
   ShieldCheck,
   Calendar,
-  // Amenity icons
   Wifi,
   Car,
   Wind,
@@ -43,7 +42,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-// ─── Amenity icon map ───────────────────────────────────────────────────────────
+// Amenity icon map
 const amenityIconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   WiFi: Wifi,
   Wifi: Wifi,
@@ -80,7 +79,6 @@ function getAmenityIcon(amenity: string): React.ComponentType<{ className?: stri
   return amenityIconMap[amenity] ?? CheckCircle2;
 }
 
-// Page for viewing a single property
 export default async function PropertyDetailPage({
   params,
 }: {
@@ -159,20 +157,15 @@ export default async function PropertyDetailPage({
 
   const host = property.host;
 
-  // FIX 2 — Real host name (never hardcoded)
-  const hostDisplayName = host.name || "Your Host";
-  // Trust badge from DB only — never hardcoded
-  const hostBadge = host.trustBadge || (host.isVerified ? "Verified Host" : null);
-  // adminVerifiedName from DB only
-  const hostSubtitle = host.adminVerifiedName || null;
+  const hostDisplayName = host?.name || "Host";
+  const hostBadge = host?.trustBadge || null;
+  const hostSubtitle = host?.adminVerifiedName || null;
 
-  // Host avatar: show real avatar or initials
-  const hostInitial = (host.name || "H")[0].toUpperCase();
+  const hostInitial = (host?.name || "H")[0].toUpperCase();
   const hasValidAvatar =
-    host.avatar && typeof host.avatar === "string" && host.avatar.startsWith("https://");
+    host?.avatar && typeof host.avatar === "string" && host.avatar.startsWith("https://");
 
-  // FIX 1 — Deduplicate images
-  const uniqueImages = [...new Set(property.images as string[])].filter(Boolean);
+  const uniqueImages = [...new Set((property.images as string[]) || [])].filter(Boolean);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const totalRating = property.reviews.reduce((acc: number, r: any) => acc + r.rating, 0);
@@ -208,10 +201,10 @@ export default async function PropertyDetailPage({
               <AlertTriangle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />
               <div>
                 <p className="text-sm font-extrabold text-red-800">
-                  ⚠️ Property Listing Rejected
+                  Property Listing Rejected
                 </p>
                 <p className="text-xs text-red-700/80 mt-0.5">
-                  This listing was rejected by admin. It is currently hidden from renters.
+                  This listing was rejected and is hidden from guests.
                 </p>
                 {property.rejectionReason && (
                   <p className="text-xs text-red-900 font-semibold italic mt-1 bg-white/60 p-2.5 rounded-xl border border-red-200/50">
@@ -234,16 +227,15 @@ export default async function PropertyDetailPage({
       )}
 
       {property.status === "PENDING" && (
-        <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 shadow-xs">
+        <div className="bg-[#7c3aed]/5 border-2 border-[#7c3aed]/20 rounded-2xl p-4 shadow-xs">
           <div className="flex items-center gap-3">
-            <Clock className="w-5 h-5 text-amber-600 shrink-0" />
+            <Clock className="w-5 h-5 text-[#7c3aed] shrink-0" />
             <div>
-              <p className="text-sm font-bold text-amber-800">
-                ⏳ Pending Admin Verification
+              <p className="text-sm font-bold text-[#111827]">
+                Waiting for review
               </p>
-              <p className="text-xs text-amber-700/80 mt-0.5">
-                This listing is currently being reviewed by platform administrators. It
-                will become visible to guests once approved.
+              <p className="text-xs text-[#6b7280] mt-0.5">
+                We&apos;re reviewing your property — usually takes up to 48 hours
               </p>
             </div>
           </div>
@@ -282,10 +274,9 @@ export default async function PropertyDetailPage({
         </div>
       </div>
 
-      {/* FIX 1 — Gallery with lightbox (client component) + favorite button overlay */}
+      {/* Gallery & Lightbox */}
       <div className="relative">
         <PropertyGallery images={uniqueImages} title={property.title} />
-        {/* Favorite button positioned absolutely over the gallery */}
         <div className="absolute top-4 left-4 z-10">
           <FavoriteButton propertyId={property.id} initialIsFavorited={isFavorited} />
         </div>
@@ -302,7 +293,7 @@ export default async function PropertyDetailPage({
                 <Users className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs text-[#6b7280]">Capacity</p>
+                <p className="text-xs text-[#6b7280]">Max guests</p>
                 <p className="text-sm font-bold text-[#111827]">
                   Up to {property.maxGuests} guests
                 </p>
@@ -332,13 +323,12 @@ export default async function PropertyDetailPage({
             </div>
           </div>
 
-          {/* FIX 2 — Host Profile Card with real name/photo */}
+          {/* Host Section */}
           <div className="bg-white rounded-3xl border border-[#e5e7eb] p-6 sm:p-8 space-y-6 shadow-xs">
             <div className="flex items-start justify-between gap-4 border-b border-[#e5e7eb] pb-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  {/* FIX 2 — Avatar: real photo or initials */}
-                  <div className="w-24 h-24 rounded-full ring-4 ring-[#7c3aed]/20 overflow-hidden flex items-center justify-center bg-[#7c3aed] text-white text-3xl font-bold border-2 border-white shadow-md shrink-0">
+                  <div className="w-24 h-24 rounded-full bg-[#7c3aed] ring-4 ring-[#7c3aed]/20 flex items-center justify-center text-white text-3xl font-bold overflow-hidden border-2 border-white shadow-md shrink-0">
                     {hasValidAvatar ? (
                       <img
                         src={host.avatar}
@@ -349,9 +339,9 @@ export default async function PropertyDetailPage({
                       hostInitial
                     )}
                   </div>
-                  {host.isVerified && (
+                  {host?.isVerified && (
                     <div
-                      className="absolute -bottom-1 -right-1 bg-emerald-500 text-white rounded-full p-1 border-2 border-white"
+                      className="absolute -bottom-1 -right-1 bg-[#7c3aed] text-white rounded-full p-1 border-2 border-white"
                       title="Verified Identity"
                     >
                       <ShieldCheck className="size-3.5" />
@@ -361,13 +351,11 @@ export default async function PropertyDetailPage({
 
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    {/* FIX 2 — Real host name from DB */}
                     <h3 className="text-xl font-extrabold text-[#111827]">
                       Hosted by {hostDisplayName}
                     </h3>
                   </div>
 
-                  {/* FIX 2 — adminVerifiedName only if set in DB */}
                   {hostSubtitle && (
                     <p className="text-xs text-[#6b7280] font-medium">{hostSubtitle}</p>
                   )}
@@ -379,22 +367,26 @@ export default async function PropertyDetailPage({
                         {hostBadge}
                       </span>
                     )}
-                    <span>·</span>
-                    <span className="flex items-center gap-1">
-                      <Calendar className="size-3 text-[#7c3aed]" />
-                      Member since{" "}
-                      {new Date(host.createdAt).toLocaleDateString(undefined, {
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </span>
+                    {host?.createdAt && (
+                      <>
+                        <span>·</span>
+                        <span className="flex items-center gap-1">
+                          <Calendar className="size-3 text-[#7c3aed]" />
+                          Member since{" "}
+                          {new Date(host.createdAt).toLocaleDateString(undefined, {
+                            month: "short",
+                            year: "numeric",
+                          })}
+                        </span>
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Host Bio */}
-            {host.shortBio ? (
+            {host?.shortBio ? (
               <div className="space-y-1.5">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">
                   About your host
@@ -405,8 +397,7 @@ export default async function PropertyDetailPage({
               </div>
             ) : (
               <p className="text-xs text-[#6b7280] italic">
-                {hostDisplayName} is a dedicated host committed to providing great stays
-                for guests in {property.city}.
+                {hostDisplayName} is a host in {property.city}.
               </p>
             )}
           </div>
@@ -419,21 +410,21 @@ export default async function PropertyDetailPage({
             </p>
           </div>
 
-          {/* FIX 3 — Amenities with icons */}
+          {/* What This Place Offers */}
           <div className="space-y-4">
             <h3 className="text-xl font-extrabold text-[#111827]">
-              What this place offers
+              What does your place offer?
             </h3>
             <ul className="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y divide-[#f3f4f6] border border-[#e5e7eb] rounded-2xl overflow-hidden bg-white shadow-2xs">
-              {property.amenities.map((amenity: string, idx: number) => {
+              {(property.amenities as string[]).map((amenity: string, idx: number) => {
                 const Icon = getAmenityIcon(amenity);
                 return (
                   <li
                     key={idx}
-                    className="flex items-center gap-3 px-5 py-3.5 text-sm text-[#111827] font-medium hover:bg-[#f9fafb] transition-colors"
+                    className="flex items-center gap-3 py-3 border-b border-[#f3f4f6] last:border-0 px-5"
                   >
                     <Icon className="w-5 h-5 text-[#7c3aed] flex-shrink-0" />
-                    {amenity}
+                    <span className="text-sm text-[#111827] font-medium">{amenity}</span>
                   </li>
                 );
               })}
@@ -475,7 +466,7 @@ export default async function PropertyDetailPage({
             <p className="text-sm md:text-base text-[#111827] leading-relaxed font-medium">
               {aiSummary}
             </p>
-            <p className="text-xs text-[#7c3aed] font-semibold">Powered by Groq AI</p>
+            <p className="text-xs text-[#7c3aed] font-semibold">Powered by AI</p>
           </div>
 
           {/* Reviews List */}
@@ -488,7 +479,7 @@ export default async function PropertyDetailPage({
 
             {property.reviews.length === 0 ? (
               <p className="text-[#6b7280] text-sm italic">
-                No reviews yet. Be the first guest to review this stay!
+                No reviews yet — be the first to review this place!
               </p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -499,17 +490,17 @@ export default async function PropertyDetailPage({
                     className="space-y-3 p-5 rounded-2xl border border-[#e5e7eb] bg-white shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#7c3aed]/10 border border-[#e5e7eb] overflow-hidden shrink-0">
-                        {review.renter.avatar ? (
+                      <div className="w-10 h-10 rounded-full bg-[#7c3aed]/10 border border-[#e5e7eb] overflow-hidden shrink-0 flex items-center justify-center font-bold text-[#7c3aed] text-sm">
+                        {review.renter.avatar &&
+                        typeof review.renter.avatar === "string" &&
+                        review.renter.avatar.startsWith("https://") ? (
                           <img
                             src={review.renter.avatar}
                             alt="Avatar"
                             className="w-full h-full object-cover"
                           />
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center text-[#7c3aed] font-bold text-sm">
-                            {(review.renter.name || review.renter.email)[0].toUpperCase()}
-                          </div>
+                          (review.renter.name || review.renter.email || "R")[0].toUpperCase()
                         )}
                       </div>
                       <div>
@@ -552,7 +543,7 @@ export default async function PropertyDetailPage({
             <div className="pt-4 border-t border-[#e5e7eb]">
               {session.user.role === "ADMIN" ? (
                 <p className="text-sm font-medium text-[#6b7280] py-2">
-                  Administrators cannot leave reviews
+                  Admins cannot leave reviews
                 </p>
               ) : (
                 <ReviewForm propertyId={property.id} />
@@ -569,15 +560,15 @@ export default async function PropertyDetailPage({
                 <div className="text-center py-6 space-y-3">
                   <p className="text-sm font-bold text-[#111827]">
                     {isOwner
-                      ? "You own this property listing."
-                      : "Administrators view mode"}
+                      ? "You own this property."
+                      : "Admin view"}
                   </p>
                   {isOwner && (
                     <Link
                       href={`/host/properties/${property.id}/edit`}
-                      className="inline-block px-5 py-2.5 rounded-xl text-xs font-bold bg-[#7c3aed] hover:bg-[#6d28d9] text-white shadow-xs transition-colors"
+                      className="inline-block px-5 py-2.5 rounded-xl text-xs font-bold bg-[#7c3aed] hover:bg-[#5b21b6] text-white shadow-xs transition-colors"
                     >
-                      Edit Property Details
+                      Edit property details
                     </Link>
                   )}
                 </div>
@@ -589,7 +580,7 @@ export default async function PropertyDetailPage({
                       <span className="text-sm font-medium text-[#6b7280]"> / night</span>
                     </h3>
                     <p className="text-xs text-[#6b7280]">
-                      Select dates to calculate total and reserve via Chapa
+                      Pick your dates to book
                     </p>
                   </div>
                   <BookingForm

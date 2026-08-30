@@ -31,10 +31,10 @@ export default async function AdminBookingsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">
-          Platform Bookings Management
+          Bookings
         </h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-          Monitor all guest reservations, revenue breakdowns, and platform commission status.
+          View all platform bookings.
         </p>
       </div>
 

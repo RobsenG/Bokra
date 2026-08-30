@@ -32,7 +32,6 @@ function LoginForm() {
   const onSubmit = async (data: LoginFormValues) => {
     setError("");
     try {
-      // Use client-side signIn from next-auth/react — returns a result object, never throws
       const result = await signIn("credentials", {
         email: data.email,
         password: data.password,
@@ -40,11 +39,10 @@ function LoginForm() {
       });
 
       if (!result || result.error) {
-        setError("Invalid email or password. Please check your credentials.");
+        setError("Wrong email or password. Try again.");
         return;
       }
 
-      // Fetch session to get the role for redirect
       const sessionRes = await fetch("/api/auth/session");
       const session = await sessionRes.json();
       const role = session?.user?.role;
@@ -58,7 +56,7 @@ function LoginForm() {
       }
       router.refresh();
     } catch (err) {
-      setError("An unexpected error occurred. Please try again.");
+      setError("Something went wrong. Please try again.");
     }
   };
 
@@ -69,19 +67,19 @@ function LoginForm() {
           Welcome back
         </CardTitle>
         <CardDescription className="text-[#6b7280]">
-          Enter your credentials to access your Bokra Stay account
+          Sign in to your account to continue
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        {/* Green success banner after registration */}
+        {/* Success banner after registration (keeping green for success toast/banner) */}
         {registered && (
           <div className="flex items-center gap-2.5 p-3 text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl">
             <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-            <span>Account created successfully! Please sign in.</span>
+            <span>You&apos;re all set! Sign in to get started</span>
           </div>
         )}
 
-        {/* Info banner for other messages (e.g. search redirect) */}
+        {/* Info banner */}
         {message && !registered && (
           <div className="flex items-center gap-2.5 p-3 text-sm text-[#7c3aed] bg-[#7c3aed]/10 border border-[#7c3aed]/20 rounded-xl">
             <Info className="w-4 h-4 shrink-0 text-[#7c3aed]" />
@@ -99,12 +97,12 @@ function LoginForm() {
 
           <div className="space-y-1.5">
             <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
-              Email Address
+              Email
             </label>
             <input
               id="email"
               type="email"
-              placeholder="name@example.com"
+              placeholder="your@email.com"
               className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200"
               {...register("email")}
             />
@@ -137,10 +135,10 @@ function LoginForm() {
             {isSubmitting ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin text-white" />
-                Signing in...
+                Signing you in...
               </>
             ) : (
-              "Sign In"
+              "Sign in"
             )}
           </button>
         </form>
@@ -149,7 +147,7 @@ function LoginForm() {
         <div className="text-sm text-[#6b7280]">
           New to Bokra Stay?{" "}
           <Link href="/register" className="text-[#7c3aed] hover:text-[#5b21b6] font-semibold hover:underline">
-            Create an account
+            Create account
           </Link>
         </div>
       </CardFooter>

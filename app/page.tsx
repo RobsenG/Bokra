@@ -36,20 +36,20 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center w-full">
             <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-bold bg-white/10 text-purple-200 border border-white/15 backdrop-blur-sm mb-8 uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-[#a855f7]" />
-              {"Ethiopia's Premier Rental Platform"}
+              Book and rent properties safely across Ethiopia
             </span>
 
             <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tight leading-[1.05] mb-6">
-              <span className="text-white">Find Your Perfect </span>
+              <span className="text-white">Find your next stay </span>
               <span className="text-[#a855f7]">
-                Stay in Ethiopia
+                in Ethiopia
               </span>
             </h1>
 
             <p className="text-[#9ca3af] text-lg md:text-xl max-w-2xl mx-auto leading-relaxed mb-12 font-light">
-              Verified properties. Secure bookings. Trusted hosts.
+              Verified properties. Safe bookings. Helpful hosts.
               <br className="hidden sm:block" />
-              From Addis Ababa to Hawassa — find your home away from home.
+              From Addis Ababa to Hawassa — find your place.
             </p>
 
             <div className="max-w-3xl mx-auto">
@@ -57,9 +57,9 @@ export default async function HomePage() {
             </div>
 
             <div className="flex flex-wrap items-center justify-center gap-6 mt-12 text-sm text-[#9ca3af]">
-              <span className="flex items-center gap-2"><BadgeCheck className="w-4 h-4 text-[#a855f7]" /> Admin Verified Listings</span>
-              <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-[#a855f7]" /> Secure Chapa Payments</span>
-              <span className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-[#a855f7]" /> AI-Powered Support</span>
+              <span className="flex items-center gap-2"><BadgeCheck className="w-4 h-4 text-[#a855f7]" /> Verified listings</span>
+              <span className="flex items-center gap-2"><Shield className="w-4 h-4 text-[#a855f7]" /> Secure Chapa payments</span>
+              <span className="flex items-center gap-2"><Sparkles className="w-4 h-4 text-[#a855f7]" /> 24/7 AI help</span>
             </div>
           </div>
         </section>
@@ -68,15 +68,15 @@ export default async function HomePage() {
         <section className="py-24 bg-[#f8fafc]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
-              <span className="text-[#7c3aed] font-bold text-xs uppercase tracking-widest">How It Works</span>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-[#111827] mt-2 tracking-tight">Simple. Fast. Trusted.</h2>
-              <p className="text-[#6b7280] text-sm mt-3 max-w-md mx-auto">Booking your perfect stay in Ethiopia has never been this easy.</p>
+              <span className="text-[#7c3aed] font-bold text-xs uppercase tracking-widest">How it works</span>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-[#111827] mt-2 tracking-tight">Simple. Fast. Safe.</h2>
+              <p className="text-[#6b7280] text-sm mt-3 max-w-md mx-auto">Book your stay in 3 simple steps.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
-                { icon: Search, title: "1. Search", desc: "Browse verified properties across Ethiopia using city, price, bedrooms, and date filters.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
-                { icon: CreditCard, title: "2. Book", desc: "Secure your dates with our booking engine and pay safely through Chapa payment gateway.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
-                { icon: Home, title: "3. Stay", desc: "Enjoy your stay with verified hosts and 24/7 AI-powered support throughout your visit.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
+                { icon: Search, title: "1. Search", desc: "Browse verified places across Ethiopia by city, price, and dates.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
+                { icon: CreditCard, title: "2. Book", desc: "Pick your dates and pay safely with Chapa.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
+                { icon: Home, title: "3. Stay", desc: "Enjoy your stay with verified hosts ready to help.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
               ].map(({ icon: Icon, title, desc, bg, text }) => (
                 <div key={title} className="bg-white rounded-2xl border border-[#e5e7eb] shadow-[0_1px_3px_0_rgb(0_0_0_/_0.08)] p-8 text-center space-y-4 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1)] transition-shadow duration-200">
                   <div className={`mx-auto w-14 h-14 rounded-2xl flex items-center justify-center ${bg} ${text}`}>
@@ -95,29 +95,29 @@ export default async function HomePage() {
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12">
               <div>
-                <span className="text-[#7c3aed] font-bold text-xs uppercase tracking-widest block mb-1">Top Stays</span>
-                <h2 className="text-3xl md:text-4xl font-extrabold text-[#111827] tracking-tight">Featured Properties</h2>
-                <p className="text-[#6b7280] text-sm mt-1">Handpicked verified stays across Ethiopia</p>
+                <span className="text-[#7c3aed] font-bold text-xs uppercase tracking-widest block mb-1">Featured stays</span>
+                <h2 className="text-3xl md:text-4xl font-extrabold text-[#111827] tracking-tight">Places to stay</h2>
+                <p className="text-[#6b7280] text-sm mt-1">Verified properties ready for your trip</p>
               </div>
               <Link
-                href={isLoggedIn ? "/properties" : "/login?message=Please+sign+in+to+search+and+book+properties"}
+                href={isLoggedIn ? "/properties" : "/login?message=Sign+in+to+search+and+book+properties"}
                 className="border-2 border-[#7c3aed] text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-all duration-200 shrink-0"
               >
-                View All Properties →
+                View all properties →
               </Link>
             </div>
 
             {properties.length === 0 ? (
               <div className="text-center py-20 border border-dashed border-[#e5e7eb] rounded-3xl">
                 <MapPin className="w-10 h-10 text-[#6b7280] mx-auto mb-3" />
-                <p className="text-[#6b7280] text-sm">No properties available at the moment. Check back soon!</p>
+                <p className="text-[#6b7280] text-sm">No properties found. Try adjusting your search.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {properties.map((property) => {
                   const totalRating = property.reviews.reduce((acc: number, r: any) => acc + r.rating, 0);
                   const avgRating = property.reviews.length > 0 ? (totalRating / property.reviews.length).toFixed(1) : null;
-                  const href = isLoggedIn ? `/properties/${property.id}` : "/login?message=Please+sign+in+to+view+and+book+properties";
+                  const href = isLoggedIn ? `/properties/${property.id}` : "/login?message=Sign+in+to+view+and+book+properties";
                   return (
                     <Link href={href} key={property.id} className="group">
                       <article className="bg-white rounded-2xl overflow-hidden border border-[#e5e7eb] shadow-[0_1px_3px_0_rgb(0_0_0_/_0.08)] hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1)] transition-all duration-200 h-full flex flex-col">
@@ -171,15 +171,15 @@ export default async function HomePage() {
         <section className="py-24 bg-[#f8fafc] border-t border-[#e5e7eb]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-14">
-              <span className="text-[#7c3aed] font-bold text-xs uppercase tracking-widest">Why Us</span>
+              <span className="text-[#7c3aed] font-bold text-xs uppercase tracking-widest">Why us</span>
               <h2 className="text-3xl md:text-4xl font-extrabold text-[#111827] mt-2 tracking-tight">Why Bokra Stay?</h2>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
-                { icon: BadgeCheck, title: "Admin Verified", desc: "Every listing is reviewed and approved by our admin team before going live.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
-                { icon: Shield, title: "Secure Payments", desc: "Pay confidently with Chapa, Ethiopia's trusted payment gateway.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
-                { icon: Cpu, title: "AI Powered", desc: "Smart review summaries and recommendations powered by Groq AI.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
-                { icon: Users, title: "Local First", desc: "Built for Ethiopia, by Ethiopians. Supporting local hosts and communities.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
+                { icon: BadgeCheck, title: "Verified hosts", desc: "Every property is checked before going live.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
+                { icon: Shield, title: "Secure payments", desc: "Pay safely with Chapa, Ethiopia's trusted payment gateway.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
+                { icon: Cpu, title: "Smart AI help", desc: "Instant AI reviews and booking assistance whenever you need.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
+                { icon: Users, title: "Built for Ethiopia", desc: "Supporting local hosts and guests across the country.", bg: "bg-[#7c3aed]/10", text: "text-[#7c3aed]" },
               ].map(({ icon: Icon, title, desc, bg, text }) => (
                 <div key={title} className="bg-white rounded-2xl border border-[#e5e7eb] shadow-[0_1px_3px_0_rgb(0_0_0_/_0.08)] p-6 space-y-3 hover:shadow-[0_4px_6px_-1px_rgb(0_0_0_/_0.1)] transition-shadow">
                   <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${bg} ${text}`}><Icon className="w-6 h-6" /></div>
@@ -199,17 +199,17 @@ export default async function HomePage() {
               <div className="space-y-5">
                 <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center"><Home className="w-6 h-6 text-[#a855f7]" /></div>
                 <h3 className="text-2xl font-extrabold">Have a property?</h3>
-                <p className="text-[#9ca3af] text-sm leading-relaxed">List it on Bokra Stay and start earning income from verified renters across Ethiopia.</p>
+                <p className="text-[#9ca3af] text-sm leading-relaxed">List it on Bokra Stay and start earning income from verified guests.</p>
                 <Link href="/register?role=HOST" className="inline-flex items-center justify-center gap-2 bg-[#7c3aed] hover:bg-[#5b21b6] text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-[0_4px_14px_0_rgb(124_58_237_/0.25)] transition-all">
-                  Become a Host
+                  Become a host
                 </Link>
               </div>
               <div className="space-y-5">
                 <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center"><Search className="w-6 h-6 text-[#a855f7]" /></div>
                 <h3 className="text-2xl font-extrabold">Ready to find your stay?</h3>
-                <p className="text-[#9ca3af] text-sm leading-relaxed">Browse verified properties and book your perfect Ethiopian getaway today.</p>
+                <p className="text-[#9ca3af] text-sm leading-relaxed">Browse verified properties and book your next stay today.</p>
                 <Link href={isLoggedIn ? "/properties" : "/register"} className="inline-flex items-center justify-center gap-2 border-2 border-white/30 hover:border-white text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition-all">
-                  Browse Properties
+                  Browse properties
                 </Link>
               </div>
             </div>

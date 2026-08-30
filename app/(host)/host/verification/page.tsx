@@ -45,37 +45,37 @@ export default async function HostVerificationPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
-        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">Host Verification</h1>
+        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">Verify your identity</h1>
         <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
-          Submit identity documents and live face photo to unlock hosting privileges.
+          Upload your ID and a selfie to get verified.
         </p>
       </div>
 
       {/* Status Banner */}
       <div className={`flex items-start gap-3 p-4 rounded-2xl border ${
         isVerified
-          ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/30"
+          ? "bg-purple-50 border-purple-200"
           : hasPending || hostUser?.selfieUrl
-          ? "bg-orange-50 dark:bg-orange-950/10 border-orange-100 dark:border-orange-900/30"
+          ? "bg-orange-50 border-orange-200"
           : "bg-neutral-50 dark:bg-neutral-800/40 border-neutral-200 dark:border-neutral-700"
       }`}>
         {isVerified ? (
-          <ShieldCheck className="size-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+          <ShieldCheck className="size-5 text-[#7c3aed] shrink-0 mt-0.5" />
         ) : hasPending || hostUser?.selfieUrl ? (
-          <Clock className="size-5 text-orange-600 dark:text-orange-400 shrink-0 mt-0.5" />
+          <Clock className="size-5 text-orange-600 shrink-0 mt-0.5" />
         ) : (
-          <AlertTriangle className="size-5 text-neutral-500 dark:text-neutral-400 shrink-0 mt-0.5" />
+          <AlertTriangle className="size-5 text-neutral-500 shrink-0 mt-0.5" />
         )}
         <div>
-          <p className={`font-bold text-sm ${isVerified ? "text-emerald-800 dark:text-emerald-300" : hasPending || hostUser?.selfieUrl ? "text-orange-800 dark:text-orange-300" : "text-neutral-700 dark:text-neutral-300"}`}>
-            {isVerified ? "Your account is verified ✓" : hasPending || hostUser?.selfieUrl ? "Verification Review in Progress" : "Action Required"}
+          <p className={`font-bold text-sm ${isVerified ? "text-[#7c3aed]" : hasPending || hostUser?.selfieUrl ? "text-orange-800" : "text-neutral-700 dark:text-neutral-300"}`}>
+            {isVerified ? "You're verified" : hasPending || hostUser?.selfieUrl ? "Review in progress" : "Verification needed"}
           </p>
-          <p className={`text-xs mt-0.5 ${isVerified ? "text-emerald-700/80 dark:text-emerald-400/80" : hasPending || hostUser?.selfieUrl ? "text-orange-700/80 dark:text-orange-400/80" : "text-neutral-500 dark:text-neutral-400"}`}>
+          <p className={`text-xs mt-0.5 ${isVerified ? "text-[#7c3aed]/80" : hasPending || hostUser?.selfieUrl ? "text-orange-700/80" : "text-neutral-500 dark:text-neutral-400"}`}>
             {isVerified
-              ? "You can list properties and receive bookings. Thank you for completing verification."
+              ? "You can list properties and host guests."
               : hasPending || hostUser?.selfieUrl
-              ? "Your identity document and live selfie are under admin review. Verification completes within 24 hours."
-              : "Please capture your identity selfie and upload your national ID to get verified."}
+              ? "We're reviewing your documents — usually takes less than 24 hours."
+              : "Upload your ID and take a selfie to get verified."}
           </p>
         </div>
       </div>
@@ -95,20 +95,20 @@ export default async function HostVerificationPage() {
             {documents.map((doc) => (
               <div key={doc.id} className="flex items-center justify-between p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/40">
                 <div className="flex items-center gap-2.5">
-                  <FileText className="size-4 text-teal-600 dark:text-teal-400" />
+                  <FileText className="size-4 text-[#7c3aed]" />
                   <div>
                     <p className="text-sm font-semibold text-neutral-700 dark:text-neutral-200">{doc.type.replace(/_/g, " ")}</p>
                     <p className="text-xs text-neutral-400 dark:text-neutral-500">{new Date(doc.uploadedAt).toLocaleDateString()}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <DocumentLink fileUrl={doc.fileUrl} label="View Document" />
+                  <DocumentLink fileUrl={doc.fileUrl} label="View document" />
                   <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                     doc.status === "APPROVED"
-                      ? "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-400"
+                      ? "bg-purple-50 text-[#7c3aed]"
                       : doc.status === "REJECTED"
-                      ? "bg-red-50 dark:bg-red-950/30 text-red-700 dark:text-red-400"
-                      : "bg-orange-50 dark:bg-orange-950/30 text-orange-700 dark:text-orange-400"
+                      ? "bg-red-50 text-red-700"
+                      : "bg-orange-50 text-orange-700"
                   }`}>
                     {doc.status}
                   </span>
