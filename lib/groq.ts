@@ -6,7 +6,8 @@ import { PLATFORM_FEE_PERCENT } from "@/lib/platform";
 
 function getGemini() {
   const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey || apiKey.startsWith("YOUR_")) return null;
+  // Valid Gemini API keys start with "AIzaSy". Keys starting with "AQ." are OAuth tokens, not API keys.
+  if (!apiKey || !apiKey.startsWith("AIzaSy")) return null;
   return new GoogleGenerativeAI(apiKey).getGenerativeModel({ model: "gemini-1.5-flash" });
 }
 
@@ -183,7 +184,7 @@ Rules:
     try {
       const res = await groq.chat.completions.create({
         messages: [{ role: "user", content: prompt }],
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         temperature: 0.2,
         response_format: { type: "json_object" },
       });
@@ -410,10 +411,14 @@ export async function getChatbotResponse(
   const gemini = getGemini();
   if (gemini) {
     try {
-      const chat = gemini.startChat({
-        systemInstruction: CHATBOT_SYSTEM_PROMPT,
-      });
-      const result = await chat.sendMessage(userMsg);
+      // Build conversation context from history
+      const historyContext = conversationHistory.length > 0
+        ? conversationHistory
+            .map((h) => `${h.role === "user" ? "User" : "Assistant"}: ${h.content}`)
+            .join("\n")
+        : "";
+      const fullPrompt = `${CHATBOT_SYSTEM_PROMPT}\n\n${historyContext ? `Previous conversation:\n${historyContext}\n\n` : ""}User: ${userMsg}\nAssistant:`;
+      const result = await gemini.generateContent(fullPrompt);
       const text = result.response.text().trim();
       if (text) return text;
     } catch (e) {
@@ -434,7 +439,7 @@ export async function getChatbotResponse(
           ...formattedHistory,
           { role: "user", content: userMsg },
         ] as any,
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         temperature: 0.3,
         max_tokens: 250,
       });
@@ -491,7 +496,7 @@ ${reviews.map((r, i) => `Review #${i + 1}: Rating: ${r.rating}/5, Comment: "${r.
     try {
       const res = await groq.chat.completions.create({
         messages: [{ role: "user", content: prompt }],
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         temperature: 0.3,
         max_tokens: 150,
       });
@@ -544,7 +549,7 @@ User query: "${query}"`;
     try {
       const res = await groq.chat.completions.create({
         messages: [{ role: "user", content: prompt }],
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         temperature: 0.1,
         response_format: { type: "json_object" },
       });
@@ -604,7 +609,7 @@ Make it sound premium, cozy, and inviting for travelers. Return only the descrip
     try {
       const res = await groq.chat.completions.create({
         messages: [{ role: "user", content: prompt }],
-        model: "llama-3.1-8b-instant",
+        model: "openai/gpt-oss-20b",
         temperature: 0.7,
         max_tokens: 200,
       });
