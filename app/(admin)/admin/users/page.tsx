@@ -36,16 +36,16 @@ export default async function AdminUsersPage() {
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">
+          <h1 className="text-2xl font-extrabold text-[#1a1208] dark:text-[#f8f6f0] tracking-tight">
             Users
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+          <p className="text-sm text-[#6b5e4e] dark:text-[#9b9080] mt-0.5">
             Manage user accounts.
           </p>
         </div>
-        <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl px-4 py-2 shadow-xs">
-          <Users className="size-4 text-[#7c3aed]" />
-          <span className="font-bold text-neutral-800 dark:text-white">
+        <div className="flex items-center gap-2 text-xs text-[#6b5e4e] dark:text-[#9b9080] bg-white dark:bg-[#12121a] border border-black/[0.08] dark:border-white/[0.06] rounded-xl px-4 py-2 shadow-xs">
+          <Users className="size-4 text-[#b8943d] dark:text-[#c9a84c]" />
+          <span className="font-bold text-[#1a1208] dark:text-[#f8f6f0]">
             {users.length}
           </span>{" "}
           total users
@@ -62,12 +62,12 @@ export default async function AdminUsersPage() {
         ].map((s) => (
           <div
             key={s.label}
-            className="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-100 dark:border-neutral-800 p-3.5 shadow-xs"
+            className="bg-white dark:bg-[#12121a] rounded-xl border border-black/[0.08] dark:border-white/[0.06] p-3.5 shadow-xs"
           >
-            <p className="text-[11px] font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+            <p className="text-[11px] font-semibold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
               {s.label}
             </p>
-            <p className="text-xl font-extrabold text-neutral-800 dark:text-white mt-1">
+            <p className="text-xl font-extrabold text-[#1a1208] dark:text-[#f8f6f0] mt-1">
               {s.value}
             </p>
           </div>
@@ -75,48 +75,48 @@ export default async function AdminUsersPage() {
       </div>
 
       {/* Users Table */}
-      <div className="bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 rounded-2xl shadow-sm overflow-hidden">
-        <div className="px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
-          <h2 className="font-bold text-sm text-neutral-800 dark:text-white">
+      <div className="bg-white dark:bg-[#12121a] border border-black/[0.08] dark:border-white/[0.06] rounded-2xl shadow-sm overflow-hidden">
+        <div className="px-6 py-4 border-b border-black/[0.06] dark:border-white/[0.06]">
+          <h2 className="font-bold text-sm text-[#1a1208] dark:text-[#f8f6f0]">
             All users
           </h2>
-          <p className="text-xs text-neutral-400 mt-0.5">
+          <p className="text-xs text-[#6b5e4e] dark:text-[#9b9080] mt-0.5">
             View and manage user accounts.
           </p>
         </div>
         <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-neutral-100 dark:divide-neutral-800 text-left">
-            <thead className="bg-neutral-50/70 dark:bg-neutral-800/50">
+          <table className="min-w-full divide-y divide-black/[0.06] dark:divide-white/[0.06] text-left">
+            <thead className="bg-[#f5f3ef] dark:bg-[#1a1a2e]">
               <tr>
-                <th className="px-5 py-3 text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-bold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
                   User
                 </th>
-                <th className="px-5 py-3 text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-bold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
                   Email
                 </th>
-                <th className="px-5 py-3 text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-bold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
                   Role
                 </th>
-                <th className="px-5 py-3 text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-bold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
                   Trust Badge
                 </th>
-                <th className="px-5 py-3 text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-bold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
                   Status
                 </th>
-                <th className="px-5 py-3 text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-bold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
                   Joined
                 </th>
-                <th className="px-5 py-3 text-xs font-bold text-neutral-400 uppercase tracking-wider">
+                <th className="px-5 py-3 text-xs font-bold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
+            <tbody className="divide-y divide-black/[0.06] dark:divide-white/[0.06]">
               {users.length === 0 ? (
                 <tr>
                   <td
                     colSpan={7}
-                    className="py-12 text-center text-sm text-neutral-400"
+                    className="py-12 text-center text-sm text-[#6b5e4e] dark:text-[#9b9080]"
                   >
                     No users found.
                   </td>

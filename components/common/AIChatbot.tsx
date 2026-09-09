@@ -25,9 +25,7 @@ function MessageContent({ content }: { content: string }) {
       elements.push(
         <ul key={key} className="list-disc list-inside space-y-0.5 pl-1">
           {listBuffer.map((item, i) => (
-            <li key={i} className="text-xs leading-relaxed">
-              {item}
-            </li>
+            <li key={i} className="text-xs leading-relaxed">{item}</li>
           ))}
         </ul>
       );
@@ -43,25 +41,22 @@ function MessageContent({ content }: { content: string }) {
       flushList(`list-${idx}`);
       if (trimmed) {
         elements.push(
-          <p key={`p-${idx}`} className="text-xs leading-relaxed">
-            {trimmed}
-          </p>
+          <p key={`p-${idx}`} className="text-xs leading-relaxed">{trimmed}</p>
         );
       }
     }
   });
   flushList("list-end");
-
   return <div className="space-y-1.5">{elements}</div>;
 }
 
 function TypingIndicator() {
   return (
     <div className="flex justify-start">
-      <div className="bg-[#f8fafc] border border-[#e5e7eb] rounded-2xl rounded-tl-sm px-4 py-2.5 flex items-center gap-1.5">
-        <span className="w-1.5 h-1.5 rounded-full bg-[#7c3aed] animate-bounce [animation-delay:0ms]" />
-        <span className="w-1.5 h-1.5 rounded-full bg-[#7c3aed] animate-bounce [animation-delay:150ms]" />
-        <span className="w-1.5 h-1.5 rounded-full bg-[#7c3aed] animate-bounce [animation-delay:300ms]" />
+      <div className="bg-[#f0ede8] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] rounded-2xl rounded-tl-sm px-4 py-2.5 flex items-center gap-1.5">
+        <span className="w-1.5 h-1.5 rounded-full bg-[#b8943d] dark:bg-[#c9a84c] animate-bounce [animation-delay:0ms]" />
+        <span className="w-1.5 h-1.5 rounded-full bg-[#b8943d] dark:bg-[#c9a84c] animate-bounce [animation-delay:150ms]" />
+        <span className="w-1.5 h-1.5 rounded-full bg-[#b8943d] dark:bg-[#c9a84c] animate-bounce [animation-delay:300ms]" />
       </div>
     </div>
   );
@@ -142,8 +137,7 @@ export default function AIChatbot() {
           ...prev,
           {
             role: "assistant",
-            content:
-              "Sorry, I'm having trouble connecting. Please try again in a moment.",
+            content: "Sorry, I'm having trouble connecting. Please try again in a moment.",
             timestamp: new Date().toISOString(),
           },
         ]);
@@ -160,34 +154,45 @@ export default function AIChatbot() {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full bg-[#7c3aed] hover:bg-[#5b21b6] shadow-[0_4px_14px_0_rgb(124_58_237_/_0.4)] flex items-center justify-center transition-all duration-200 cursor-pointer text-white"
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full
+                     bg-[#b8943d] dark:bg-[#c9a84c]
+                     hover:bg-[#c9a84c] dark:hover:bg-[#e8c96d]
+                     shadow-[0_4px_20px_rgba(184,148,61,0.3)] dark:shadow-[0_4px_20px_rgba(201,168,76,0.4)]
+                     flex items-center justify-center transition-all duration-200 cursor-pointer
+                     text-white dark:text-[#0a0a0f] animate-pulse-gold"
           aria-label="Open AI Chat"
         >
           <Bot className="w-6 h-6" />
           <span className="absolute -top-1 -right-1 flex h-3 w-3">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#a855f7] opacity-75" />
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#7c3aed]" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e8c96d] opacity-75" />
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-[#c9a84c]" />
           </span>
         </button>
       )}
 
-      {/* Chat Window Panel */}
+      {/* Chat Panel */}
       {isOpen && (
-        <div className="fixed bottom-24 right-6 z-50 w-[360px] sm:w-[380px] bg-white rounded-2xl border border-[#e5e7eb] shadow-[0_20px_60px_0_rgb(0_0_0_/_0.15)] flex flex-col overflow-hidden max-h-[520px] h-[520px]">
+        <div className="fixed bottom-24 right-6 z-50 w-[360px] sm:w-[380px]
+                        bg-white dark:bg-[#12121a]
+                        rounded-2xl border border-black/[0.08] dark:border-white/[0.08]
+                        shadow-[0_24px_64px_rgba(0,0,0,0.15)] dark:shadow-[0_24px_64px_rgba(0,0,0,0.6)]
+                        flex flex-col overflow-hidden max-h-[520px] h-[520px]">
           {/* Header */}
-          <div className="bg-gradient-to-r from-[#5b21b6] to-[#7c3aed] px-4 py-3.5 flex items-center justify-between shrink-0">
+          <div className="bg-[#f5f3ef] dark:bg-gradient-to-r dark:from-[#1a1408] dark:to-[#12120a] px-4 py-3.5 flex items-center justify-between shrink-0 border-b border-black/[0.06] dark:border-[#c9a84c]/15">
             <div className="flex items-center gap-2.5">
-              <div className="p-1.5 bg-white/10 rounded-lg">
-                <Sparkles className="w-4 h-4 text-purple-200" />
+              <div className="p-1.5 bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 rounded-lg border border-[#b8943d]/20 dark:border-[#c9a84c]/20">
+                <Sparkles className="w-4 h-4 text-[#b8943d] dark:text-[#c9a84c]" />
               </div>
               <div>
-                <h3 className="text-sm font-semibold text-white">Bokra Stay Assistant</h3>
-                <p className="text-[10px] text-purple-200">Help &amp; Support</p>
+                <h3 className="text-sm font-semibold text-[#1a1208] dark:text-[#f8f6f0]">
+                  Bokra Stay Assistant
+                </h3>
+                <p className="text-[10px] text-[#9b8e7e] dark:text-[#5a5348]">Help &amp; Support</p>
               </div>
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="p-1 hover:bg-white/15 rounded-lg transition-colors cursor-pointer text-white"
+              className="p-1 hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition-colors cursor-pointer text-[#6b5e4e] dark:text-[#9b9080]"
               aria-label="Close chat"
             >
               <X className="w-5 h-5" />
@@ -195,19 +200,17 @@ export default function AIChatbot() {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#f8fafc]">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#faf9f7] dark:bg-[#0a0a0f]/50">
             {messages.map((msg, index) => (
               <div
                 key={index}
-                className={`flex flex-col gap-0.5 ${
-                  msg.role === "user" ? "items-end" : "items-start"
-                }`}
+                className={`flex flex-col gap-0.5 ${msg.role === "user" ? "items-end" : "items-start"}`}
               >
                 <div
                   className={
                     msg.role === "user"
-                      ? "bg-[#7c3aed] text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm max-w-[80%] ml-auto"
-                      : "bg-[#f8fafc] border border-[#e5e7eb] text-[#111827] rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm max-w-[80%]"
+                      ? "bg-[#b8943d] dark:bg-[#c9a84c] text-white dark:text-[#0a0a0f] rounded-2xl rounded-tr-sm px-4 py-2.5 text-sm max-w-[80%] ml-auto"
+                      : "bg-[#f0ede8] dark:bg-white/[0.05] border border-black/[0.06] dark:border-white/[0.08] text-[#6b5e4e] dark:text-[#9b9080] rounded-2xl rounded-tl-sm px-4 py-2.5 text-sm max-w-[80%]"
                   }
                 >
                   {msg.role === "user" ? (
@@ -216,20 +219,19 @@ export default function AIChatbot() {
                     <MessageContent content={msg.content} />
                   )}
                 </div>
-                <span className="text-[9px] text-[#6b7280] px-1 font-medium">
+                <span className="text-[9px] text-[#9b8e7e] dark:text-[#5a5348] px-1 font-medium">
                   {formatTime(msg.timestamp)}
                 </span>
               </div>
             ))}
-
             {loading && <TypingIndicator />}
             <div ref={messagesEndRef} />
           </div>
 
           {/* Quick Replies */}
           {showQuickReplies && !loading && (
-            <div className="px-3 pt-2 pb-1.5 bg-white border-t border-[#e5e7eb] shrink-0">
-              <p className="text-[9px] font-semibold uppercase tracking-wider text-[#6b7280] mb-1.5 px-0.5">
+            <div className="px-3 pt-2 pb-1.5 bg-white dark:bg-[#12121a] border-t border-black/[0.06] dark:border-white/[0.06] shrink-0">
+              <p className="text-[9px] font-semibold uppercase tracking-wider text-[#9b8e7e] dark:text-[#5a5348] mb-1.5 px-0.5">
                 Quick questions
               </p>
               <div className="flex flex-wrap gap-1.5">
@@ -237,7 +239,7 @@ export default function AIChatbot() {
                   <button
                     key={idx}
                     onClick={() => handleSend(chip)}
-                    className="inline-flex px-3 py-1.5 rounded-full border border-[#7c3aed]/30 bg-[#7c3aed]/5 text-[#7c3aed] text-xs font-medium hover:bg-[#7c3aed]/10 cursor-pointer transition-colors"
+                    className="inline-flex px-3 py-1.5 rounded-full border border-[#b8943d]/30 dark:border-[#c9a84c]/20 bg-[#b8943d]/[0.05] dark:bg-[#c9a84c]/[0.05] text-[#b8943d] dark:text-[#c9a84c] text-xs font-medium hover:bg-[#b8943d]/10 dark:hover:bg-[#c9a84c]/10 cursor-pointer transition-colors"
                   >
                     {chip}
                   </button>
@@ -246,8 +248,8 @@ export default function AIChatbot() {
             </div>
           )}
 
-          {/* Input Footer */}
-          <div className="border-t border-[#e5e7eb] p-3 flex flex-col gap-1.5 bg-white shrink-0">
+          {/* Input */}
+          <div className="border-t border-black/[0.06] dark:border-white/[0.06] p-3 flex flex-col gap-1.5 bg-white dark:bg-[#12121a] shrink-0">
             <div className="flex items-center gap-2">
               <input
                 type="text"
@@ -261,29 +263,24 @@ export default function AIChatbot() {
                 }}
                 placeholder="Ask a question..."
                 maxLength={MAX_CHARS + 50}
-                className={`flex-1 px-4 py-2.5 rounded-xl border text-sm text-[#111827] bg-white placeholder:text-[#6b7280] focus:outline-none focus:ring-2 transition-all duration-200 ${
+                className={`flex-1 px-4 py-2.5 rounded-xl border text-sm text-[#1a1208] dark:text-[#f8f6f0] bg-black/[0.03] dark:bg-white/[0.04] placeholder:text-[#9b8e7e] dark:placeholder:text-[#5a5348] focus:outline-none focus:ring-1 transition-all duration-200 ${
                   isOverLimit
                     ? "border-red-400 focus:ring-red-400/20 focus:border-red-500"
-                    : "border-[#e5e7eb] focus:ring-[#7c3aed]/20 focus:border-[#7c3aed]"
+                    : "border-black/[0.08] dark:border-white/[0.08] focus:ring-[#b8943d]/15 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d]/40 dark:focus:border-[#c9a84c]/40"
                 }`}
                 aria-label="Chat input"
               />
               <button
                 onClick={() => handleSend(input)}
                 disabled={loading || !input.trim() || isOverLimit}
-                className="w-9 h-9 rounded-xl bg-[#7c3aed] hover:bg-[#5b21b6] text-white flex items-center justify-center transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shrink-0"
+                className="w-9 h-9 rounded-xl bg-[#b8943d] dark:bg-[#c9a84c] hover:bg-[#c9a84c] dark:hover:bg-[#e8c96d] text-white dark:text-[#0a0a0f] flex items-center justify-center transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                 aria-label="Send message"
               >
                 <Send className="w-4 h-4" />
               </button>
             </div>
-
             <div className="flex justify-end px-0.5">
-              <span
-                className={`text-[9px] font-mono font-semibold ${
-                  isOverLimit ? "text-red-500" : "text-[#6b7280]"
-                }`}
-              >
+              <span className={`text-[9px] font-mono font-semibold ${isOverLimit ? "text-red-500" : "text-[#9b8e7e] dark:text-[#5a5348]"}`}>
                 {charCount}/{MAX_CHARS}
               </span>
             </div>

@@ -8,7 +8,7 @@ export default function PropertiesLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen flex flex-col bg-[#f8fafc] font-sans">
+    <div className="min-h-screen flex flex-col bg-[#faf9f7] dark:bg-[#0f0f18] text-neutral-900 dark:text-white font-sans transition-colors duration-200">
       <Navbar />
       <main className="flex-1 w-full">
         {children}

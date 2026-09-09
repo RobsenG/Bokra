@@ -31,10 +31,10 @@ export default async function VerificationsPage() {
   ]);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-10 font-sans">
       <div>
-        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">Verifications</h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+        <h1 className="text-2xl font-extrabold text-[#1a1208] dark:text-[#f8f6f0] tracking-tight">Verifications</h1>
+        <p className="text-sm text-[#6b5e4e] dark:text-[#9b9080] mt-0.5">
           Review submitted properties and host verification documents.
         </p>
       </div>
@@ -43,19 +43,19 @@ export default async function VerificationsPage() {
         {/* Properties & Ownership Docs Verification Column */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-neutral-800 dark:text-neutral-100 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-[#1a1208] dark:text-[#f8f6f0] flex items-center gap-2">
               <span>Properties awaiting review</span>
-              <span className="text-xs bg-purple-50 text-[#7c3aed] px-2 py-0.5 rounded-full font-bold">
+              <span className="text-xs bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[#c9a84c]/20 px-2 py-0.5 rounded-full font-bold">
                 {pendingProperties.length} pending
               </span>
             </h2>
           </div>
 
           {pendingProperties.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-10 text-center border border-neutral-100 dark:border-neutral-850 rounded-2xl bg-white dark:bg-neutral-900 shadow-xs">
-              <CheckCircle2 className="size-8 text-purple-600 mb-2" />
-              <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">All properties verified</p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">No new property submissions at this time.</p>
+            <div className="flex flex-col items-center justify-center p-10 text-center border border-black/[0.08] dark:border-white/[0.06] rounded-2xl bg-white dark:bg-[#12121a] shadow-xs">
+              <CheckCircle2 className="size-8 text-emerald-600 dark:text-emerald-400 mb-2" />
+              <p className="text-sm font-semibold text-[#1a1208] dark:text-[#f8f6f0]">All properties verified</p>
+              <p className="text-xs text-[#6b5e4e] dark:text-[#9b9080] mt-0.5">No new property submissions at this time.</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -89,62 +89,62 @@ export default async function VerificationsPage() {
         {/* Host Identity Documents & Live Selfie Matching Column */}
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-bold text-neutral-800 dark:text-neutral-100 flex items-center gap-2">
+            <h2 className="text-lg font-bold text-[#1a1208] dark:text-[#f8f6f0] flex items-center gap-2">
               <span>Host documents awaiting review</span>
-              <span className="text-xs bg-purple-50 text-[#7c3aed] px-2 py-0.5 rounded-full font-bold">
+              <span className="text-xs bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[#c9a84c]/20 px-2 py-0.5 rounded-full font-bold">
                 {pendingDocuments.length} pending
               </span>
             </h2>
           </div>
 
           {pendingDocuments.length === 0 ? (
-            <div className="flex flex-col items-center justify-center p-10 text-center border border-neutral-100 dark:border-neutral-850 rounded-2xl bg-white dark:bg-neutral-900 shadow-xs">
-              <CheckCircle2 className="size-8 text-purple-600 mb-2" />
-              <p className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">All host identity docs verified</p>
-              <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-0.5">No new identity document submissions at this time.</p>
+            <div className="flex flex-col items-center justify-center p-10 text-center border border-black/[0.08] dark:border-white/[0.06] rounded-2xl bg-white dark:bg-[#12121a] shadow-xs">
+              <CheckCircle2 className="size-8 text-emerald-600 dark:text-emerald-400 mb-2" />
+              <p className="text-sm font-semibold text-[#1a1208] dark:text-[#f8f6f0]">All host identity docs verified</p>
+              <p className="text-xs text-[#6b5e4e] dark:text-[#9b9080] mt-0.5">No new identity document submissions at this time.</p>
             </div>
           ) : (
             <div className="space-y-4">
               {pendingDocuments.map((doc) => (
-                <div key={doc.id} className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-5 shadow-xs space-y-4">
+                <div key={doc.id} className="bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.06] p-5 shadow-xs space-y-4">
                   <div className="space-y-1">
                     <div className="flex justify-between items-start gap-2">
-                      <h3 className="font-bold text-neutral-800 dark:text-neutral-200 text-sm">
+                      <h3 className="font-bold text-[#1a1208] dark:text-[#f8f6f0] text-sm">
                         {doc.type.replace(/_/g, " ")}
                       </h3>
-                      <span className="text-[10px] font-bold text-orange-700 bg-orange-50 px-2.5 py-0.5 rounded-full">
+                      <span className="text-[10px] font-bold text-orange-700 dark:text-orange-400 bg-orange-50 dark:bg-orange-950/30 px-2.5 py-0.5 rounded-full">
                         Pending review
                       </span>
                     </div>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
-                      Uploaded by: <span className="font-semibold text-neutral-700 dark:text-neutral-200">{doc.user.name || doc.user.email}</span> ({doc.user.email})
+                    <p className="text-xs text-[#6b5e4e] dark:text-[#9b9080]">
+                      Uploaded by: <span className="font-semibold text-[#1a1208] dark:text-[#f8f6f0]">{doc.user.name || doc.user.email}</span> ({doc.user.email})
                     </p>
                   </div>
 
                   {/* Side-by-side comparison */}
-                  <div className="bg-neutral-50 dark:bg-neutral-800/40 rounded-xl p-3.5 border border-neutral-100 dark:border-neutral-800 space-y-2">
-                    <p className="text-xs font-bold text-[#7c3aed]">
+                  <div className="bg-[#f5f3ef] dark:bg-[#1a1a2e] rounded-xl p-3.5 border border-black/[0.06] dark:border-white/[0.06] space-y-2">
+                    <p className="text-xs font-bold text-[#b8943d] dark:text-[#c9a84c]">
                       Face match verification: ID vs Selfie
                     </p>
                     <div className="grid grid-cols-2 gap-3">
                       {/* ID Document Box */}
                       <div className="space-y-1">
-                        <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">
+                        <span className="text-[10px] font-semibold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
                           1. Government ID Document
                         </span>
-                        <div className="h-28 rounded-lg bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-2 flex flex-col justify-between items-center text-center">
-                          <FileText className="size-6 text-[#7c3aed] mt-2" />
+                        <div className="h-28 rounded-lg bg-white dark:bg-[#12121a] border border-black/[0.08] dark:border-white/[0.06] p-2 flex flex-col justify-between items-center text-center">
+                          <FileText className="size-6 text-[#b8943d] dark:text-[#c9a84c] mt-2" />
                           <DocumentLink fileUrl={doc.fileUrl} label="View ID" />
                         </div>
                       </div>
 
                       {/* Live Selfie Box */}
                       <div className="space-y-1">
-                        <span className="text-[10px] font-semibold text-neutral-500 uppercase tracking-wider">
+                        <span className="text-[10px] font-semibold text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider">
                           2. Live Selfie
                         </span>
                         {doc.user.selfieUrl ? (
-                          <div className="h-28 rounded-lg overflow-hidden border border-[#7c3aed] bg-neutral-900 relative">
+                          <div className="h-28 rounded-lg overflow-hidden border border-[#b8943d] dark:border-[#c9a84c] bg-neutral-900 relative">
                             <img src={doc.user.selfieUrl} alt="Host Live Selfie" className="w-full h-full object-cover" />
                             <a
                               href={doc.user.selfieUrl}
@@ -163,7 +163,7 @@ export default async function VerificationsPage() {
                         )}
                       </div>
                     </div>
-                    <p className="text-[10px] text-neutral-400 dark:text-neutral-500 italic">
+                    <p className="text-[10px] text-[#6b5e4e] dark:text-[#9b9080] italic">
                       Verify that the selfie matches the ID photo.
                     </p>
                   </div>
@@ -172,7 +172,7 @@ export default async function VerificationsPage() {
                     <form action={rejectDocument.bind(null, doc.id)} className="flex-1">
                       <button 
                         type="submit" 
-                        className="w-full text-xs py-2.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 font-semibold transition-colors cursor-pointer"
+                        className="w-full text-xs py-2.5 rounded-xl border border-red-200 dark:border-red-900/40 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 font-semibold transition-colors cursor-pointer"
                       >
                         Reject
                       </button>
@@ -180,7 +180,7 @@ export default async function VerificationsPage() {
                     <form action={approveDocument.bind(null, doc.id)} className="flex-1">
                       <button 
                         type="submit" 
-                        className="w-full text-xs py-2.5 rounded-xl bg-[#7c3aed] hover:bg-[#5b21b6] text-white font-semibold shadow-md shadow-[#7c3aed]/10 transition-colors cursor-pointer"
+                        className="w-full text-xs py-2.5 rounded-xl bg-[#b8943d] dark:bg-[#c9a84c] hover:brightness-110 text-white dark:text-[#0a0a0f] font-semibold shadow-xs transition-colors cursor-pointer"
                       >
                         Approve host
                       </button>

@@ -339,15 +339,15 @@ export default function EditPropertyForm({
       <div className="flex items-center gap-3">
         <Link
           href="/host/properties"
-          className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 transition-colors text-[#6b7280]"
+          className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors text-neutral-600 dark:text-neutral-300"
         >
           <ArrowLeft className="size-4" />
         </Link>
         <div>
-          <h1 className="text-2xl font-extrabold text-[#111827] tracking-tight">
+          <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-white tracking-tight">
             {isRejected ? "Edit & Resubmit Property" : "Edit Property"}
           </h1>
-          <p className="text-sm text-[#6b7280] mt-0.5">
+          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
             {isRejected
               ? "Update property details and upload corrected ownership proof documents below."
               : "Update the details of your listing and ownership documents."}
@@ -355,11 +355,11 @@ export default function EditPropertyForm({
         </div>
       </div>
 
-      <div className="bg-white border border-[#e5e7eb] rounded-2xl shadow-[0_1px_3px_0_rgb(0_0_0_/_0.08)] p-8 max-w-3xl mx-auto">
+      <div className="bg-white dark:bg-[#12121e] border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-sm p-8 max-w-3xl mx-auto">
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Section 1: Details */}
           <div className="space-y-6">
-            <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#7c3aed] border-b border-[#e5e7eb] pb-2">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#b8943d] dark:text-[#c9a84c] border-b border-neutral-200 dark:border-neutral-800 pb-2">
               1. Property Information
             </h2>
 
@@ -367,7 +367,7 @@ export default function EditPropertyForm({
             <div className="space-y-1.5">
               <label
                 htmlFor="title"
-                className="text-xs font-bold uppercase tracking-wider text-[#6b7280]"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
               >
                 Property Title
               </label>
@@ -378,7 +378,7 @@ export default function EditPropertyForm({
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 text-[#111827]"
+                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white"
               />
             </div>
 
@@ -387,7 +387,7 @@ export default function EditPropertyForm({
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="description"
-                  className="text-xs font-bold uppercase tracking-wider text-[#6b7280]"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                 >
                   Description
                 </label>
@@ -395,7 +395,7 @@ export default function EditPropertyForm({
                   type="button"
                   onClick={handleGenerateDescription}
                   disabled={descLoading || !title.trim()}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#7c3aed] hover:bg-[#5b21b6] text-white text-[11px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
+                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white text-[11px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
                 >
                   {descLoading ? (
                     <Loader2 className="size-3 animate-spin" />
@@ -412,7 +412,7 @@ export default function EditPropertyForm({
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full p-4 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 text-[#111827] resize-none"
+                className="w-full p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white resize-none"
               />
             </div>
 
@@ -421,7 +421,7 @@ export default function EditPropertyForm({
               <div className="space-y-1.5">
                 <label
                   htmlFor="address"
-                  className="text-xs font-bold uppercase tracking-wider text-[#6b7280]"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                 >
                   Address
                 </label>
@@ -431,13 +431,13 @@ export default function EditPropertyForm({
                   type="text"
                   defaultValue={property.address}
                   required
-                  className="w-full h-11 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 text-[#111827]"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white"
                 />
               </div>
               <div className="space-y-1.5">
                 <label
                   htmlFor="city"
-                  className="text-xs font-bold uppercase tracking-wider text-[#6b7280]"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                 >
                   City
                 </label>
@@ -448,7 +448,7 @@ export default function EditPropertyForm({
                   required
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  className="w-full h-11 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 text-[#111827]"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white"
                 />
               </div>
             </div>
@@ -457,7 +457,7 @@ export default function EditPropertyForm({
             <div className="space-y-1.5">
               <label
                 htmlFor="amenities"
-                className="text-xs font-bold uppercase tracking-wider text-[#6b7280]"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
               >
                 Amenities (comma separated)
               </label>
@@ -467,7 +467,7 @@ export default function EditPropertyForm({
                 type="text"
                 value={amenities}
                 onChange={(e) => setAmenities(e.target.value)}
-                className="w-full h-11 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 text-[#111827]"
+                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white"
               />
             </div>
 
@@ -477,7 +477,7 @@ export default function EditPropertyForm({
                 <div className="flex items-center justify-between gap-1">
                   <label
                     htmlFor="pricePerNight"
-                    className="text-xs font-bold uppercase tracking-wider text-[#6b7280]"
+                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                   >
                     Price / Night (ETB)
                   </label>
@@ -485,7 +485,7 @@ export default function EditPropertyForm({
                     type="button"
                     onClick={handleSuggestPrice}
                     disabled={priceLoading || !city.trim()}
-                    className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs shrink-0"
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white text-[10px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs shrink-0"
                   >
                     {priceLoading ? (
                       <Loader2 className="size-2.5 animate-spin" />
@@ -504,13 +504,13 @@ export default function EditPropertyForm({
                   required
                   value={pricePerNight}
                   onChange={(e) => setPricePerNight(e.target.value)}
-                  className="w-full h-11 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 text-[#111827]"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white"
                 />
               </div>
               <div className="space-y-1.5">
                 <label
                   htmlFor="bedrooms"
-                  className="text-xs font-bold uppercase tracking-wider text-[#6b7280]"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                 >
                   Bedrooms
                 </label>
@@ -522,13 +522,13 @@ export default function EditPropertyForm({
                   required
                   value={bedrooms}
                   onChange={(e) => setBedrooms(e.target.value)}
-                  className="w-full h-11 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 text-[#111827]"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white"
                 />
               </div>
               <div className="space-y-1.5">
                 <label
                   htmlFor="bathrooms"
-                  className="text-xs font-bold uppercase tracking-wider text-[#6b7280]"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                 >
                   Bathrooms
                 </label>
@@ -540,13 +540,13 @@ export default function EditPropertyForm({
                   required
                   value={bathrooms}
                   onChange={(e) => setBathrooms(e.target.value)}
-                  className="w-full h-11 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 text-[#111827]"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white"
                 />
               </div>
               <div className="space-y-1.5">
                 <label
                   htmlFor="maxGuests"
-                  className="text-xs font-bold uppercase tracking-wider text-[#6b7280]"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
                 >
                   Max Guests
                 </label>
@@ -557,14 +557,14 @@ export default function EditPropertyForm({
                   min="1"
                   required
                   defaultValue={property.maxGuests}
-                  className="w-full h-11 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 text-[#111827]"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white"
                 />
               </div>
             </div>
 
             {/* AI Price Rationale */}
             {priceRationale && (
-              <div className="bg-amber-50 border border-amber-200/60 rounded-xl p-3.5 text-xs text-amber-800 leading-relaxed animate-in fade-in duration-200">
+              <div className="bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-[#b8943d]/20 dark:border-[#c9a84c]/20 rounded-xl p-3.5 text-xs text-[#b8943d] dark:text-[#c9a84c] leading-relaxed animate-in fade-in duration-200">
                 <span className="font-bold">💡 AI Pricing Insight: </span>
                 {priceRationale}
               </div>
@@ -572,13 +572,13 @@ export default function EditPropertyForm({
 
             {/* Replace Images */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">
+              <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                 Replace Images{" "}
-                <span className="text-[#6b7280] font-normal">
+                <span className="text-neutral-400 font-normal">
                   (optional — leave blank to keep existing)
                 </span>
               </label>
-              <div className="relative group border-2 border-dashed border-[#e5e7eb] hover:border-[#7c3aed] rounded-2xl p-5 text-center cursor-pointer transition-colors">
+              <div className="relative group border-2 border-dashed border-neutral-200 dark:border-neutral-800 hover:border-[#b8943d] dark:hover:border-[#c9a84c] rounded-2xl p-5 text-center cursor-pointer transition-colors">
                 <input
                   type="file"
                   name="images"
@@ -587,9 +587,9 @@ export default function EditPropertyForm({
                   onChange={(e) => setImagesSelected(e.target.files?.length || 0)}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
-                <div className="flex flex-col items-center gap-2 text-[#6b7280]">
-                  <UploadCloud className="size-7 text-[#6b7280] group-hover:text-[#7c3aed] transition-colors" />
-                  <p className="text-xs font-semibold text-[#111827]">
+                <div className="flex flex-col items-center gap-2 text-neutral-500 dark:text-neutral-400">
+                  <UploadCloud className="size-7 group-hover:text-[#b8943d] dark:group-hover:text-[#c9a84c] transition-colors" />
+                  <p className="text-xs font-semibold text-neutral-900 dark:text-white">
                     {imagesSelected > 0
                       ? `${imagesSelected} new images selected`
                       : "Click or drag new images to replace existing"}
@@ -601,25 +601,25 @@ export default function EditPropertyForm({
 
           {/* Section 2: Ownership Documents */}
           <div className="space-y-6 pt-4">
-            <div className="flex items-center justify-between border-b border-[#e5e7eb] pb-2">
+            <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-2">
               <div>
-                <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#7c3aed] flex items-center gap-2">
-                  <ShieldCheck className="size-4 text-[#7c3aed]" />
+                <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#b8943d] dark:text-[#c9a84c] flex items-center gap-2">
+                  <ShieldCheck className="size-4 text-[#b8943d] dark:text-[#c9a84c]" />
                   2. Ownership Documents
                 </h2>
-                <p className="text-xs text-[#6b7280] mt-0.5">
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
                   Upload proof that you own or have legal right to rent this property. Required for admin approval.
                 </p>
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-purple-50 text-[#7c3aed] px-2.5 py-1 rounded-full border border-purple-200">
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] px-2.5 py-1 rounded-full border border-[#b8943d]/20 dark:border-[#c9a84c]/20">
                 AI Verified
               </span>
             </div>
 
             {/* Error Banner */}
             {docError && (
-              <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-xs text-red-700 flex items-center gap-2 font-medium">
-                <AlertTriangle className="size-4 shrink-0 text-red-600" />
+              <div className="p-3.5 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-xl text-xs text-red-700 dark:text-red-300 flex items-center gap-2 font-medium">
+                <AlertTriangle className="size-4 shrink-0 text-red-600 dark:text-red-400" />
                 <span>{docError}</span>
               </div>
             )}
@@ -627,34 +627,34 @@ export default function EditPropertyForm({
             {/* Existing Documents List */}
             {activeExistingDocs.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                   Previously Uploaded Documents
                 </h3>
                 <div className="space-y-2">
                   {activeExistingDocs.map((doc) => (
                     <div
                       key={doc.id}
-                      className="p-4 rounded-xl border border-[#e5e7eb] bg-neutral-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <FileText className="size-4 text-[#7c3aed]" />
-                          <span className="text-xs font-bold text-[#111827]">
+                          <FileText className="size-4 text-[#b8943d] dark:text-[#c9a84c]" />
+                          <span className="text-xs font-bold text-neutral-900 dark:text-white">
                             {doc.type.replace(/_/g, " ")}
                           </span>
                           <span
                             className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase ${
                               doc.status === "APPROVED"
-                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50"
                                 : doc.status === "REJECTED"
-                                ? "bg-red-50 text-red-700 border border-red-200"
-                                : "bg-amber-50 text-amber-700 border border-amber-200"
+                                ? "bg-red-50 text-red-700 dark:bg-red-950/40 dark:text-red-400 border border-red-200 dark:border-red-900/50"
+                                : "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-400 border border-amber-200 dark:border-amber-900/50"
                             }`}
                           >
                             {doc.status}
                           </span>
                         </div>
-                        <p className="text-[11px] text-[#6b7280]">
+                        <p className="text-[11px] text-neutral-500 dark:text-neutral-400">
                           Uploaded: {new Date(doc.uploadedAt).toLocaleDateString()}
                         </p>
                       </div>
@@ -664,7 +664,7 @@ export default function EditPropertyForm({
                         <button
                           type="button"
                           onClick={() => handleRemoveExistingDoc(doc.id)}
-                          className="text-red-600 hover:text-red-700 hover:underline cursor-pointer flex items-center gap-1"
+                          className="text-red-600 hover:text-red-700 dark:text-red-400 hover:underline cursor-pointer flex items-center gap-1"
                         >
                           <Trash2 className="size-3.5" />
                           <span>Remove</span>
@@ -679,27 +679,27 @@ export default function EditPropertyForm({
             {/* Newly Uploaded Documents List */}
             {newUploadedDocs.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
                   New Documents Added
                 </h3>
                 <div className="space-y-2">
                   {newUploadedDocs.map((doc) => (
                     <div
                       key={doc.id}
-                      className="p-4 rounded-xl border border-purple-200 bg-purple-50/40 space-y-2"
+                      className="p-4 rounded-xl border border-[#b8943d]/20 dark:border-[#c9a84c]/20 bg-[#b8943d]/5 dark:bg-[#c9a84c]/5 space-y-2"
                     >
                       <div className="flex items-center justify-between gap-3">
-                        <div className="flex items-center gap-2 text-xs font-bold text-[#111827]">
-                          <FileText className="size-4 text-[#7c3aed]" />
+                        <div className="flex items-center gap-2 text-xs font-bold text-neutral-900 dark:text-white">
+                          <FileText className="size-4 text-[#b8943d] dark:text-[#c9a84c]" />
                           <span>{doc.docType}</span>
-                          <span className="text-[10px] font-normal text-[#6b7280]">
+                          <span className="text-[10px] font-normal text-neutral-500 dark:text-neutral-400">
                             ({doc.fileName})
                           </span>
                         </div>
                         <button
                           type="button"
                           onClick={() => handleRemoveNewDoc(doc.id)}
-                          className="text-red-600 hover:underline text-xs font-semibold cursor-pointer"
+                          className="text-red-600 dark:text-red-400 hover:underline text-xs font-semibold cursor-pointer"
                         >
                           Remove
                         </button>
@@ -707,8 +707,8 @@ export default function EditPropertyForm({
 
                       {/* AI Status */}
                       {doc.aiCheckStatus === "scanning" ? (
-                        <div className="flex items-center gap-2 text-xs text-[#7c3aed] font-medium">
-                          <Loader2 className="size-3.5 animate-spin text-[#7c3aed]" />
+                        <div className="flex items-center gap-2 text-xs text-[#b8943d] dark:text-[#c9a84c] font-medium">
+                          <Loader2 className="size-3.5 animate-spin" />
                           <span>Running AI document pre-check scanning...</span>
                         </div>
                       ) : (
@@ -716,17 +716,17 @@ export default function EditPropertyForm({
                           <div
                             className={`p-2.5 rounded-lg text-xs flex items-center gap-2 ${
                               doc.aiResult.status === "approved"
-                                ? "bg-emerald-50 text-emerald-800 border border-emerald-200"
+                                ? "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/50"
                                 : doc.aiResult.status === "warning"
-                                ? "bg-amber-50 text-amber-800 border border-amber-200"
-                                : "bg-red-50 text-red-800 border border-red-200"
+                                ? "bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/50"
+                                : "bg-red-50 dark:bg-red-950/40 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-900/50"
                             }`}
                           >
                             {doc.aiResult.status === "approved" && (
-                              <CheckCircle2 className="size-4 text-emerald-600 shrink-0" />
+                              <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                             )}
                             {doc.aiResult.status === "warning" && (
-                              <AlertTriangle className="size-4 text-amber-600 shrink-0" />
+                              <AlertTriangle className="size-4 text-amber-600 dark:text-amber-400 shrink-0" />
                             )}
                             <span className="font-semibold">
                               AI Pre-Check ({doc.aiResult.confidence}% confidence):
@@ -742,21 +742,21 @@ export default function EditPropertyForm({
             )}
 
             {/* New Document Upload Area */}
-            <div className="bg-neutral-50 border border-[#e5e7eb] rounded-2xl p-5 space-y-4">
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#111827]">
+            <div className="bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 space-y-4">
+              <h3 className="text-xs font-extrabold uppercase tracking-wider text-neutral-900 dark:text-white">
                 Upload New / Corrected Document
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] font-bold uppercase text-[#6b7280]">
+                  <label className="block text-[11px] font-bold uppercase text-neutral-500 dark:text-neutral-400">
                     Document Type
                   </label>
                   <div className="relative">
                     <select
                       value={selectedDocType}
                       onChange={(e) => setSelectedDocType(e.target.value)}
-                      className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] bg-white text-[#111827] text-sm focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200 appearance-none cursor-pointer pr-10"
+                      className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-neutral-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 appearance-none cursor-pointer pr-10"
                     >
                       <option value="Property Title Deed">Property Title Deed</option>
                       <option value="House Registration Certificate">
@@ -770,22 +770,22 @@ export default function EditPropertyForm({
                         Government Ownership Letter
                       </option>
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6b7280] pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 dark:text-neutral-400 pointer-events-none" />
                   </div>
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-[11px] font-bold uppercase text-[#6b7280]">
+                  <label className="block text-[11px] font-bold uppercase text-neutral-500 dark:text-neutral-400">
                     Select File (PDF, JPG, PNG — max 5MB)
                   </label>
-                  <label className="w-full h-11 px-4 rounded-xl bg-white border border-[#e5e7eb] text-xs font-semibold text-[#111827] hover:border-[#7c3aed] transition-all cursor-pointer flex items-center justify-between shadow-2xs">
-                    <span className="flex items-center gap-2 text-[#7c3aed]">
+                  <label className="w-full h-11 px-4 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs font-semibold text-neutral-900 dark:text-white hover:border-[#b8943d] dark:hover:border-[#c9a84c] transition-all cursor-pointer flex items-center justify-between shadow-2xs">
+                    <span className="flex items-center gap-2 text-[#b8943d] dark:text-[#c9a84c]">
                       <UploadCloud className="size-4" />
                       <span>
                         {docUploadLoading ? "Uploading & Scanning..." : "Choose File"}
                       </span>
                     </span>
-                    <Plus className="size-4 text-[#6b7280]" />
+                    <Plus className="size-4 text-neutral-500 dark:text-neutral-400" />
                     <input
                       type="file"
                       accept=".pdf,.jpg,.jpeg,.png"
@@ -799,30 +799,30 @@ export default function EditPropertyForm({
             </div>
 
             {/* Collapsible Info Section */}
-            <div className="rounded-2xl border border-[#e5e7eb] bg-neutral-50 overflow-hidden">
+            <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 overflow-hidden">
               <button
                 type="button"
                 onClick={() => setShowDocHelp(!showDocHelp)}
-                className="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-[#111827] hover:bg-neutral-100 transition-colors"
+                className="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-colors"
               >
                 <span className="flex items-center gap-2">
-                  <HelpCircle className="size-4 text-[#7c3aed]" />
+                  <HelpCircle className="size-4 text-[#b8943d] dark:text-[#c9a84c]" />
                   What documents are accepted for ownership proof?
                 </span>
                 {showDocHelp ? (
-                  <ChevronUp className="size-4 text-[#6b7280]" />
+                  <ChevronUp className="size-4 text-neutral-500 dark:text-neutral-400" />
                 ) : (
-                  <ChevronDown className="size-4 text-[#6b7280]" />
+                  <ChevronDown className="size-4 text-neutral-500 dark:text-neutral-400" />
                 )}
               </button>
 
               {showDocHelp && (
-                <div className="px-4 pb-4 pt-1 text-xs space-y-3 border-t border-[#e5e7eb]">
+                <div className="px-4 pb-4 pt-1 text-xs space-y-3 border-t border-neutral-200 dark:border-neutral-800">
                   <div>
-                    <p className="font-bold text-emerald-700 mb-1">
+                    <p className="font-bold text-[#b8943d] dark:text-[#c9a84c] mb-1">
                       📋 Accepted Documents:
                     </p>
-                    <ul className="list-disc list-inside space-y-0.5 text-[#6b7280]">
+                    <ul className="list-disc list-inside space-y-0.5 text-neutral-600 dark:text-neutral-400">
                       <li>Property Title Deed or Land Certificate</li>
                       <li>House Registration Certificate (Kebele)</li>
                       <li>Lease Agreement (if subletting)</li>
@@ -831,10 +831,10 @@ export default function EditPropertyForm({
                     </ul>
                   </div>
                   <div>
-                    <p className="font-bold text-red-600 mb-1">
+                    <p className="font-bold text-red-600 dark:text-red-400 mb-1">
                       ❌ Not Accepted:
                     </p>
-                    <ul className="list-disc list-inside space-y-0.5 text-[#6b7280]">
+                    <ul className="list-disc list-inside space-y-0.5 text-neutral-600 dark:text-neutral-400">
                       <li>Personal ID only</li>
                       <li>Utility bills alone</li>
                       <li>Photos of the property</li>
@@ -847,11 +847,11 @@ export default function EditPropertyForm({
           </div>
 
           {/* Form Action Buttons */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-[#e5e7eb]">
+          <div className="flex justify-between items-center mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-800">
             <Link href="/host/properties">
               <button
                 type="button"
-                className="px-5 py-2.5 rounded-xl text-xs font-semibold border border-[#e5e7eb] text-[#6b7280] hover:bg-neutral-50 transition-colors cursor-pointer"
+                className="px-5 py-2.5 rounded-xl text-xs font-semibold border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
               >
                 Cancel
               </button>
@@ -859,7 +859,7 @@ export default function EditPropertyForm({
             <button
               type="submit"
               disabled={loading || docUploadLoading}
-              className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-[#7c3aed] hover:bg-[#5b21b6] shadow-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2.5 rounded-xl text-xs font-bold text-white bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] shadow-xs transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-2"
             >
               {loading ? (
                 <>

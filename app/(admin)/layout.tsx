@@ -5,6 +5,7 @@ import prisma from "@/lib/prisma";
 import AdminSidebar from "@/components/dashboard/AdminSidebar";
 import AdminNotificationBell from "@/components/dashboard/AdminNotificationBell";
 import UserMenu from "@/components/common/UserMenu";
+import { ThemeToggle } from "@/components/common/ThemeProvider";
 import { getUnreadNotifications } from "@/lib/notifications";
 
 export default async function AdminLayout({
@@ -18,15 +19,13 @@ export default async function AdminLayout({
     redirect("/");
   }
 
-  // Fetch pending property count for sidebar badge and unread notifications for notification bell
   const [pendingCount, unreadNotifications] = await Promise.all([
     prisma.property.count({ where: { status: "PENDING", isVerified: false } }),
     getUnreadNotifications(),
   ]);
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col md:flex-row font-sans">
-      {/* Sidebar Nav with live pending badge */}
+    <div className="min-h-screen bg-[#faf9f7] dark:bg-[#0d0d14] flex flex-col md:flex-row font-sans">
       <AdminSidebar
         pendingCount={pendingCount}
         unreadCount={unreadNotifications.length}
@@ -34,13 +33,14 @@ export default async function AdminLayout({
       />
 
       {/* Main Workspace */}
-      <div className="flex-1 flex flex-col md:ml-64 min-h-screen bg-[#f8fafc]">
+      <div className="flex-1 flex flex-col md:ml-64 min-h-screen">
         {/* Top Header */}
-        <header className="bg-white border-b border-[#e5e7eb] px-8 py-4 flex items-center justify-between sticky top-0 z-10">
-          <div className="font-bold text-lg text-[#111827] pl-10 md:pl-0">
+        <header className="bg-white/90 dark:bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-black/[0.06] dark:border-white/[0.05] px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+          <div className="font-bold text-lg text-[#1a1208] dark:text-[#f8f6f0] pl-10 md:pl-0">
             Admin Console
           </div>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <AdminNotificationBell
               notifications={unreadNotifications.map((n) => ({
                 id: n.id,
@@ -55,7 +55,7 @@ export default async function AdminLayout({
           </div>
         </header>
 
-        {/* Workspace Content */}
+        {/* Content */}
         <main className="flex-1 p-6 sm:p-8">{children}</main>
       </div>
     </div>

@@ -24,12 +24,11 @@ export default function DocumentLink({
 
   if (!isValidUrl) {
     return (
-      <div
-        className="inline-flex items-center gap-2 px-3 py-1.5
-                   bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-lg
-                   text-amber-700 dark:text-amber-400 text-xs font-semibold"
-      >
-        ⚠️ Document unavailable - host needs to re-upload
+      <div className="inline-flex items-center gap-2 px-3 py-1.5
+                      bg-amber-50 dark:bg-amber-500/10
+                      border border-amber-200 dark:border-amber-500/20
+                      rounded-lg text-amber-700 dark:text-amber-400 text-xs font-semibold">
+        ⚠️ Document unavailable — host needs to re-upload
       </div>
     );
   }
@@ -40,9 +39,10 @@ export default function DocumentLink({
       target="_blank"
       rel="noopener noreferrer"
       className="inline-flex items-center gap-2 px-3 py-1.5
-                 bg-[#7c3aed]/10 border border-[#7c3aed]/20 rounded-lg
-                 text-[#7c3aed] dark:text-[#a78bfa] text-xs font-semibold
-                 hover:bg-[#7c3aed]/20 transition-colors"
+                 bg-[#b8943d]/10 dark:bg-[#c9a84c]/10
+                 border border-[#b8943d]/20 dark:border-[#c9a84c]/20
+                 rounded-lg text-[#b8943d] dark:text-[#c9a84c] text-xs font-semibold
+                 hover:bg-[#b8943d]/20 dark:hover:bg-[#c9a84c]/20 transition-colors"
     >
       📄 {label} {documentType ? `(${documentType})` : ""} ↗
     </a>

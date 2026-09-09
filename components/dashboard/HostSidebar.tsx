@@ -3,19 +3,20 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { 
+import {
   Home,
-  LayoutDashboard, 
-  Building2, 
-  CalendarDays, 
+  LayoutDashboard,
+  Building2,
+  CalendarDays,
   Wallet,
   FileCheck,
-  ShieldAlert, 
+  ShieldAlert,
   Star,
   User,
-  Menu, 
-  X, 
+  Menu,
+  X,
 } from "lucide-react";
+import { ThemeToggle } from "@/components/common/ThemeProvider";
 
 interface HostSidebarProps {
   isVerified: boolean;
@@ -46,40 +47,46 @@ export default function HostSidebar({ isVerified, user }: HostSidebarProps) {
 
   return (
     <>
-      {/* Mobile Toggle Button */}
+      {/* Mobile Toggle */}
       <div className="md:hidden fixed top-3 left-4 z-50">
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="p-2 rounded-xl bg-[#111827] text-white shadow-md hover:bg-[#1f2937] transition-colors focus:outline-none cursor-pointer"
+          className="p-2 rounded-xl bg-[#080810] text-[#f8f6f0] shadow-md hover:bg-[#12121a] transition-colors focus:outline-none cursor-pointer"
         >
           {isOpen ? <X className="size-5" /> : <Menu className="size-5" />}
         </button>
       </div>
 
-      {/* Sidebar */}
-      <aside className={`w-64 min-h-screen bg-[#111827] flex flex-col fixed left-0 top-0 bottom-0 z-40 transform transition-transform duration-300 md:translate-x-0 ${
-        isOpen ? "translate-x-0" : "-translate-x-full"
-      }`}>
-        {/* Sidebar Header */}
-        <div className="px-6 py-5 border-b border-[#374151] flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-white">
-            Bokra<span className="text-[#a855f7]">Stay</span>
+      {/* Sidebar — always dark */}
+      <aside
+        className={`w-64 min-h-screen bg-[#080810] flex flex-col fixed left-0 top-0 bottom-0 z-40 transform transition-transform duration-300 md:translate-x-0 border-r border-white/[0.04] ${
+          isOpen ? "translate-x-0" : "-translate-x-full"
+        }`}
+      >
+        {/* Header */}
+        <div className="px-6 py-5 border-b border-white/[0.06] flex items-center justify-between">
+          <Link href="/" className="text-xl font-bold">
+            <span className="text-[#f8f6f0]">Bokra</span>
+            <span className="text-[#c9a84c]">Stay</span>
           </Link>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#7c3aed]/20 text-[#a855f7] border border-[#7c3aed]/30">
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-[#c9a84c]/10 text-[#c9a84c] border border-[#c9a84c]/20">
             Host
           </span>
         </div>
 
-        {/* Sidebar Nav Section Label */}
-        <div className="px-6 pt-6 pb-2 text-[10px] font-bold uppercase tracking-widest text-[#6b7280]">
+        {/* Nav label */}
+        <div className="px-6 pt-6 pb-2 text-[10px] font-bold uppercase tracking-widest text-[#5a5348]">
           Host menu
         </div>
 
-        {/* Navigation links */}
-        <nav className="flex-1 space-y-1">
+        {/* Nav links */}
+        <nav className="flex-1 space-y-0.5 px-3">
           {links.map((link) => {
             const Icon = link.icon;
-            const isActive = link.href === "/" ? pathname === "/" : (pathname === link.href || pathname.startsWith(link.href + "/"));
+            const isActive =
+              link.href === "/"
+                ? pathname === "/"
+                : pathname === link.href || pathname.startsWith(link.href + "/");
             return (
               <Link
                 key={link.name}
@@ -87,8 +94,8 @@ export default function HostSidebar({ isVerified, user }: HostSidebarProps) {
                 onClick={() => setIsOpen(false)}
                 className={
                   isActive
-                    ? "flex items-center gap-3 px-6 py-3 mx-3 rounded-xl text-sm font-semibold text-white bg-[#7c3aed] shadow-[0_4px_14px_0_rgb(124_58_237_/_0.3)]"
-                    : "flex items-center gap-3 px-6 py-3 mx-3 rounded-xl text-sm font-medium text-[#9ca3af] hover:text-white hover:bg-[#1f2937] transition-all duration-150 cursor-pointer"
+                    ? "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold text-[#0a0a0f] bg-[#c9a84c] shadow-[0_4px_20px_rgba(201,168,76,0.3)]"
+                    : "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-[#9b9080] hover:text-[#f8f6f0] hover:bg-white/[0.05] transition-all duration-150 cursor-pointer"
                 }
               >
                 <Icon className="w-4 h-4 shrink-0" />
@@ -98,31 +105,36 @@ export default function HostSidebar({ isVerified, user }: HostSidebarProps) {
           })}
         </nav>
 
-        {/* Sidebar footer */}
-        <div className="mt-auto px-4 py-4 border-t border-[#374151] flex items-center gap-3">
-          {avatarSrc ? (
-            <img
-              src={avatarSrc}
-              alt={user?.name || "User"}
-              className="w-9 h-9 rounded-full object-cover ring-2 ring-white/20 shrink-0"
-            />
-          ) : (
-            <div className="w-9 h-9 rounded-full bg-[#7c3aed] flex items-center justify-center text-white text-sm font-bold ring-2 ring-white/20 shrink-0">
-              {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || "U"}
+        {/* Footer */}
+        <div className="mt-auto px-4 py-4 border-t border-white/[0.06]">
+          <div className="flex items-center gap-3 mb-3">
+            {avatarSrc ? (
+              <img
+                src={avatarSrc}
+                alt={user?.name || "User"}
+                className="w-9 h-9 rounded-full object-cover ring-2 ring-white/10 shrink-0"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-[#c9a84c] flex items-center justify-center text-[#0a0a0f] text-sm font-bold ring-2 ring-white/10 shrink-0">
+                {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || "U"}
+              </div>
+            )}
+            <div className="flex flex-col min-w-0 flex-1">
+              <span className="text-xs font-semibold text-[#f8f6f0] truncate">{user?.name || "Host Portal"}</span>
+              <span className="text-[10px] text-[#5a5348] truncate">{user?.email || "host@bokrastay.com"}</span>
             </div>
-          )}
-          <div className="flex flex-col min-w-0 flex-1">
-            <span className="text-xs font-semibold text-white truncate">{user?.name || "Host Portal"}</span>
-            <span className="text-[10px] text-[#9ca3af] truncate">{user?.email || "host@bokrastay.com"}</span>
+          </div>
+          <div className="flex justify-end">
+            <ThemeToggle />
           </div>
         </div>
       </aside>
 
-      {/* Overlay on mobile */}
+      {/* Mobile overlay */}
       {isOpen && (
-        <div 
+        <div
           onClick={() => setIsOpen(false)}
-          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-xs md:hidden"
+          className="fixed inset-0 z-30 bg-black/60 backdrop-blur-sm md:hidden"
         />
       )}
     </>

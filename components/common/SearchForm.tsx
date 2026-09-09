@@ -75,8 +75,8 @@ export default function SearchForm() {
           onClick={() => { setShowAiSearch(!showAiSearch); setAiApplied(false); setAiError(""); }}
           className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 cursor-pointer ${
             showAiSearch
-              ? "bg-[#7c3aed] border-[#7c3aed] text-white shadow-md shadow-[#7c3aed]/20"
-              : "border-[#7c3aed]/30 text-[#7c3aed] hover:bg-[#7c3aed]/10"
+              ? "bg-[#b8943d] dark:bg-[#c9a84c] border-[#b8943d] dark:border-[#c9a84c] text-white shadow-md shadow-[#b8943d]/20"
+              : "border-[#b8943d]/30 dark:border-[#c9a84c]/30 text-[#b8943d] dark:text-[#c9a84c] hover:bg-[#b8943d]/10 dark:hover:bg-[#c9a84c]/10"
           }`}
         >
           <Wand2 className="w-3.5 h-3.5" />
@@ -86,8 +86,8 @@ export default function SearchForm() {
 
       {/* AI Search Box */}
       {showAiSearch && (
-        <div className="bg-[#7c3aed]/5 border border-[#7c3aed]/20 rounded-2xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center gap-2 text-[#7c3aed] text-xs font-bold">
+        <div className="bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-[#b8943d]/20 dark:border-[#c9a84c]/20 rounded-2xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center gap-2 text-[#b8943d] dark:text-[#c9a84c] text-xs font-bold">
             <Sparkles className="w-4 h-4" />
             <span>Describe what you&apos;re looking for in plain English</span>
           </div>
@@ -98,23 +98,23 @@ export default function SearchForm() {
               onChange={(e) => setAiQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAiSearch()}
               placeholder="e.g. A cozy 2-bedroom place in Hawassa under 3000 ETB with WiFi..."
-              className="flex-1 h-11 px-4 rounded-xl border border-[#e5e7eb] bg-white text-sm text-[#111827] focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/20 outline-none transition-all placeholder-[#6b7280]"
+              className="flex-1 h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm text-neutral-900 dark:text-white focus:border-[#b8943d] dark:focus:border-[#c9a84c] focus:ring-2 focus:ring-[#b8943d]/20 outline-none transition-all placeholder:text-neutral-400"
             />
             <button
               type="button"
               onClick={handleAiSearch}
               disabled={aiLoading || !aiQuery.trim()}
-              className="h-11 px-4 rounded-xl bg-[#7c3aed] hover:bg-[#5b21b6] text-white font-semibold flex items-center gap-1.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-md shadow-[#7c3aed]/15"
+              className="h-11 px-4 rounded-xl bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white font-semibold flex items-center gap-1.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-md shadow-[#b8943d]/15"
             >
               {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
               {aiLoading ? "Parsing..." : "Parse"}
             </button>
           </div>
           {aiError && (
-            <p className="text-xs text-red-600 font-medium px-1">{aiError}</p>
+            <p className="text-xs text-red-600 dark:text-red-400 font-medium px-1">{aiError}</p>
           )}
           {aiApplied && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-700 font-semibold">
+            <div className="flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 font-semibold">
               <span>✅ Filters applied from your AI query! Review below and click Search.</span>
             </div>
           )}
@@ -123,63 +123,63 @@ export default function SearchForm() {
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-4 md:p-3 rounded-2xl shadow-xl flex flex-col md:flex-row items-stretch md:items-center gap-3 border border-[#e5e7eb] text-[#111827]"
+        className="bg-white dark:bg-[#12121e] p-4 md:p-3 rounded-2xl shadow-xl flex flex-col md:flex-row items-stretch md:items-center gap-3 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white"
       >
         {/* Location */}
-        <div className="flex-1 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-[#e5e7eb]">
-          <MapPin className="w-5 h-5 text-[#7c3aed] shrink-0" />
+        <div className="flex-1 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-neutral-800">
+          <MapPin className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
           <div className="flex-1 text-left">
-            <label className="block text-[10px] font-bold text-[#6b7280] uppercase tracking-wider">Where</label>
+            <label className="block text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Where</label>
             <input
               type="text"
               placeholder="Addis Ababa, Hawassa..."
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder-[#6b7280] text-[#111827] outline-none"
+              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder:text-neutral-400 text-neutral-900 dark:text-white outline-none"
             />
           </div>
         </div>
 
         {/* Check In */}
-        <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-[#e5e7eb]">
-          <Calendar className="w-5 h-5 text-[#7c3aed] shrink-0" />
+        <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-neutral-800">
+          <Calendar className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
           <div className="flex-1 text-left">
-            <label className="block text-[10px] font-bold text-[#6b7280] uppercase tracking-wider">Check In</label>
+            <label className="block text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Check In</label>
             <input
               type="date"
               value={checkIn}
               onChange={(e) => setCheckIn(e.target.value)}
-              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-[#111827] outline-none"
+              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-neutral-900 dark:text-white outline-none"
             />
           </div>
         </div>
 
         {/* Check Out */}
-        <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-[#e5e7eb]">
-          <Calendar className="w-5 h-5 text-[#7c3aed] shrink-0" />
+        <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-neutral-800">
+          <Calendar className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
           <div className="flex-1 text-left">
-            <label className="block text-[10px] font-bold text-[#6b7280] uppercase tracking-wider">Check Out</label>
+            <label className="block text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Check Out</label>
             <input
               type="date"
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
-              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-[#111827] outline-none"
+              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-neutral-900 dark:text-white outline-none"
             />
           </div>
         </div>
 
         {/* Guests */}
         <div className="w-full md:w-32 flex items-center gap-2.5 px-3 py-2">
-          <Users className="w-5 h-5 text-[#7c3aed] shrink-0" />
+          <Users className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
           <div className="flex-1 text-left">
-            <label className="block text-[10px] font-bold text-[#6b7280] uppercase tracking-wider">Guests</label>
+            <label className="block text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Guests</label>
             <input
               type="number"
               placeholder="Guests"
               value={guests}
               onChange={(e) => setGuests(e.target.value)}
               min="1"
-              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder-[#6b7280] text-[#111827] outline-none"
+              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder:text-neutral-400 text-neutral-900 dark:text-white outline-none"
             />
           </div>
         </div>
@@ -191,8 +191,8 @@ export default function SearchForm() {
             onClick={() => setShowAdvanced(!showAdvanced)}
             className={`p-3 rounded-xl border transition-colors flex items-center justify-center cursor-pointer ${
               showAdvanced
-                ? "bg-[#7c3aed]/10 border-[#7c3aed]/30 text-[#7c3aed]"
-                : "border-[#e5e7eb] text-[#6b7280] hover:bg-[#f8fafc]"
+                ? "bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border-[#b8943d]/30 dark:border-[#c9a84c]/30 text-[#b8943d] dark:text-[#c9a84c]"
+                : "border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800"
             }`}
             title="Advanced Filters"
           >
@@ -201,7 +201,7 @@ export default function SearchForm() {
 
           <button
             type="submit"
-            className="flex-1 md:flex-none bg-[#7c3aed] hover:bg-[#5b21b6] active:bg-[#4c1d95] text-white font-semibold h-11 px-5 rounded-xl flex items-center justify-center gap-2 shadow-[0_4px_14px_0_rgb(124_58_237_/0.25)] transition-all cursor-pointer"
+            className="flex-1 md:flex-none bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white font-semibold h-11 px-5 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-[#b8943d]/15 transition-all cursor-pointer"
           >
             <Search className="w-4 h-4" />
             <span>Search</span>
@@ -211,41 +211,41 @@ export default function SearchForm() {
 
       {/* Advanced Filters Panel */}
       {showAdvanced && (
-        <div className="bg-white border border-[#e5e7eb] p-5 rounded-2xl shadow-xl grid grid-cols-1 sm:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2 duration-200 text-[#111827]">
+        <div className="bg-white dark:bg-[#12121e] border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-xl grid grid-cols-1 sm:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2 duration-200 text-neutral-900 dark:text-white">
           {/* Min Price */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">Min Price (ETB)</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Min Price (ETB)</label>
             <input
               type="number"
               placeholder="E.g. 1000"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/20 outline-none"
+              className="w-full h-10 px-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:border-[#b8943d] dark:focus:border-[#c9a84c] focus:ring-2 focus:ring-[#b8943d]/20 outline-none text-neutral-900 dark:text-white"
             />
           </div>
 
           {/* Max Price */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">Max Price (ETB)</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Max Price (ETB)</label>
             <input
               type="number"
               placeholder="E.g. 10000"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/20 outline-none"
+              className="w-full h-10 px-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:border-[#b8943d] dark:focus:border-[#c9a84c] focus:ring-2 focus:ring-[#b8943d]/20 outline-none text-neutral-900 dark:text-white"
             />
           </div>
 
           {/* Bedrooms */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-[#6b7280]">Bedrooms</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Bedrooms</label>
             <input
               type="number"
               placeholder="Any"
               value={bedrooms}
               onChange={(e) => setBedrooms(e.target.value)}
               min="0"
-              className="w-full h-10 px-3.5 rounded-xl border border-[#e5e7eb] bg-white text-sm focus:border-[#7c3aed] focus:ring-2 focus:ring-[#7c3aed]/20 outline-none"
+              className="w-full h-10 px-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:border-[#b8943d] dark:focus:border-[#c9a84c] focus:ring-2 focus:ring-[#b8943d]/20 outline-none text-neutral-900 dark:text-white"
             />
           </div>
         </div>

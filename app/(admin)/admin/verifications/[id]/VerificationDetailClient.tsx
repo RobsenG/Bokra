@@ -208,7 +208,7 @@ export default function VerificationDetailClient({
       } else {
         setBadgeSuccess(`Assigned "${finalBadge}" trust badge to host!`);
       }
-    } catch (err) {
+    } catch {
       setError("Failed to update trust badge.");
     } finally {
       setBadgeLoading(false);
@@ -222,17 +222,17 @@ export default function VerificationDetailClient({
   return (
     <div className="space-y-8 max-w-6xl mx-auto pb-12 font-sans">
       {/* TOP BAR */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-neutral-900 border border-neutral-100 dark:border-neutral-800 p-4 sm:px-6 rounded-2xl shadow-xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-[#12121a] border border-black/[0.08] dark:border-white/[0.06] p-4 sm:px-6 rounded-2xl shadow-xs">
         <div className="flex items-center gap-3">
           <Link
             href="/admin/verifications"
-            className="p-2 rounded-xl bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 transition-colors"
+            className="p-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-[#6b5e4e] dark:text-[#9b9080] transition-colors"
           >
             <ArrowLeft className="size-4" />
           </Link>
           <div>
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-extrabold text-neutral-800 dark:text-white line-clamp-1">
+              <h1 className="text-xl font-extrabold text-[#1a1208] dark:text-[#f8f6f0] line-clamp-1">
                 {property.title}
               </h1>
               <span
@@ -247,7 +247,7 @@ export default function VerificationDetailClient({
                 {status}
               </span>
             </div>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400">
+            <p className="text-xs text-[#6b5e4e] dark:text-[#9b9080]">
               Submitted on {new Date(property.createdAt).toLocaleDateString()}
             </p>
           </div>
@@ -265,7 +265,7 @@ export default function VerificationDetailClient({
           <button
             onClick={handleApprove}
             disabled={loading || status === "APPROVED"}
-            className="px-4 py-2 rounded-xl text-xs font-bold bg-[#7c3aed] hover:bg-[#6d28d9] text-white shadow-md shadow-[#7c3aed]/10 disabled:opacity-40 transition-colors cursor-pointer flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl text-xs font-bold bg-[#b8943d] dark:bg-[#c9a84c] hover:brightness-110 text-white dark:text-[#0a0a0f] shadow-xs disabled:opacity-40 transition-colors cursor-pointer flex items-center gap-1.5"
           >
             {loading ? (
               <Loader2 className="size-3.5 animate-spin" />
@@ -285,8 +285,8 @@ export default function VerificationDetailClient({
       )}
 
       {/* SECTION 1 — Property Overview */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-6">
-        <h2 className="font-bold text-neutral-800 dark:text-white text-base">
+      <div className="bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.06] p-6 shadow-xs space-y-6">
+        <h2 className="font-bold text-[#1a1208] dark:text-[#f8f6f0] text-base">
           Property Overview
         </h2>
 
@@ -296,7 +296,7 @@ export default function VerificationDetailClient({
             {property.images.slice(0, 4).map((img, idx) => (
               <div
                 key={idx}
-                className="h-44 rounded-xl overflow-hidden bg-neutral-100 dark:bg-neutral-800 border border-neutral-200/50 dark:border-neutral-800"
+                className="h-44 rounded-xl overflow-hidden bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/5"
               >
                 <img
                   src={img}
@@ -307,7 +307,7 @@ export default function VerificationDetailClient({
             ))}
           </div>
         ) : (
-          <div className="p-8 text-center bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-dashed border-neutral-200 dark:border-neutral-700 text-xs text-neutral-400">
+          <div className="p-8 text-center bg-[#f5f3ef] dark:bg-[#1a1a2e] rounded-xl border border-dashed border-black/10 dark:border-white/10 text-xs text-[#6b5e4e] dark:text-[#9b9080]">
             No images uploaded
           </div>
         )}
@@ -315,56 +315,56 @@ export default function VerificationDetailClient({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
           <div className="space-y-2 md:col-span-2">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#7c3aed]">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#b8943d] dark:text-[#c9a84c]">
                 Location
               </span>
-              <p className="text-sm font-bold text-neutral-800 dark:text-white">
+              <p className="text-sm font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                 {property.address}, {property.city}
               </p>
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6b5e4e] dark:text-[#9b9080]">
                 Description
               </span>
-              <p className="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed whitespace-pre-line mt-0.5">
+              <p className="text-xs text-[#6b5e4e] dark:text-[#9b9080] leading-relaxed whitespace-pre-line mt-0.5">
                 {property.description}
               </p>
             </div>
           </div>
 
-          <div className="bg-neutral-50 dark:bg-neutral-800/40 p-4 rounded-xl border border-neutral-100 dark:border-neutral-800 space-y-3">
+          <div className="bg-[#f5f3ef] dark:bg-[#1a1a2e] p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.06] space-y-3">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6b5e4e] dark:text-[#9b9080]">
                 Price / Night
               </span>
-              <p className="text-xl font-extrabold text-[#7c3aed] mt-0.5">
+              <p className="text-xl font-extrabold text-[#b8943d] dark:text-[#c9a84c] mt-0.5">
                 {property.pricePerNight.toLocaleString()} ETB
               </p>
             </div>
 
             <div className="grid grid-cols-3 gap-2 text-center pt-1">
-              <div className="bg-white dark:bg-neutral-900 p-2 rounded-lg border border-neutral-100 dark:border-neutral-800">
-                <p className="text-[10px] text-neutral-400">Bedrooms</p>
-                <p className="text-sm font-bold text-neutral-800 dark:text-white">
+              <div className="bg-white dark:bg-[#12121a] p-2 rounded-lg border border-black/[0.06] dark:border-white/[0.06]">
+                <p className="text-[10px] text-[#6b5e4e] dark:text-[#9b9080]">Bedrooms</p>
+                <p className="text-sm font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                   {property.bedrooms}
                 </p>
               </div>
-              <div className="bg-white dark:bg-neutral-900 p-2 rounded-lg border border-neutral-100 dark:border-neutral-800">
-                <p className="text-[10px] text-neutral-400">Bathrooms</p>
-                <p className="text-sm font-bold text-neutral-800 dark:text-white">
+              <div className="bg-white dark:bg-[#12121a] p-2 rounded-lg border border-black/[0.06] dark:border-white/[0.06]">
+                <p className="text-[10px] text-[#6b5e4e] dark:text-[#9b9080]">Bathrooms</p>
+                <p className="text-sm font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                   {property.bathrooms}
                 </p>
               </div>
-              <div className="bg-white dark:bg-neutral-900 p-2 rounded-lg border border-neutral-100 dark:border-neutral-800">
-                <p className="text-[10px] text-neutral-400">Max Guests</p>
-                <p className="text-sm font-bold text-neutral-800 dark:text-white">
+              <div className="bg-white dark:bg-[#12121a] p-2 rounded-lg border border-black/[0.06] dark:border-white/[0.06]">
+                <p className="text-[10px] text-[#6b5e4e] dark:text-[#9b9080]">Max Guests</p>
+                <p className="text-sm font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                   {property.maxGuests}
                 </p>
               </div>
             </div>
 
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#6b5e4e] dark:text-[#9b9080]">
                 Amenities
               </span>
               <div className="flex flex-wrap gap-1.5 mt-1">
@@ -372,13 +372,13 @@ export default function VerificationDetailClient({
                   property.amenities.map((a, i) => (
                     <span
                       key={i}
-                      className="text-[10px] font-medium bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 px-2 py-0.5 rounded-md text-neutral-700 dark:text-neutral-300"
+                      className="text-[10px] font-medium bg-white dark:bg-[#12121a] border border-black/[0.08] dark:border-white/[0.06] px-2 py-0.5 rounded-md text-[#1a1208] dark:text-[#f8f6f0]"
                     >
                       {a}
                     </span>
                   ))
                 ) : (
-                  <span className="text-[11px] text-neutral-400 italic">
+                  <span className="text-[11px] text-[#6b5e4e] dark:text-[#9b9080] italic">
                     None specified
                   </span>
                 )}
@@ -389,15 +389,15 @@ export default function VerificationDetailClient({
       </div>
 
       {/* SECTION 2 — Property Ownership Documents & Verification Guide */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-5">
-        <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-3">
+      <div className="bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.06] p-6 shadow-xs space-y-5">
+        <div className="flex items-center justify-between border-b border-black/[0.06] dark:border-white/[0.06] pb-3">
           <div className="flex items-center gap-2">
-            <FileText className="size-5 text-[#7c3aed]" />
-            <h2 className="font-bold text-neutral-800 dark:text-white text-base">
+            <FileText className="size-5 text-[#b8943d] dark:text-[#c9a84c]" />
+            <h2 className="font-bold text-[#1a1208] dark:text-[#f8f6f0] text-base">
               Property Ownership Documents
             </h2>
           </div>
-          <span className="text-xs font-bold text-[#7c3aed] bg-purple-50 dark:bg-purple-950/30 px-3 py-1 rounded-full border border-purple-200">
+          <span className="text-xs font-bold text-[#b8943d] dark:text-[#c9a84c] bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 px-3 py-1 rounded-full border border-[#b8943d]/20 dark:border-[#c9a84c]/20">
             {ownershipDocs.length}{" "}
             {ownershipDocs.length === 1 ? "document" : "documents"} uploaded
           </span>
@@ -430,17 +430,17 @@ export default function VerificationDetailClient({
             {ownershipDocs.map((doc) => (
               <div
                 key={doc.id}
-                className="bg-neutral-50 dark:bg-neutral-800/40 p-4 rounded-xl border border-neutral-100 dark:border-neutral-800 space-y-3"
+                className="bg-[#f5f3ef] dark:bg-[#1a1a2e] p-4 rounded-xl border border-black/[0.06] dark:border-white/[0.06] space-y-3"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-neutral-800 dark:text-white">
+                  <span className="font-bold text-xs text-[#1a1208] dark:text-[#f8f6f0]">
                     {doc.type.replace(/_/g, " ")}
                   </span>
                   <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
                     AI Pre-check: APPROVED
                   </span>
                 </div>
-                <div className="text-[11px] text-neutral-500 space-y-0.5">
+                <div className="text-[11px] text-[#6b5e4e] dark:text-[#9b9080] space-y-0.5">
                   <p>Uploaded: {new Date(doc.uploadedAt).toLocaleDateString()}</p>
                 </div>
                 <DocumentLink
@@ -462,10 +462,10 @@ export default function VerificationDetailClient({
       </div>
 
       {/* SECTION 3 — Assign Host Trust Level & Performance Summary */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-6">
-        <div className="flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800 pb-3">
-          <Award className="size-5 text-[#7c3aed]" />
-          <h2 className="font-bold text-neutral-800 dark:text-white text-base">
+      <div className="bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.06] p-6 shadow-xs space-y-6">
+        <div className="flex items-center gap-2 border-b border-black/[0.06] dark:border-white/[0.06] pb-3">
+          <Award className="size-5 text-[#b8943d] dark:text-[#c9a84c]" />
+          <h2 className="font-bold text-[#1a1208] dark:text-[#f8f6f0] text-base">
             Host Trust Level
           </h2>
         </div>
@@ -474,20 +474,20 @@ export default function VerificationDetailClient({
           {/* Left: Assign Badge Form */}
           <form onSubmit={handleAssignBadge} className="space-y-4">
             {badgeSuccess && (
-              <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold rounded-xl flex items-center gap-2">
+              <div className="p-3 bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/40 text-emerald-700 dark:text-emerald-400 text-xs font-bold rounded-xl flex items-center gap-2">
                 <Check className="size-4 shrink-0" />
                 <span>{badgeSuccess}</span>
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#6b5e4e] dark:text-[#9b9080] mb-1">
                 Badge Name
               </label>
               <select
                 value={badgeSelect}
                 onChange={(e) => setBadgeSelect(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-xs font-medium text-neutral-800 dark:text-neutral-100 focus:border-[#7c3aed] outline-none"
+                className="w-full h-10 px-3 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#0a0a0f] text-xs font-medium text-[#1a1208] dark:text-[#f8f6f0] focus:border-[#b8943d] dark:focus:border-[#c9a84c] outline-none"
               >
                 <option value="Verified Host">Verified Host (Default)</option>
                 <option value="Top Host">Top Host (4.5+ Rating &amp; 5+ Bookings)</option>
@@ -499,7 +499,7 @@ export default function VerificationDetailClient({
 
             {badgeSelect === "Custom" && (
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1">
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#6b5e4e] dark:text-[#9b9080] mb-1">
                   Custom Badge Title
                 </label>
                 <input
@@ -508,13 +508,13 @@ export default function VerificationDetailClient({
                   onChange={(e) => setCustomBadge(e.target.value)}
                   placeholder="e.g. Super Host"
                   required
-                  className="w-full h-10 px-3 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-xs text-neutral-800 dark:text-neutral-100 outline-none"
+                  className="w-full h-10 px-3 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#0a0a0f] text-xs text-[#1a1208] dark:text-[#f8f6f0] outline-none"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#6b5e4e] dark:text-[#9b9080] mb-1">
                 Admin Display Name
               </label>
               <input
@@ -522,14 +522,14 @@ export default function VerificationDetailClient({
                 value={adminDisplayName}
                 onChange={(e) => setAdminDisplayName(e.target.value)}
                 placeholder="e.g. Certified by Bokra Stay Team"
-                className="w-full h-10 px-3 rounded-xl border border-neutral-200 dark:border-neutral-750 bg-transparent text-xs text-neutral-800 dark:text-neutral-100 outline-none"
+                className="w-full h-10 px-3 rounded-xl border border-black/10 dark:border-white/10 bg-white dark:bg-[#0a0a0f] text-xs text-[#1a1208] dark:text-[#f8f6f0] outline-none"
               />
             </div>
 
             <button
               type="submit"
               disabled={badgeLoading}
-              className="px-5 py-2.5 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-2"
+              className="px-5 py-2.5 bg-[#b8943d] dark:bg-[#c9a84c] hover:brightness-110 text-white dark:text-[#0a0a0f] font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-2"
             >
               {badgeLoading ? (
                 <Loader2 className="size-3.5 animate-spin" />
@@ -541,57 +541,57 @@ export default function VerificationDetailClient({
           </form>
 
           {/* Right: Host Performance Summary */}
-          <div className="bg-neutral-50 dark:bg-neutral-800/40 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-5 space-y-3">
-            <h3 className="font-bold text-xs text-neutral-700 dark:text-neutral-300 uppercase tracking-wider border-b border-neutral-200/60 dark:border-neutral-800 pb-2">
+          <div className="bg-[#f5f3ef] dark:bg-[#1a1a2e] rounded-2xl border border-black/[0.06] dark:border-white/[0.06] p-5 space-y-3">
+            <h3 className="font-bold text-xs text-[#6b5e4e] dark:text-[#9b9080] uppercase tracking-wider border-b border-black/[0.06] dark:border-white/[0.06] pb-2">
               Host Performance Summary
             </h3>
 
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div>
-                <span className="text-neutral-400">Properties Listed:</span>
-                <p className="font-bold text-neutral-800 dark:text-white">
+                <span className="text-[#6b5e4e] dark:text-[#9b9080]">Properties Listed:</span>
+                <p className="font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                   {property.host._count.properties}
                 </p>
               </div>
               <div>
-                <span className="text-neutral-400">Total Bookings:</span>
-                <p className="font-bold text-neutral-800 dark:text-white">
+                <span className="text-[#6b5e4e] dark:text-[#9b9080]">Total Bookings:</span>
+                <p className="font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                   {property.host._count.bookings}
                 </p>
               </div>
               <div>
-                <span className="text-neutral-400">Confirmed Bookings:</span>
-                <p className="font-bold text-neutral-800 dark:text-white">
+                <span className="text-[#6b5e4e] dark:text-[#9b9080]">Confirmed Bookings:</span>
+                <p className="font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                   {property.host.confirmedBookings}
                 </p>
               </div>
               <div>
-                <span className="text-neutral-400">Average Rating:</span>
+                <span className="text-[#6b5e4e] dark:text-[#9b9080]">Average Rating:</span>
                 <p className="font-bold text-amber-500 flex items-center gap-1">
                   <span>{property.host.avgRating}</span>
                   <Star className="size-3 fill-amber-500" />
                 </p>
               </div>
               <div>
-                <span className="text-neutral-400">Total Reviews:</span>
-                <p className="font-bold text-neutral-800 dark:text-white">
+                <span className="text-[#6b5e4e] dark:text-[#9b9080]">Total Reviews:</span>
+                <p className="font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                   {property.host._count.reviews}
                 </p>
               </div>
               <div>
-                <span className="text-neutral-400">Member Since:</span>
-                <p className="font-bold text-neutral-800 dark:text-white">
+                <span className="text-[#6b5e4e] dark:text-[#9b9080]">Member Since:</span>
+                <p className="font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                   {new Date(property.host.createdAt).toLocaleDateString()}
                 </p>
               </div>
               <div>
-                <span className="text-neutral-400">Identity Verified:</span>
+                <span className="text-[#6b5e4e] dark:text-[#9b9080]">Identity Verified:</span>
                 <p className="font-bold text-emerald-600 dark:text-emerald-400">
                   {property.host.isVerified ? "✅ Yes" : "❌ No"}
                 </p>
               </div>
               <div>
-                <span className="text-neutral-400">Terms Accepted:</span>
+                <span className="text-[#6b5e4e] dark:text-[#9b9080]">Terms Accepted:</span>
                 <p className="font-bold text-emerald-600 dark:text-emerald-400">
                   {property.host.termsAcceptedAt ? "✅ Yes" : "❌ No"}
                 </p>
@@ -602,10 +602,10 @@ export default function VerificationDetailClient({
       </div>
 
       {/* SECTION 4 — Host Identity & Verification Card */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-4">
-        <div className="flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-800 pb-3">
-          <UserCheck className="size-5 text-[#7c3aed]" />
-          <h2 className="font-bold text-neutral-800 dark:text-white text-base">
+      <div className="bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.06] p-6 shadow-xs space-y-4">
+        <div className="flex items-center gap-2 border-b border-black/[0.06] dark:border-white/[0.06] pb-3">
+          <UserCheck className="size-5 text-[#b8943d] dark:text-[#c9a84c]" />
+          <h2 className="font-bold text-[#1a1208] dark:text-[#f8f6f0] text-base">
             Host Identity Details &amp; Documents
           </h2>
         </div>
@@ -613,27 +613,27 @@ export default function VerificationDetailClient({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
           <div className="space-y-3">
             <div className="flex justify-between py-1">
-              <span className="text-neutral-500">Host Name</span>
-              <span className="font-bold text-neutral-800 dark:text-white">
+              <span className="text-[#6b5e4e] dark:text-[#9b9080]">Host Name</span>
+              <span className="font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                 {property.host.name || "N/A"}
               </span>
             </div>
             <div className="flex justify-between py-1">
-              <span className="text-neutral-500">Email</span>
-              <span className="font-medium text-neutral-800 dark:text-white">
+              <span className="text-[#6b5e4e] dark:text-[#9b9080]">Email</span>
+              <span className="font-medium text-[#1a1208] dark:text-[#f8f6f0]">
                 {property.host.email}
               </span>
             </div>
             <div className="flex justify-between py-1">
-              <span className="text-neutral-500">Phone</span>
-              <span className="font-medium text-neutral-800 dark:text-white">
+              <span className="text-[#6b5e4e] dark:text-[#9b9080]">Phone</span>
+              <span className="font-medium text-[#1a1208] dark:text-[#f8f6f0]">
                 {property.host.phone || "Not provided"}
               </span>
             </div>
 
             {/* Identity Documents Listing */}
             <div className="pt-2 space-y-2">
-              <span className="font-bold text-neutral-700 dark:text-neutral-300 block">
+              <span className="font-bold text-[#1a1208] dark:text-[#f8f6f0] block">
                 Identity Documents
               </span>
               {property.host.documents.length > 0 ? (
@@ -649,7 +649,7 @@ export default function VerificationDetailClient({
                   ))}
                 </div>
               ) : (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-amber-700 text-sm font-medium">
+                <div className="bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/40 rounded-xl p-4 text-amber-700 dark:text-amber-400 text-sm font-medium">
                   ⚠️ This host has not uploaded any identity documents yet.
                 </div>
               )}
@@ -657,7 +657,7 @@ export default function VerificationDetailClient({
           </div>
 
           <div className="space-y-2">
-            <span className="font-bold text-neutral-700 dark:text-neutral-300 block">
+            <span className="font-bold text-[#1a1208] dark:text-[#f8f6f0] block">
               Live Selfie Verification
             </span>
             {property.host.selfieUrl && property.host.selfieUrl.startsWith("https://") ? (
@@ -665,9 +665,9 @@ export default function VerificationDetailClient({
                 <img
                   src={property.host.selfieUrl}
                   alt="Host selfie"
-                  className="w-32 h-32 rounded-2xl object-cover border-2 border-[#7c3aed]/20 shadow-md"
+                  className="w-32 h-32 rounded-2xl object-cover border-2 border-[#b8943d]/30 dark:border-[#c9a84c]/30 shadow-md"
                 />
-                <p className="text-[10px] text-neutral-400">
+                <p className="text-[10px] text-[#6b5e4e] dark:text-[#9b9080]">
                   Verified at:{" "}
                   {property.host.selfieVerifiedAt
                     ? new Date(property.host.selfieVerifiedAt).toLocaleDateString()
@@ -675,7 +675,7 @@ export default function VerificationDetailClient({
                 </p>
               </div>
             ) : (
-              <div className="w-32 h-32 rounded-2xl bg-amber-50 border-2 border-amber-200 flex items-center justify-center text-amber-600 text-xs text-center p-2 font-medium">
+              <div className="w-32 h-32 rounded-2xl bg-amber-50 dark:bg-amber-950/20 border-2 border-amber-200 dark:border-amber-900/40 flex items-center justify-center text-amber-600 dark:text-amber-400 text-xs text-center p-2 font-medium">
                 ⚠️ No selfie captured yet
               </div>
             )}
@@ -684,19 +684,19 @@ export default function VerificationDetailClient({
       </div>
 
       {/* SECTION 5 — Host Activity History Tabs */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-4">
-        <h2 className="font-bold text-neutral-800 dark:text-white text-base">
+      <div className="bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.06] p-6 shadow-xs space-y-4">
+        <h2 className="font-bold text-[#1a1208] dark:text-[#f8f6f0] text-base">
           Host Activity History
         </h2>
 
         {/* Tab Buttons */}
-        <div className="flex border-b border-neutral-100 dark:border-neutral-800 gap-6">
+        <div className="flex border-b border-black/[0.06] dark:border-white/[0.06] gap-6">
           <button
             onClick={() => setActiveTab("properties")}
             className={`pb-2.5 text-xs font-bold transition-colors border-b-2 cursor-pointer ${
               activeTab === "properties"
-                ? "border-[#7c3aed] text-[#7c3aed]"
-                : "border-transparent text-neutral-400 hover:text-neutral-600"
+                ? "border-[#b8943d] dark:border-[#c9a84c] text-[#b8943d] dark:text-[#c9a84c]"
+                : "border-transparent text-[#6b5e4e] dark:text-[#9b9080] hover:text-[#1a1208] dark:hover:text-[#f8f6f0]"
             }`}
           >
             All Host Properties ({property.host.properties.length})
@@ -705,8 +705,8 @@ export default function VerificationDetailClient({
             onClick={() => setActiveTab("bookings")}
             className={`pb-2.5 text-xs font-bold transition-colors border-b-2 cursor-pointer ${
               activeTab === "bookings"
-                ? "border-[#7c3aed] text-[#7c3aed]"
-                : "border-transparent text-neutral-400 hover:text-neutral-600"
+                ? "border-[#b8943d] dark:border-[#c9a84c] text-[#b8943d] dark:text-[#c9a84c]"
+                : "border-transparent text-[#6b5e4e] dark:text-[#9b9080] hover:text-[#1a1208] dark:hover:text-[#f8f6f0]"
             }`}
           >
             Booking History ({property.bookings.length})
@@ -715,8 +715,8 @@ export default function VerificationDetailClient({
             onClick={() => setActiveTab("reviews")}
             className={`pb-2.5 text-xs font-bold transition-colors border-b-2 cursor-pointer ${
               activeTab === "reviews"
-                ? "border-[#7c3aed] text-[#7c3aed]"
-                : "border-transparent text-neutral-400 hover:text-neutral-600"
+                ? "border-[#b8943d] dark:border-[#c9a84c] text-[#b8943d] dark:text-[#c9a84c]"
+                : "border-transparent text-[#6b5e4e] dark:text-[#9b9080] hover:text-[#1a1208] dark:hover:text-[#f8f6f0]"
             }`}
           >
             Reviews ({property.reviews.length})
@@ -727,7 +727,7 @@ export default function VerificationDetailClient({
         {activeTab === "properties" && (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-neutral-50 dark:bg-neutral-800/50 text-neutral-400 uppercase font-bold text-[10px]">
+              <thead className="bg-[#f5f3ef] dark:bg-[#1a1a2e] text-[#6b5e4e] dark:text-[#9b9080] uppercase font-bold text-[10px]">
                 <tr>
                   <th className="p-3">Title</th>
                   <th className="p-3">Status</th>
@@ -736,13 +736,13 @@ export default function VerificationDetailClient({
                   <th className="p-3">Listed Date</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <tbody className="divide-y divide-black/[0.06] dark:divide-white/[0.06]">
                 {property.host.properties.map((p) => (
                   <tr
                     key={p.id}
-                    className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30"
+                    className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
                   >
-                    <td className="p-3 font-semibold text-neutral-800 dark:text-white">
+                    <td className="p-3 font-semibold text-[#1a1208] dark:text-[#f8f6f0]">
                       {p.title}
                     </td>
                     <td className="p-3">
@@ -756,9 +756,9 @@ export default function VerificationDetailClient({
                         {p.status}
                       </span>
                     </td>
-                    <td className="p-3">{p._count.bookings}</td>
-                    <td className="p-3">{p._count.reviews}</td>
-                    <td className="p-3 text-neutral-400">
+                    <td className="p-3 text-[#1a1208] dark:text-[#f8f6f0]">{p._count.bookings}</td>
+                    <td className="p-3 text-[#1a1208] dark:text-[#f8f6f0]">{p._count.reviews}</td>
+                    <td className="p-3 text-[#6b5e4e] dark:text-[#9b9080]">
                       {new Date(p.createdAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -772,7 +772,7 @@ export default function VerificationDetailClient({
         {activeTab === "bookings" && (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-neutral-50 dark:bg-neutral-800/50 text-neutral-400 uppercase font-bold text-[10px]">
+              <thead className="bg-[#f5f3ef] dark:bg-[#1a1a2e] text-[#6b5e4e] dark:text-[#9b9080] uppercase font-bold text-[10px]">
                 <tr>
                   <th className="p-3">Renter</th>
                   <th className="p-3">Dates</th>
@@ -781,20 +781,20 @@ export default function VerificationDetailClient({
                   <th className="p-3">Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-100 dark:divide-neutral-800">
+              <tbody className="divide-y divide-black/[0.06] dark:divide-white/[0.06]">
                 {property.bookings.map((b) => (
                   <tr
                     key={b.id}
-                    className="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/30"
+                    className="hover:bg-black/[0.02] dark:hover:bg-white/[0.02]"
                   >
-                    <td className="p-3 font-semibold">
+                    <td className="p-3 font-semibold text-[#1a1208] dark:text-[#f8f6f0]">
                       {b.renter.name || b.renter.email}
                     </td>
-                    <td className="p-3 text-neutral-500">
+                    <td className="p-3 text-[#6b5e4e] dark:text-[#9b9080]">
                       {new Date(b.checkIn).toLocaleDateString()} →{" "}
                       {new Date(b.checkOut).toLocaleDateString()}
                     </td>
-                    <td className="p-3 font-bold text-[#7c3aed]">
+                    <td className="p-3 font-bold text-[#b8943d] dark:text-[#c9a84c]">
                       {b.totalPrice.toLocaleString()} ETB
                     </td>
                     <td className="p-3">
@@ -802,13 +802,13 @@ export default function VerificationDetailClient({
                         className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                           b.payment?.status === "SUCCESS"
                             ? "bg-emerald-50 text-emerald-700"
-                            : "bg-neutral-100 text-neutral-600"
+                            : "bg-black/5 dark:bg-white/5 text-[#6b5e4e] dark:text-[#9b9080]"
                         }`}
                       >
                         {b.payment?.status || "UNPAID"}
                       </span>
                     </td>
-                    <td className="p-3 font-bold">{b.status}</td>
+                    <td className="p-3 font-bold text-[#1a1208] dark:text-[#f8f6f0]">{b.status}</td>
                   </tr>
                 ))}
               </tbody>
@@ -823,10 +823,10 @@ export default function VerificationDetailClient({
               property.reviews.map((r) => (
                 <div
                   key={r.id}
-                  className="p-3.5 bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-neutral-100 dark:border-neutral-800 space-y-1 text-xs"
+                  className="p-3.5 bg-[#f5f3ef] dark:bg-[#1a1a2e] rounded-xl border border-black/[0.06] dark:border-white/[0.06] space-y-1 text-xs"
                 >
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-neutral-800 dark:text-white">
+                    <span className="font-bold text-[#1a1208] dark:text-[#f8f6f0]">
                       {r.renter.name || "Anonymous Guest"}
                     </span>
                     <div className="flex items-center gap-1 text-amber-500 font-bold">
@@ -834,16 +834,16 @@ export default function VerificationDetailClient({
                       <span>{r.rating} / 5</span>
                     </div>
                   </div>
-                  <p className="text-neutral-600 dark:text-neutral-300 italic">
+                  <p className="text-[#6b5e4e] dark:text-[#9b9080] italic">
                     &quot;{r.comment}&quot;
                   </p>
-                  <p className="text-[10px] text-neutral-400">
+                  <p className="text-[10px] text-[#6b5e4e] dark:text-[#9b9080]">
                     {new Date(r.createdAt).toLocaleDateString()}
                   </p>
                 </div>
               ))
             ) : (
-              <p className="text-xs text-neutral-400 italic">
+              <p className="text-xs text-[#6b5e4e] dark:text-[#9b9080] italic">
                 No reviews received yet
               </p>
             )}
@@ -852,15 +852,15 @@ export default function VerificationDetailClient({
       </div>
 
       {/* SECTION 6 — Verification Decision Card */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-4">
-        <h2 className="font-bold text-neutral-800 dark:text-white text-base">
+      <div className="bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.06] p-6 shadow-xs space-y-4">
+        <h2 className="font-bold text-[#1a1208] dark:text-[#f8f6f0] text-base">
           Verification Decision
         </h2>
 
         {status === "APPROVED" && (
           <div className="p-4 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/40 rounded-xl flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <CheckCircle2 className="size-6 text-emerald-600" />
+              <CheckCircle2 className="size-6 text-emerald-600 dark:text-emerald-400" />
               <div>
                 <p className="font-bold text-emerald-800 dark:text-emerald-300 text-sm">
                   ✅ Listing Currently Approved &amp; Published
@@ -883,7 +883,7 @@ export default function VerificationDetailClient({
           <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-xl space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <XCircle className="size-6 text-red-600" />
+                <XCircle className="size-6 text-red-600 dark:text-red-400" />
                 <div>
                   <p className="font-bold text-red-800 dark:text-red-300 text-sm">
                     ✗ Listing Rejected
@@ -898,7 +898,7 @@ export default function VerificationDetailClient({
               <button
                 onClick={handleApprove}
                 disabled={loading}
-                className="px-4 py-2 bg-[#7c3aed] hover:bg-[#6d28d9] text-white font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
+                className="px-4 py-2 bg-[#b8943d] dark:bg-[#c9a84c] hover:brightness-110 text-white dark:text-[#0a0a0f] font-bold text-xs rounded-xl shadow-xs transition-colors cursor-pointer"
               >
                 {loading ? "Re-approving..." : "Re-approve Listing"}
               </button>
@@ -920,7 +920,7 @@ export default function VerificationDetailClient({
                   <button
                     type="button"
                     onClick={() => setShowRejectForm(false)}
-                    className="text-xs text-neutral-400 hover:text-neutral-600 cursor-pointer"
+                    className="text-xs text-[#6b5e4e] dark:text-[#9b9080] hover:text-[#1a1208] dark:hover:text-[#f8f6f0] cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -931,13 +931,13 @@ export default function VerificationDetailClient({
                   onChange={(e) => setReasonInput(e.target.value)}
                   placeholder="e.g. The uploaded house registration proof is illegible. Please re-upload a clear copy."
                   required
-                  className="w-full p-3 rounded-xl border border-red-200 dark:border-red-900/40 bg-white dark:bg-neutral-900 text-xs outline-none focus:ring-2 focus:ring-red-500/20"
+                  className="w-full p-3 rounded-xl border border-red-200 dark:border-red-900/40 bg-white dark:bg-[#0a0a0f] text-xs text-[#1a1208] dark:text-[#f8f6f0] outline-none focus:ring-2 focus:ring-red-500/20"
                 />
                 <div className="flex gap-2">
                   <button
                     type="button"
                     onClick={() => setShowRejectForm(false)}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300"
+                    className="px-4 py-2 rounded-xl text-xs font-semibold border border-black/10 dark:border-white/10 text-[#6b5e4e] dark:text-[#9b9080]"
                   >
                     Cancel
                   </button>
@@ -955,14 +955,14 @@ export default function VerificationDetailClient({
                 <button
                   onClick={() => setShowRejectForm(true)}
                   disabled={loading}
-                  className="flex-1 py-3 rounded-xl border border-red-200 text-red-600 font-bold text-xs hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
+                  className="flex-1 py-3 rounded-xl border border-red-200 dark:border-red-900/40 text-red-600 dark:text-red-400 font-bold text-xs hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
                 >
                   ✗ Reject Property
                 </button>
                 <button
                   onClick={handleApprove}
                   disabled={loading}
-                  className="flex-1 py-3 rounded-xl bg-[#7c3aed] text-white font-bold text-xs hover:bg-[#6d28d9] shadow-md shadow-[#7c3aed]/10 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                  className="flex-1 py-3 rounded-xl bg-[#b8943d] dark:bg-[#c9a84c] text-white dark:text-[#0a0a0f] font-bold text-xs hover:brightness-110 shadow-xs transition-colors cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   {loading ? (
                     <Loader2 className="size-4 animate-spin" />

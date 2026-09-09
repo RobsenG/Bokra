@@ -4,7 +4,6 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { signIn } from "next-auth/react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, Suspense } from "react";
@@ -25,7 +24,11 @@ function LoginForm() {
   const registered = searchParams.get("registered") === "true";
   const message = searchParams.get("message");
 
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<LoginFormValues>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
   });
 
@@ -47,111 +50,104 @@ function LoginForm() {
       const session = await sessionRes.json();
       const role = session?.user?.role;
 
-      if (role === "HOST") {
-        router.push("/host/dashboard");
-      } else if (role === "ADMIN") {
-        router.push("/admin/dashboard");
-      } else {
-        router.push("/renter/bookings");
-      }
+      if (role === "HOST") router.push("/host/dashboard");
+      else if (role === "ADMIN") router.push("/admin/dashboard");
+      else router.push("/renter/bookings");
       router.refresh();
-    } catch (err) {
+    } catch {
       setError("Something went wrong. Please try again.");
     }
   };
 
   return (
-    <Card className="w-full border-[#e5e7eb] shadow-[0_1px_3px_0_rgb(0_0_0_/_0.08)] bg-white rounded-2xl p-2 sm:p-4">
-      <CardHeader className="space-y-2 text-center pb-6">
-        <CardTitle className="text-3xl font-extrabold tracking-tight text-[#111827]">
+    <div className="w-full bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-6 sm:p-8 space-y-6">
+      {/* Header */}
+      <div className="text-center space-y-2">
+        <h1 className="text-3xl font-extrabold tracking-tight text-[#1a1208] dark:text-[#f8f6f0]">
           Welcome back
-        </CardTitle>
-        <CardDescription className="text-[#6b7280]">
+        </h1>
+        <p className="text-[#9b8e7e] dark:text-[#5a5348] text-sm">
           Sign in to your account to continue
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* Success banner after registration (keeping green for success toast/banner) */}
-        {registered && (
-          <div className="flex items-center gap-2.5 p-3 text-sm text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl">
-            <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600" />
-            <span>You&apos;re all set! Sign in to get started</span>
-          </div>
-        )}
+        </p>
+      </div>
 
-        {/* Info banner */}
-        {message && !registered && (
-          <div className="flex items-center gap-2.5 p-3 text-sm text-[#7c3aed] bg-[#7c3aed]/10 border border-[#7c3aed]/20 rounded-xl">
-            <Info className="w-4 h-4 shrink-0 text-[#7c3aed]" />
-            <span>{decodeURIComponent(message)}</span>
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {error && (
-            <div className="flex items-center gap-2.5 p-3 text-sm text-red-800 bg-red-50 border border-red-200 rounded-xl">
-              <AlertCircle className="w-4 h-4 shrink-0 text-red-600" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <div className="space-y-1.5">
-            <label htmlFor="email" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
-              Email
-            </label>
-            <input
-              id="email"
-              type="email"
-              placeholder="your@email.com"
-              className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200"
-              {...register("email")}
-            />
-            {errors.email && (
-              <p className="text-xs font-medium text-red-500">{errors.email.message}</p>
-            )}
-          </div>
-
-          <div className="space-y-1.5">
-            <label htmlFor="password" className="block text-xs font-semibold uppercase tracking-wider text-[#6b7280]">
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              className="w-full px-4 py-2.5 rounded-xl border border-[#e5e7eb] text-sm text-[#111827] bg-white focus:outline-none focus:ring-2 focus:ring-[#7c3aed]/20 focus:border-[#7c3aed] transition-all duration-200"
-              {...register("password")}
-            />
-            {errors.password && (
-              <p className="text-xs font-medium text-red-500">{errors.password.message}</p>
-            )}
-          </div>
-
-          <button
-            type="submit"
-            className="w-full bg-[#7c3aed] hover:bg-[#5b21b6] active:bg-[#4c1d95] text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-[0_4px_14px_0_rgb(124_58_237_/0.25)] hover:shadow-[0_6px_20px_0_rgb(124_58_237/_0.35)] transition-all duration-200 disabled:opacity-50 mt-6 cursor-pointer flex items-center justify-center gap-2"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin text-white" />
-                Signing you in...
-              </>
-            ) : (
-              "Sign in"
-            )}
-          </button>
-        </form>
-      </CardContent>
-      <CardFooter className="flex flex-col items-center justify-center space-y-4 pt-4 border-t border-[#e5e7eb]">
-        <div className="text-sm text-[#6b7280]">
-          New to Bokra Stay?{" "}
-          <Link href="/register" className="text-[#7c3aed] hover:text-[#5b21b6] font-semibold hover:underline">
-            Create account
-          </Link>
+      {/* Banners */}
+      {registered && (
+        <div className="flex items-center gap-2.5 p-3 text-sm text-emerald-800 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/[0.05] border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+          <span>You&apos;re all set! Sign in to get started</span>
         </div>
-      </CardFooter>
-    </Card>
+      )}
+
+      {message && !registered && (
+        <div className="flex items-center gap-2.5 p-3 text-sm text-[#b8943d] dark:text-[#c9a84c] bg-[#b8943d]/[0.08] dark:bg-[#c9a84c]/[0.08] border border-[#b8943d]/20 dark:border-[#c9a84c]/20 rounded-xl">
+          <Info className="w-4 h-4 shrink-0" />
+          <span>{decodeURIComponent(message)}</span>
+        </div>
+      )}
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        {error && (
+          <div className="flex items-center gap-2.5 p-3 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/[0.05] border border-red-200 dark:border-red-500/15 rounded-xl">
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-600 dark:text-red-400" />
+            <span>{error}</span>
+          </div>
+        )}
+
+        <div className="space-y-1.5">
+          <label htmlFor="email" className="label">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="your@email.com"
+            className="input"
+            {...register("email")}
+          />
+          {errors.email && (
+            <p className="text-xs font-medium text-red-500">{errors.email.message}</p>
+          )}
+        </div>
+
+        <div className="space-y-1.5">
+          <label htmlFor="password" className="label">Password</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="••••••••"
+            className="input"
+            {...register("password")}
+          />
+          {errors.password && (
+            <p className="text-xs font-medium text-red-500">{errors.password.message}</p>
+          )}
+        </div>
+
+        <button
+          type="submit"
+          className="btn-primary w-full mt-2 cursor-pointer"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin" />
+              Signing you in...
+            </>
+          ) : (
+            "Sign in"
+          )}
+        </button>
+      </form>
+
+      <div className="pt-4 border-t border-black/[0.06] dark:border-white/[0.06] text-center text-sm text-[#9b8e7e] dark:text-[#5a5348]">
+        New to Bokra Stay?{" "}
+        <Link
+          href="/register"
+          className="text-[#b8943d] dark:text-[#c9a84c] hover:text-[#8a6e2a] dark:hover:text-[#e8c96d] font-semibold hover:underline"
+        >
+          Create account
+        </Link>
+      </div>
+    </div>
   );
 }
 

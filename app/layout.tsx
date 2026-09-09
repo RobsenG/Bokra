@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import AIChatbot from "@/components/common/AIChatbot";
+import { ThemeProvider } from "@/components/common/ThemeProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -24,18 +25,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased">
+    <html lang="en" className="h-full antialiased dark">
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap"
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-full flex flex-col bg-white text-[#111827] font-sans">
-        {children}
-        <AIChatbot />
+      <body className="min-h-full flex flex-col bg-[#faf9f7] dark:bg-[#0a0a0f] text-[#1a1208] dark:text-[#f8f6f0] font-sans transition-colors duration-300">
+        <ThemeProvider>
+          {children}
+          <AIChatbot />
+        </ThemeProvider>
       </body>
     </html>
   );
