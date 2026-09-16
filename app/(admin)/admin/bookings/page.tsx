@@ -30,10 +30,10 @@ export default async function AdminBookingsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">
+        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-[#f5f0e8] tracking-tight">
           Bookings
         </h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+        <p className="text-sm text-neutral-500 dark:text-[#8a8278] mt-0.5">
           View all platform bookings.
         </p>
       </div>

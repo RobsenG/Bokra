@@ -57,7 +57,7 @@ export default function AdminNotificationsPanel({
   if (notifications.length === 0) return null;
 
   return (
-    <div className="bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-[#b8943d]/20 dark:border-[#c9a84c]/20 rounded-2xl p-5 space-y-3.5 shadow-xs font-sans">
+    <div className="bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-[#b8943d]/20 dark:border-[#c9a84c]/18 rounded-2xl p-5 space-y-3.5 shadow-xs font-sans">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2 text-[#b8943d] dark:text-[#c9a84c] font-extrabold text-sm">
           <ShieldAlert className="size-5 text-[#b8943d] dark:text-[#c9a84c]" />
@@ -80,15 +80,15 @@ export default function AdminNotificationsPanel({
         {notifications.map((notif) => (
           <div
             key={notif.id}
-            className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-white dark:bg-[#12121a] border border-black/[0.08] dark:border-white/[0.06] shadow-2xs"
+            className="flex items-start justify-between gap-3 p-3.5 rounded-xl bg-white dark:bg-[#141310] border border-black/[0.08] dark:border-[#fff8dc]/[0.06] shadow-2xs"
           >
             <div className="flex items-start gap-2.5">
               <AlertTriangle className="size-4 text-amber-500 shrink-0 mt-0.5" />
               <div className="space-y-0.5 text-xs">
-                <p className="font-semibold text-[#1a1208] dark:text-[#f8f6f0] leading-snug">
+                <p className="font-semibold text-[#1a1208] dark:text-[#f5f0e8] leading-snug">
                   {notif.message}
                 </p>
-                <p className="text-[10px] text-[#6b5e4e] dark:text-[#9b9080]">
+                <p className="text-[10px] text-[#6b5e4e] dark:text-[#8a8278]">
                   Logged on {new Date(notif.createdAt).toLocaleString()}
                 </p>
               </div>
@@ -107,7 +107,7 @@ export default function AdminNotificationsPanel({
               <button
                 type="button"
                 onClick={() => handleMarkRead(notif.id)}
-                className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-[#6b5e4e] dark:text-[#9b9080] hover:text-emerald-600 transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-[#22c55e]/10 text-[#6b5e4e] dark:text-[#8a8278] hover:text-emerald-600 dark:hover:text-[#86efac] transition-colors cursor-pointer"
                 title="Mark alert as read"
               >
                 <Check className="size-4" />

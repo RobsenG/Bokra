@@ -32,13 +32,13 @@ export default function LandingSearchForm({ isLoggedIn }: LandingSearchFormProps
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white dark:bg-[#12121a] rounded-2xl p-3 flex flex-col md:flex-row items-stretch md:items-center gap-3
-                 border border-black/[0.08] dark:border-white/[0.08]
+      className="bg-white dark:bg-[#141310] rounded-2xl p-3 flex flex-col md:flex-row items-stretch md:items-center gap-3
+                 border border-black/[0.08] dark:border-[#fff8dc]/[0.07]
                  shadow-[0_8px_32px_rgba(0,0,0,0.08),0_0_0_1px_rgba(184,148,61,0.08)]
-                 dark:shadow-[0_0_0_1px_rgba(201,168,76,0.1),0_24px_64px_rgba(0,0,0,0.6)]"
+                 dark:shadow-[0_0_0_1px_rgba(201,168,76,0.08),0_32px_80px_rgba(0,0,0,0.7)]"
     >
       {/* Location */}
-      <div className="flex-1 flex items-center gap-2.5 px-4 py-2 border-b md:border-b-0 md:border-r border-black/[0.06] dark:border-white/[0.06]">
+      <div className="flex-1 flex items-center gap-2.5 px-4 py-2 border-b md:border-b-0 md:border-r border-black/[0.06] dark:border-[#fff8dc]/[0.06]">
         <MapPin className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
         <div className="flex-1 text-left">
           <label className="label">Where</label>
@@ -47,13 +47,13 @@ export default function LandingSearchForm({ isLoggedIn }: LandingSearchFormProps
             placeholder="Addis Ababa, Hawassa..."
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            className="w-full bg-transparent border-none p-0 text-sm font-medium text-[#1a1208] dark:text-[#f8f6f0] focus:ring-0 placeholder-[#9b8e7e] dark:placeholder-[#5a5348] outline-none"
+            className="w-full bg-transparent border-none p-0 text-sm font-medium text-[#1a1208] dark:text-[#d4cfc7] focus:ring-0 placeholder-[#9b8e7e] dark:placeholder-[#524d47] outline-none"
           />
         </div>
       </div>
 
       {/* Check-in */}
-      <div className="w-full md:w-36 flex items-center gap-2.5 px-4 py-2 border-b md:border-b-0 md:border-r border-black/[0.06] dark:border-white/[0.06]">
+      <div className="w-full md:w-36 flex items-center gap-2.5 px-4 py-2 border-b md:border-b-0 md:border-r border-black/[0.06] dark:border-[#fff8dc]/[0.06]">
         <Calendar className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
         <div className="flex-1 text-left">
           <label className="label">Check In</label>
@@ -61,13 +61,13 @@ export default function LandingSearchForm({ isLoggedIn }: LandingSearchFormProps
             type="date"
             value={checkIn}
             onChange={(e) => setCheckIn(e.target.value)}
-            className="w-full bg-transparent border-none p-0 text-sm font-medium text-[#1a1208] dark:text-[#f8f6f0] focus:ring-0 outline-none"
+            className="w-full bg-transparent border-none p-0 text-sm font-medium text-[#1a1208] dark:text-[#d4cfc7] focus:ring-0 outline-none"
           />
         </div>
       </div>
 
       {/* Check-out */}
-      <div className="w-full md:w-36 flex items-center gap-2.5 px-4 py-2 border-b md:border-b-0 md:border-r border-black/[0.06] dark:border-white/[0.06]">
+      <div className="w-full md:w-36 flex items-center gap-2.5 px-4 py-2 border-b md:border-b-0 md:border-r border-black/[0.06] dark:border-[#fff8dc]/[0.06]">
         <Calendar className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
         <div className="flex-1 text-left">
           <label className="label">Check Out</label>
@@ -75,7 +75,7 @@ export default function LandingSearchForm({ isLoggedIn }: LandingSearchFormProps
             type="date"
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
-            className="w-full bg-transparent border-none p-0 text-sm font-medium text-[#1a1208] dark:text-[#f8f6f0] focus:ring-0 outline-none"
+            className="w-full bg-transparent border-none p-0 text-sm font-medium text-[#1a1208] dark:text-[#d4cfc7] focus:ring-0 outline-none"
           />
         </div>
       </div>
@@ -91,7 +91,7 @@ export default function LandingSearchForm({ isLoggedIn }: LandingSearchFormProps
             value={guests}
             onChange={(e) => setGuests(e.target.value)}
             min="1"
-            className="w-full bg-transparent border-none p-0 text-sm font-medium text-[#1a1208] dark:text-[#f8f6f0] focus:ring-0 placeholder-[#9b8e7e] dark:placeholder-[#5a5348] outline-none"
+            className="w-full bg-transparent border-none p-0 text-sm font-medium text-[#1a1208] dark:text-[#d4cfc7] focus:ring-0 placeholder-[#9b8e7e] dark:placeholder-[#524d47] outline-none"
           />
         </div>
       </div>

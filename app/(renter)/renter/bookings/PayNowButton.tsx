@@ -25,7 +25,7 @@ export default function PayNowButton({ bookingId }: { bookingId: string }) {
     <button
       onClick={handlePay}
       disabled={loading}
-      className="flex items-center gap-1 text-xs font-bold text-white bg-teal-600 hover:bg-teal-700 px-3 py-1.5 rounded-xl transition-all cursor-pointer disabled:opacity-50 shadow-sm"
+      className="flex items-center gap-1 text-xs font-bold text-[#0c0b09] bg-[#c9a84c] hover:bg-[#d4b458] px-3 py-1.5 rounded-xl transition-all cursor-pointer disabled:opacity-50 shadow-sm"
     >
       {loading ? <Loader2 className="size-3 animate-spin" /> : <CreditCard className="size-3" />}
       <span>Pay Now</span>

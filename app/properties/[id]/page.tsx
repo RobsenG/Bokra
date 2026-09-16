@@ -176,7 +176,7 @@ export default async function PropertyDetailPage({
   return (
     <div className="max-w-6xl mx-auto px-4 py-8 space-y-8 font-sans">
       {/* Navigation Breadcrumb */}
-      <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 dark:text-neutral-400">
+      <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 dark:text-[#8a8278]">
         <Link
           href="/"
           className="hover:text-[#b8943d] dark:hover:text-[#c9a84c] flex items-center gap-1 transition-colors"
@@ -189,24 +189,24 @@ export default async function PropertyDetailPage({
           Stays
         </Link>
         <span>/</span>
-        <span className="text-neutral-900 dark:text-white truncate max-w-xs">{property.title}</span>
+        <span className="text-neutral-900 dark:text-[#f5f0e8] truncate max-w-xs">{property.title}</span>
       </div>
 
       {/* Property Status Banners */}
       {property.status === "REJECTED" && (
-        <div className="bg-red-50 dark:bg-red-950/30 border-2 border-red-200 dark:border-red-900/50 rounded-2xl p-5 shadow-xs space-y-2">
+        <div className="bg-red-50 dark:bg-[rgba(239,68,68,0.08)] border-2 border-red-200 dark:border-[rgba(239,68,68,0.15)] rounded-2xl p-5 shadow-xs space-y-2">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+              <AlertTriangle className="w-5 h-5 text-red-600 dark:text-[#fca5a5] shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-extrabold text-red-800 dark:text-red-300">
+                <p className="text-sm font-extrabold text-red-800 dark:text-[#fca5a5]">
                   Property Listing Rejected
                 </p>
-                <p className="text-xs text-red-700/80 dark:text-red-300/80 mt-0.5">
+                <p className="text-xs text-red-700/80 dark:text-[#fca5a5]/80 mt-0.5">
                   This listing was rejected and is hidden from guests.
                 </p>
                 {property.rejectionReason && (
-                  <p className="text-xs text-red-900 dark:text-red-200 font-semibold italic mt-1 bg-white/60 dark:bg-neutral-900/60 p-2.5 rounded-xl border border-red-200/50 dark:border-red-900/50">
+                  <p className="text-xs text-red-900 dark:text-[#fca5a5] font-semibold italic mt-1 bg-white/60 dark:bg-[#141310] p-2.5 rounded-xl border border-red-200/50 dark:border-[rgba(239,68,68,0.15)]">
                     Reason: &quot;{property.rejectionReason}&quot;
                   </p>
                 )}
@@ -226,14 +226,14 @@ export default async function PropertyDetailPage({
       )}
 
       {property.status === "PENDING" && (
-        <div className="bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border-2 border-[#b8943d]/20 dark:border-[#c9a84c]/20 rounded-2xl p-4 shadow-xs">
+        <div className="bg-[#b8943d]/10 dark:bg-[rgba(245,158,11,0.08)] border-2 border-[#b8943d]/20 dark:border-[rgba(245,158,11,0.15)] rounded-2xl p-4 shadow-xs">
           <div className="flex items-center gap-3">
-            <Clock className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
+            <Clock className="w-5 h-5 text-[#b8943d] dark:text-[#fcd34d] shrink-0" />
             <div>
-              <p className="text-sm font-bold text-neutral-900 dark:text-white">
+              <p className="text-sm font-bold text-neutral-900 dark:text-[#f5f0e8]">
                 Waiting for review
               </p>
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+              <p className="text-xs text-neutral-500 dark:text-[#8a8278] mt-0.5">
                 We&apos;re reviewing your property — usually takes up to 48 hours
               </p>
             </div>
@@ -244,28 +244,28 @@ export default async function PropertyDetailPage({
       {/* Header Info */}
       <div className="space-y-3">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-[#f5f0e8]">
             {property.title}
           </h1>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-neutral-500 dark:text-neutral-400">
-          <span className="flex items-center gap-1 text-neutral-900 dark:text-white font-semibold">
+        <div className="flex flex-wrap items-center gap-4 text-sm font-medium text-neutral-500 dark:text-[#8a8278]">
+          <span className="flex items-center gap-1 text-neutral-900 dark:text-[#d4cfc7] font-semibold">
             <MapPin className="w-4 h-4 text-[#b8943d] dark:text-[#c9a84c]" />
             {property.address}, {property.city}
           </span>
           {avgRating ? (
-            <span className="flex items-center gap-1 text-neutral-900 dark:text-white font-bold">
+            <span className="flex items-center gap-1 text-neutral-900 dark:text-[#d4cfc7] font-bold">
               <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
               {avgRating} ({property.reviews.length}{" "}
               {property.reviews.length === 1 ? "review" : "reviews"})
             </span>
           ) : (
-            <span className="text-xs font-semibold text-neutral-400">New property</span>
+            <span className="text-xs font-semibold text-neutral-400 dark:text-[#524d47]">New property</span>
           )}
 
           {hostBadge && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] text-xs font-extrabold border border-[#b8943d]/20 dark:border-[#c9a84c]/20">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#b8943d]/10 dark:bg-[rgba(201,168,76,0.08)] text-[#b8943d] dark:text-[#c9a84c] text-xs font-extrabold border border-[#b8943d]/20 dark:border-[rgba(201,168,76,0.15)]">
               <Award className="size-3.5" />
               {hostBadge}
             </span>
@@ -286,36 +286,36 @@ export default async function PropertyDetailPage({
         {/* Left Column */}
         <div className="lg:col-span-2 space-y-10">
           {/* Key Specs Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 p-6 bg-white dark:bg-[#12121e] border border-neutral-200 dark:border-neutral-800 rounded-2xl shadow-xs">
+          <div className="flex flex-wrap items-center justify-between gap-4 p-6 bg-white dark:bg-[#141310] border border-neutral-200 dark:border-[#fff8dc]/[0.06] rounded-2xl shadow-xs dark:shadow-[0_1px_0_rgba(255,255,255,0.03)]">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/[0.08] text-[#b8943d] dark:text-[#c9a84c] flex items-center justify-center">
                 <Users className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">Max guests</p>
-                <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                <p className="text-xs text-neutral-500 dark:text-[#8a8278]">Max guests</p>
+                <p className="text-sm font-bold text-neutral-900 dark:text-[#f5f0e8]">
                   Up to {property.maxGuests} guests
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/[0.08] text-[#b8943d] dark:text-[#c9a84c] flex items-center justify-center">
                 <BedDouble className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">Bedrooms</p>
-                <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                <p className="text-xs text-neutral-500 dark:text-[#8a8278]">Bedrooms</p>
+                <p className="text-sm font-bold text-neutral-900 dark:text-[#f5f0e8]">
                   {property.bedrooms} {property.bedrooms === 1 ? "Bedroom" : "Bedrooms"}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] flex items-center justify-center">
+              <div className="w-10 h-10 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/[0.08] text-[#b8943d] dark:text-[#c9a84c] flex items-center justify-center">
                 <Bath className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400">Bathrooms</p>
-                <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                <p className="text-xs text-neutral-500 dark:text-[#8a8278]">Bathrooms</p>
+                <p className="text-sm font-bold text-neutral-900 dark:text-[#f5f0e8]">
                   {property.bathrooms} {property.bathrooms === 1 ? "Bath" : "Baths"}
                 </p>
               </div>
@@ -323,11 +323,11 @@ export default async function PropertyDetailPage({
           </div>
 
           {/* Host Section */}
-          <div className="bg-white dark:bg-[#12121e] rounded-3xl border border-neutral-200 dark:border-neutral-800 p-6 sm:p-8 space-y-6 shadow-xs">
-            <div className="flex items-start justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+          <div className="bg-white dark:bg-[#141310] rounded-3xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] p-6 sm:p-8 space-y-6 shadow-xs">
+            <div className="flex items-start justify-between gap-4 border-b border-neutral-200 dark:border-[#fff8dc]/[0.05] pb-6">
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full bg-[#b8943d] dark:bg-[#c9a84c] ring-4 ring-[#b8943d]/20 dark:ring-[#c9a84c]/20 flex items-center justify-center text-white text-3xl font-bold overflow-hidden border-2 border-white dark:border-neutral-900 shadow-md shrink-0">
+                  <div className="w-24 h-24 rounded-full bg-[#b8943d] dark:bg-[#c9a84c] ring-4 ring-[#b8943d]/20 dark:ring-[#c9a84c]/20 flex items-center justify-center text-white dark:text-[#0c0b09] text-3xl font-bold overflow-hidden border-2 border-white dark:border-[#141310] shadow-md shrink-0">
                     {hasValidAvatar ? (
                       <img
                         src={host.avatar}
@@ -340,7 +340,7 @@ export default async function PropertyDetailPage({
                   </div>
                   {host?.isVerified && (
                     <div
-                      className="absolute -bottom-1 -right-1 bg-[#b8943d] dark:bg-[#c9a84c] text-white rounded-full p-1 border-2 border-white dark:border-neutral-900"
+                      className="absolute -bottom-1 -right-1 bg-[#b8943d] dark:bg-[#c9a84c] text-white dark:text-[#0c0b09] rounded-full p-1 border-2 border-white dark:border-[#141310]"
                       title="Verified Identity"
                     >
                       <ShieldCheck className="size-3.5" />
@@ -350,18 +350,18 @@ export default async function PropertyDetailPage({
 
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-xl font-extrabold text-neutral-900 dark:text-white">
+                    <h3 className="text-xl font-extrabold text-neutral-900 dark:text-[#f5f0e8]">
                       Hosted by {hostDisplayName}
                     </h3>
                   </div>
 
                   {hostSubtitle && (
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{hostSubtitle}</p>
+                    <p className="text-xs text-neutral-500 dark:text-[#8a8278] font-medium">{hostSubtitle}</p>
                   )}
 
-                  <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                  <div className="flex flex-wrap items-center gap-2 text-xs text-neutral-500 dark:text-[#8a8278]">
                     {hostBadge && (
-                      <span className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[#c9a84c]/20">
+                      <span className="inline-flex items-center gap-1 text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-[#b8943d]/10 dark:bg-[rgba(201,168,76,0.08)] text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[rgba(201,168,76,0.15)]">
                         <Award className="size-3" />
                         {hostBadge}
                       </span>
@@ -387,15 +387,15 @@ export default async function PropertyDetailPage({
             {/* Host Bio */}
             {host?.shortBio ? (
               <div className="space-y-1.5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]">
                   About your host
                 </h4>
-                <p className="text-sm text-neutral-900 dark:text-white leading-relaxed italic bg-neutral-50 dark:bg-neutral-900/50 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800">
+                <p className="text-sm text-neutral-900 dark:text-[#d4cfc7] leading-relaxed italic bg-neutral-50 dark:bg-[#fff8dc]/[0.02] p-4 rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.05]">
                   &quot;{host.shortBio}&quot;
                 </p>
               </div>
             ) : (
-              <p className="text-xs text-neutral-500 dark:text-neutral-400 italic">
+              <p className="text-xs text-neutral-500 dark:text-[#8a8278] italic">
                 {hostDisplayName} is a host in {property.city}.
               </p>
             )}
@@ -403,42 +403,42 @@ export default async function PropertyDetailPage({
 
           {/* Description */}
           <div className="space-y-4">
-            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-white">About this space</h3>
-            <p className="text-neutral-600 dark:text-neutral-300 whitespace-pre-line leading-relaxed text-sm md:text-base">
+            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-[#f5f0e8]">About this space</h3>
+            <p className="text-neutral-600 dark:text-[#d4cfc7] whitespace-pre-line leading-relaxed text-sm md:text-base">
               {property.description}
             </p>
           </div>
 
           {/* What This Place Offers */}
           <div className="space-y-4">
-            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-white">
+            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-[#f5f0e8]">
               What does your place offer?
             </h3>
-            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y divide-neutral-100 dark:divide-neutral-800 border border-neutral-200 dark:border-neutral-800 rounded-2xl overflow-hidden bg-white dark:bg-[#12121e] shadow-2xs">
+            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-0 divide-y divide-neutral-100 dark:divide-[#fff8dc]/[0.04] border border-neutral-200 dark:border-[#fff8dc]/[0.06] rounded-2xl overflow-hidden bg-white dark:bg-[#141310] shadow-2xs">
               {(property.amenities as string[]).map((amenity: string, idx: number) => {
                 const Icon = getAmenityIcon(amenity);
                 return (
                   <li
                     key={idx}
-                    className="flex items-center gap-3 py-3 border-b border-neutral-100 dark:border-neutral-800 last:border-0 px-5"
+                    className="flex items-center gap-3 py-3 border-b border-neutral-100 dark:border-[#fff8dc]/[0.04] last:border-0 px-5"
                   >
                     <Icon className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] flex-shrink-0" />
-                    <span className="text-sm text-neutral-900 dark:text-white font-medium">{amenity}</span>
+                    <span className="text-sm text-neutral-900 dark:text-[#8a8278] font-medium">{amenity}</span>
                   </li>
                 );
               })}
             </ul>
           </div>
 
-          <hr className="border-neutral-200 dark:border-neutral-800" />
+          <hr className="border-neutral-200 dark:border-[#fff8dc]/[0.04]" />
 
           {/* Location Map */}
           <div className="space-y-4">
-            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-white">Location</h3>
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 mb-4">
+            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-[#f5f0e8]">Location</h3>
+            <p className="text-sm text-neutral-500 dark:text-[#8a8278] mb-4">
               {property.address}, {property.city}
             </p>
-            <div className="w-full h-[320px] rounded-3xl overflow-hidden border border-neutral-200 dark:border-neutral-800 shadow-xs relative">
+            <div className="w-full h-[320px] rounded-3xl overflow-hidden border border-neutral-200 dark:border-[#fff8dc]/[0.06] shadow-xs relative">
               <iframe
                 width="100%"
                 height="100%"
@@ -454,15 +454,15 @@ export default async function PropertyDetailPage({
             </div>
           </div>
 
-          <hr className="border-neutral-200 dark:border-neutral-800" />
+          <hr className="border-neutral-200 dark:border-[#fff8dc]/[0.04]" />
 
           {/* AI Review Summary */}
-          <div className="bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 rounded-3xl p-6 md:p-8 border border-[#b8943d]/20 dark:border-[#c9a84c]/20 space-y-4">
+          <div className="bg-[#b8943d]/10 dark:bg-gradient-to-br dark:from-[#c9a84c]/[0.06] dark:to-transparent rounded-3xl p-6 md:p-8 border border-[#b8943d]/20 dark:border-[#c9a84c]/[0.12] space-y-4">
             <div className="flex items-center gap-2 text-[#b8943d] dark:text-[#c9a84c] font-bold">
               <Sparkles className="w-5 h-5" />
               <h3 className="text-lg">AI Review Summary</h3>
             </div>
-            <p className="text-sm md:text-base text-neutral-900 dark:text-white leading-relaxed font-medium">
+            <p className="text-sm md:text-base text-neutral-900 dark:text-[#f5f0e8] leading-relaxed font-medium">
               {aiSummary}
             </p>
             <p className="text-xs text-[#b8943d] dark:text-[#c9a84c] font-semibold">Powered by AI</p>
@@ -470,14 +470,14 @@ export default async function PropertyDetailPage({
 
           {/* Reviews List */}
           <div className="space-y-6">
-            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-[#f5f0e8] flex items-center gap-2">
               <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
               {property.reviews.length}{" "}
               {property.reviews.length === 1 ? "Review" : "Reviews"}
             </h3>
 
             {property.reviews.length === 0 ? (
-              <p className="text-neutral-500 dark:text-neutral-400 text-sm italic">
+              <p className="text-neutral-500 dark:text-[#8a8278] text-sm italic">
                 No reviews yet — be the first to review this place!
               </p>
             ) : (
@@ -486,10 +486,10 @@ export default async function PropertyDetailPage({
                 {property.reviews.map((review: any) => (
                   <div
                     key={review.id}
-                    className="space-y-3 p-5 rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#12121e] shadow-2xs"
+                    className="space-y-3 p-5 rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.05] bg-white dark:bg-[#fff8dc]/[0.02] shadow-2xs"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-neutral-200 dark:border-neutral-800 overflow-hidden shrink-0 flex items-center justify-center font-bold text-[#b8943d] dark:text-[#c9a84c] text-sm">
+                      <div className="w-10 h-10 rounded-full bg-[#b8943d]/10 dark:bg-[#c9a84c]/[0.08] border border-neutral-200 dark:border-[#fff8dc]/[0.06] overflow-hidden shrink-0 flex items-center justify-center font-bold text-[#b8943d] dark:text-[#c9a84c] text-sm">
                         {review.renter.avatar &&
                         typeof review.renter.avatar === "string" &&
                         review.renter.avatar.startsWith("https://") ? (
@@ -503,10 +503,10 @@ export default async function PropertyDetailPage({
                         )}
                       </div>
                       <div>
-                        <p className="font-bold text-sm text-neutral-900 dark:text-white">
+                        <p className="font-bold text-sm text-neutral-900 dark:text-[#f5f0e8]">
                           {review.renter.name || review.renter.email}
                         </p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                        <p className="text-xs text-neutral-500 dark:text-[#8a8278]">
                           {new Date(review.createdAt).toLocaleDateString(undefined, {
                             month: "long",
                             year: "numeric",
@@ -521,13 +521,13 @@ export default async function PropertyDetailPage({
                           className={`w-3.5 h-3.5 ${
                             i < review.rating
                               ? "fill-amber-500 text-amber-500"
-                              : "text-neutral-300 dark:text-neutral-700"
+                              : "text-neutral-300 dark:text-[#524d47]"
                           }`}
                         />
                       ))}
                     </div>
                     {review.comment && (
-                      <p className="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                      <p className="text-sm text-neutral-600 dark:text-[#d4cfc7] leading-relaxed">
                         {review.comment}
                       </p>
                     )}
@@ -539,9 +539,9 @@ export default async function PropertyDetailPage({
 
           {/* Add Review Form */}
           {session?.user && (
-            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800">
+            <div className="pt-4 border-t border-neutral-200 dark:border-[#fff8dc]/[0.04]">
               {session.user.role === "ADMIN" ? (
-                <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400 py-2">
+                <p className="text-sm font-medium text-neutral-500 dark:text-[#8a8278] py-2">
                   Admins cannot leave reviews
                 </p>
               ) : (
@@ -554,10 +554,10 @@ export default async function PropertyDetailPage({
         {/* Right Column: Sticky Booking Widget */}
         <div className="relative">
           <div className="sticky top-24">
-            <div className="bg-white dark:bg-[#12121e] rounded-3xl border border-neutral-200 dark:border-neutral-800 shadow-xl p-6 md:p-8 space-y-6">
+            <div className="bg-white dark:bg-[#1c1a16] rounded-3xl border border-neutral-200 dark:border-[#c9a84c]/[0.15] shadow-xl dark:shadow-[0_0_0_1px_rgba(201,168,76,0.06),0_32px_80px_rgba(0,0,0,0.5)] p-6 md:p-8 space-y-6">
               {session?.user?.role === "ADMIN" || isOwner ? (
                 <div className="text-center py-6 space-y-3">
-                  <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                  <p className="text-sm font-bold text-neutral-900 dark:text-[#f5f0e8]">
                     {isOwner
                       ? "You own this property."
                       : "Admin view"}
@@ -565,7 +565,7 @@ export default async function PropertyDetailPage({
                   {isOwner && (
                     <Link
                       href={`/host/properties/${property.id}/edit`}
-                      className="inline-block px-5 py-2.5 rounded-xl text-xs font-bold bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white shadow-xs transition-colors"
+                      className="inline-block px-5 py-2.5 rounded-xl text-xs font-bold bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#d4b458] text-white dark:text-[#0c0b09] shadow-xs transition-colors"
                     >
                       Edit property details
                     </Link>
@@ -573,12 +573,12 @@ export default async function PropertyDetailPage({
                 </div>
               ) : (
                 <>
-                  <div className="space-y-1 border-b border-neutral-200 dark:border-neutral-800 pb-5">
-                    <h3 className="text-2xl font-black text-neutral-900 dark:text-white flex items-baseline gap-1">
+                  <div className="space-y-1 border-b border-neutral-200 dark:border-[#fff8dc]/[0.05] pb-5">
+                    <h3 className="text-2xl font-black text-neutral-900 dark:text-[#c9a84c] flex items-baseline gap-1">
                       {Number(property.pricePerNight).toLocaleString()} ETB
-                      <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400"> / night</span>
+                      <span className="text-sm font-medium text-neutral-500 dark:text-[#8a8278]"> / night</span>
                     </h3>
-                    <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                    <p className="text-xs text-neutral-500 dark:text-[#8a8278]">
                       Pick your dates to book
                     </p>
                   </div>

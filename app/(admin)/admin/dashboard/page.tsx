@@ -54,17 +54,17 @@ export default async function AdminDashboardPage() {
 
   const colorMap: Record<string, string> = {
     gold: "bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c]",
-    orange: "bg-orange-50 dark:bg-orange-950/30 text-orange-600 dark:text-orange-400",
+    orange: "bg-amber-50 dark:bg-[#f59e0b]/10 text-amber-600 dark:text-[#fcd34d]",
   };
 
   return (
     <div className="space-y-8 font-sans">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-[#1a1208] dark:text-[#f8f6f0] tracking-tight">
+        <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-[#f5f0e8] tracking-tight">
           Admin dashboard
         </h1>
-        <p className="text-sm text-[#6b5e4e] dark:text-[#9b9080] mt-0.5">
+        <p className="text-sm text-neutral-500 dark:text-[#8a8278] mt-0.5">
           Overview of users, properties, and bookings.
         </p>
       </div>
@@ -80,7 +80,7 @@ export default async function AdminDashboardPage() {
             <Link
               key={stat.label}
               href={stat.href}
-              className="group bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.06] p-5 shadow-xs hover:border-[#b8943d]/40 dark:hover:border-[#c9a84c]/40 transition-all"
+              className="group bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] p-5 shadow-xs hover:border-[#b8943d]/40 dark:hover:border-[#c9a84c]/30 transition-all"
             >
               <div className="flex items-start justify-between">
                 <div className={`p-2.5 rounded-xl ${colorMap[stat.color]}`}>
@@ -89,10 +89,10 @@ export default async function AdminDashboardPage() {
                 <ArrowRight className="size-4 text-neutral-400 group-hover:text-[#b8943d] dark:group-hover:text-[#c9a84c] transition-colors mt-1" />
               </div>
               <div className="mt-4">
-                <p className="text-xs font-medium text-[#6b5e4e] dark:text-[#9b9080]">
+                <p className="text-xs font-medium text-neutral-500 dark:text-[#8a8278]">
                   {stat.label}
                 </p>
-                <p className="text-2xl font-extrabold text-[#1a1208] dark:text-[#f8f6f0] mt-0.5">
+                <p className="text-2xl font-extrabold text-neutral-900 dark:text-[#f5f0e8] mt-0.5">
                   {stat.value}
                 </p>
               </div>
@@ -103,21 +103,21 @@ export default async function AdminDashboardPage() {
 
       {/* Pending Verifications Alert */}
       {pendingVerifications > 0 && (
-        <div className="flex items-start sm:items-center justify-between gap-4 p-4 bg-orange-50 dark:bg-orange-950/20 border border-orange-200 dark:border-orange-900/40 rounded-2xl">
+        <div className="flex items-start sm:items-center justify-between gap-4 p-4 bg-amber-50 dark:bg-[#f59e0b]/10 border border-amber-200 dark:border-[#f59e0b]/20 rounded-2xl">
           <div className="flex items-start gap-3">
-            <AlertCircle className="size-5 text-orange-600 dark:text-orange-400 shrink-0 mt-0.5" />
+            <AlertCircle className="size-5 text-amber-600 dark:text-[#fcd34d] shrink-0 mt-0.5" />
             <div>
-              <p className="text-sm font-bold text-orange-900 dark:text-orange-300">
+              <p className="text-sm font-bold text-amber-900 dark:text-[#fcd34d]">
                 {pendingVerifications} propert{pendingVerifications === 1 ? "y" : "ies"} awaiting verification
               </p>
-              <p className="text-xs text-orange-700/80 dark:text-orange-400/80 mt-0.5">
+              <p className="text-xs text-amber-700/80 dark:text-[#fcd34d]/80 mt-0.5">
                 Review submitted properties and ownership documents.
               </p>
             </div>
           </div>
           <Link
             href="/admin/verifications"
-            className="shrink-0 px-4 py-1.5 rounded-lg text-xs font-semibold bg-[#b8943d] dark:bg-[#c9a84c] hover:brightness-110 text-white dark:text-[#0a0a0f] shadow-xs transition-colors"
+            className="shrink-0 px-4 py-1.5 rounded-lg text-xs font-bold bg-[#b8943d] dark:bg-[#c9a84c] hover:bg-[#d4b458] text-white dark:text-[#0c0b09] shadow-xs transition-colors"
           >
             Review
           </Link>
@@ -125,9 +125,9 @@ export default async function AdminDashboardPage() {
       )}
 
       {/* Recent Users */}
-      <div className="bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.06] shadow-xs">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-black/[0.06] dark:border-white/[0.06]">
-          <h2 className="font-bold text-[#1a1208] dark:text-[#f8f6f0] text-sm">
+      <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] shadow-xs">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 dark:border-[#fff8dc]/[0.05]">
+          <h2 className="font-bold text-neutral-900 dark:text-[#f5f0e8] text-sm">
             Recent users
           </h2>
           <Link
@@ -137,21 +137,21 @@ export default async function AdminDashboardPage() {
             View all
           </Link>
         </div>
-        <div className="divide-y divide-black/[0.06] dark:divide-white/[0.06]">
+        <div className="divide-y divide-neutral-200 dark:divide-[#fff8dc]/[0.04]">
           {recentUsers.map((user, i) => (
             <div
               key={i}
               className="flex items-center justify-between px-6 py-3.5"
             >
               <div className="flex items-center gap-3 min-w-0">
-                <div className="h-8 w-8 rounded-full bg-[#b8943d] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#0a0a0f] font-bold text-xs shrink-0">
+                <div className="h-8 w-8 rounded-full bg-[#b8943d] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#080806] font-bold text-xs shrink-0">
                   {(user.name || user.email || "U").substring(0, 2).toUpperCase()}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-[#1a1208] dark:text-[#f8f6f0] truncate">
+                  <p className="text-sm font-semibold text-neutral-900 dark:text-[#f5f0e8] truncate">
                     {user.name || "—"}
                   </p>
-                  <p className="text-xs text-[#6b5e4e] dark:text-[#9b9080] truncate">
+                  <p className="text-xs text-neutral-500 dark:text-[#8a8278] truncate">
                     {user.email}
                   </p>
                 </div>
@@ -160,15 +160,15 @@ export default async function AdminDashboardPage() {
                 <span
                   className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${
                     user.role === "ADMIN"
-                      ? "bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[#c9a84c]/20"
+                      ? "bg-[#b8943d]/10 dark:bg-[#fff8dc]/[0.06] text-[#b8943d] dark:text-[#d4cfc7] border border-[#b8943d]/20 dark:border-[#fff8dc]/[0.12]"
                       : user.role === "HOST"
                       ? "bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[#c9a84c]/20"
-                      : "bg-black/5 dark:bg-white/5 text-[#6b5e4e] dark:text-[#9b9080]"
+                      : "bg-black/5 dark:bg-[#60a5fa]/10 text-neutral-600 dark:text-[#93c5fd]"
                   }`}
                 >
                   {user.role}
                 </span>
-                <p className="text-[10px] text-[#6b5e4e] dark:text-[#9b9080]">
+                <p className="text-[10px] text-neutral-500 dark:text-[#8a8278]">
                   {user.isVerified ? "✓ Verified" : "Unverified"}
                 </p>
               </div>

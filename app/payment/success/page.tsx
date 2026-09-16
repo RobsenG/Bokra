@@ -74,49 +74,49 @@ export default async function PaymentSuccessPage({
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] flex flex-col items-center justify-center p-4 font-sans">
-      <div className="w-full max-w-md bg-white border border-[#e5e7eb] rounded-3xl shadow-xl overflow-hidden p-8 text-center space-y-6">
+    <div className="min-h-screen bg-[#faf9f7] dark:bg-[#0c0b09] flex flex-col items-center justify-center p-4 font-sans">
+      <div className="w-full max-w-md bg-white dark:bg-[#141310] border border-black/[0.08] dark:border-[#fff8dc]/[0.06] rounded-3xl shadow-xl overflow-hidden p-8 text-center space-y-6">
         <div className="flex justify-center">
-          <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center">
-            <CheckCircle2 className="w-10 h-10 text-emerald-600" />
+          <div className="w-20 h-20 bg-emerald-100 dark:bg-[rgba(34,197,94,0.08)] rounded-full flex items-center justify-center">
+            <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-[#86efac]" />
           </div>
         </div>
 
         <div className="space-y-2">
-          <h1 className="text-2xl font-extrabold text-[#111827] tracking-tight">
+          <h1 className="text-2xl font-extrabold text-[#1a1208] dark:text-[#f5f0e8] tracking-tight">
             Booking Confirmed!
           </h1>
-          <p className="text-[#6b7280] text-sm leading-relaxed">
+          <p className="text-[#6b5e4e] dark:text-[#8a8278] text-sm leading-relaxed">
             Your payment was successful. Your booking is confirmed.
           </p>
         </div>
 
         {/* Booking Details Card */}
-        <div className="bg-[#f8fafc] rounded-2xl p-4 text-left space-y-3 border border-[#e5e7eb]">
-          <h3 className="font-bold text-[#111827] text-sm line-clamp-1">
+        <div className="bg-black/[0.02] dark:bg-[#fff8dc]/[0.02] rounded-2xl p-4 text-left space-y-3 border border-black/[0.06] dark:border-[#fff8dc]/[0.05]">
+          <h3 className="font-bold text-[#1a1208] dark:text-[#f5f0e8] text-sm line-clamp-1">
             {booking.property.title}
           </h3>
-          <div className="flex items-center gap-2 text-xs text-[#6b7280]">
-            <MapPin className="w-3.5 h-3.5 text-[#7c3aed]" />
+          <div className="flex items-center gap-2 text-xs text-[#6b5e4e] dark:text-[#8a8278]">
+            <MapPin className="w-3.5 h-3.5 text-[#b8943d] dark:text-[#c9a84c]" />
             <span>{booking.property.city}</span>
           </div>
-          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-[#e5e7eb] text-xs">
+          <div className="grid grid-cols-2 gap-4 pt-2 border-t border-black/[0.06] dark:border-[#fff8dc]/[0.05] text-xs">
             <div>
-              <p className="text-[#6b7280] font-medium">Check-in</p>
-              <p className="font-semibold text-[#111827] mt-0.5">
+              <p className="text-[#6b5e4e] dark:text-[#8a8278] font-medium">Check-in</p>
+              <p className="font-semibold text-[#1a1208] dark:text-[#d4cfc7] mt-0.5">
                 {new Date(booking.checkIn).toLocaleDateString(undefined, { dateStyle: "medium" })}
               </p>
             </div>
             <div>
-              <p className="text-[#6b7280] font-medium">Check-out</p>
-              <p className="font-semibold text-[#111827] mt-0.5">
+              <p className="text-[#6b5e4e] dark:text-[#8a8278] font-medium">Check-out</p>
+              <p className="font-semibold text-[#1a1208] dark:text-[#d4cfc7] mt-0.5">
                 {new Date(booking.checkOut).toLocaleDateString(undefined, { dateStyle: "medium" })}
               </p>
             </div>
           </div>
-          <div className="pt-2 border-t border-[#e5e7eb] flex justify-between items-center text-xs">
-            <span className="text-[#6b7280]">Amount Paid</span>
-            <span className="font-extrabold text-[#7c3aed] text-sm">
+          <div className="pt-2 border-t border-black/[0.06] dark:border-[#fff8dc]/[0.05] flex justify-between items-center text-xs">
+            <span className="text-[#6b5e4e] dark:text-[#8a8278]">Amount Paid</span>
+            <span className="font-extrabold text-[#b8943d] dark:text-[#c9a84c] text-sm">
               {Number(booking.totalPrice).toLocaleString()} ETB
             </span>
           </div>
@@ -125,14 +125,14 @@ export default async function PaymentSuccessPage({
         <div className="pt-4 flex flex-col gap-3">
           <Link
             href="/renter/bookings"
-            className="w-full flex items-center justify-center gap-2 bg-[#7c3aed] hover:bg-[#5b21b6] active:bg-[#4c1d95] text-white font-semibold py-3 rounded-xl transition-all shadow-[0_4px_14px_0_rgb(124_58_237_/0.25)] cursor-pointer text-sm"
+            className="btn-primary w-full flex items-center justify-center gap-2"
           >
             <ListTodo className="w-4 h-4" />
             View My Bookings
           </Link>
           <Link
             href="/"
-            className="w-full flex items-center justify-center gap-2 border-2 border-[#7c3aed] text-[#7c3aed] hover:bg-[#7c3aed] hover:text-white font-semibold py-3 rounded-xl transition-all cursor-pointer text-sm"
+            className="btn-secondary w-full flex items-center justify-center gap-2"
           >
             <Home className="w-4 h-4" />
             Back to Home

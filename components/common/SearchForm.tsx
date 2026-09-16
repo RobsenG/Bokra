@@ -75,7 +75,7 @@ export default function SearchForm() {
           onClick={() => { setShowAiSearch(!showAiSearch); setAiApplied(false); setAiError(""); }}
           className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold border transition-all duration-200 cursor-pointer ${
             showAiSearch
-              ? "bg-[#b8943d] dark:bg-[#c9a84c] border-[#b8943d] dark:border-[#c9a84c] text-white shadow-md shadow-[#b8943d]/20"
+              ? "bg-[#b8943d] dark:bg-[#c9a84c] border-[#b8943d] dark:border-[#c9a84c] text-white dark:text-[#0c0b09] shadow-md shadow-[#b8943d]/20 dark:shadow-[0_4px_16px_rgba(201,168,76,0.2)]"
               : "border-[#b8943d]/30 dark:border-[#c9a84c]/30 text-[#b8943d] dark:text-[#c9a84c] hover:bg-[#b8943d]/10 dark:hover:bg-[#c9a84c]/10"
           }`}
         >
@@ -86,7 +86,7 @@ export default function SearchForm() {
 
       {/* AI Search Box */}
       {showAiSearch && (
-        <div className="bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-[#b8943d]/20 dark:border-[#c9a84c]/20 rounded-2xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+        <div className="bg-[#b8943d]/10 dark:bg-[#c9a84c]/[0.06] border border-[#b8943d]/20 dark:border-[#c9a84c]/[0.15] rounded-2xl p-4 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
           <div className="flex items-center gap-2 text-[#b8943d] dark:text-[#c9a84c] text-xs font-bold">
             <Sparkles className="w-4 h-4" />
             <span>Describe what you&apos;re looking for in plain English</span>
@@ -98,23 +98,23 @@ export default function SearchForm() {
               onChange={(e) => setAiQuery(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleAiSearch()}
               placeholder="e.g. A cozy 2-bedroom place in Hawassa under 3000 ETB with WiFi..."
-              className="flex-1 h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm text-neutral-900 dark:text-white focus:border-[#b8943d] dark:focus:border-[#c9a84c] focus:ring-2 focus:ring-[#b8943d]/20 outline-none transition-all placeholder:text-neutral-400"
+              className="flex-1 h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm text-neutral-900 dark:text-[#d4cfc7] focus:border-[#b8943d] dark:focus:border-[#c9a84c]/40 focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 outline-none transition-all placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
             />
             <button
               type="button"
               onClick={handleAiSearch}
               disabled={aiLoading || !aiQuery.trim()}
-              className="h-11 px-4 rounded-xl bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white font-semibold flex items-center gap-1.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-md shadow-[#b8943d]/15"
+              className="h-11 px-4 rounded-xl bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#d4b458] text-white dark:text-[#0c0b09] font-semibold flex items-center gap-1.5 text-sm disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-md shadow-[#b8943d]/15 dark:shadow-[0_4px_16px_rgba(201,168,76,0.2)]"
             >
               {aiLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
               {aiLoading ? "Parsing..." : "Parse"}
             </button>
           </div>
           {aiError && (
-            <p className="text-xs text-red-600 dark:text-red-400 font-medium px-1">{aiError}</p>
+            <p className="text-xs text-red-600 dark:text-[#fca5a5] font-medium px-1">{aiError}</p>
           )}
           {aiApplied && (
-            <div className="flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-400 font-semibold">
+            <div className="flex items-center gap-1.5 text-xs text-emerald-700 dark:text-[#86efac] font-semibold">
               <span>✅ Filters applied from your AI query! Review below and click Search.</span>
             </div>
           )}
@@ -123,47 +123,47 @@ export default function SearchForm() {
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-[#12121e] p-4 md:p-3 rounded-2xl shadow-xl flex flex-col md:flex-row items-stretch md:items-center gap-3 border border-neutral-200 dark:border-neutral-800 text-neutral-900 dark:text-white"
+        className="bg-white dark:bg-[#141310] p-4 md:p-3 rounded-2xl shadow-xl flex flex-col md:flex-row items-stretch md:items-center gap-3 border border-neutral-200 dark:border-[#fff8dc]/[0.07] text-neutral-900 dark:text-[#d4cfc7] dark:shadow-[0_0_0_1px_rgba(201,168,76,0.08),0_32px_80px_rgba(0,0,0,0.7)]"
       >
         {/* Location */}
-        <div className="flex-1 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-neutral-800">
+        <div className="flex-1 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-[#fff8dc]/[0.06]">
           <MapPin className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
           <div className="flex-1 text-left">
-            <label className="block text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Where</label>
+            <label className="block text-[10px] font-bold text-neutral-500 dark:text-[#524d47] uppercase tracking-wider">Where</label>
             <input
               type="text"
               placeholder="Addis Ababa, Hawassa..."
               value={city}
               onChange={(e) => setCity(e.target.value)}
-              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder:text-neutral-400 text-neutral-900 dark:text-white outline-none"
+              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-[#524d47] text-neutral-900 dark:text-[#d4cfc7] outline-none"
             />
           </div>
         </div>
 
         {/* Check In */}
-        <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-neutral-800">
+        <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-[#fff8dc]/[0.06]">
           <Calendar className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
           <div className="flex-1 text-left">
-            <label className="block text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Check In</label>
+            <label className="block text-[10px] font-bold text-neutral-500 dark:text-[#524d47] uppercase tracking-wider">Check In</label>
             <input
               type="date"
               value={checkIn}
               onChange={(e) => setCheckIn(e.target.value)}
-              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-neutral-900 dark:text-white outline-none"
+              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-neutral-900 dark:text-[#d4cfc7] outline-none"
             />
           </div>
         </div>
 
         {/* Check Out */}
-        <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-neutral-800">
+        <div className="w-full md:w-40 flex items-center gap-2.5 px-3 py-2 border-b md:border-b-0 md:border-r border-neutral-200 dark:border-[#fff8dc]/[0.06]">
           <Calendar className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
           <div className="flex-1 text-left">
-            <label className="block text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Check Out</label>
+            <label className="block text-[10px] font-bold text-neutral-500 dark:text-[#524d47] uppercase tracking-wider">Check Out</label>
             <input
               type="date"
               value={checkOut}
               onChange={(e) => setCheckOut(e.target.value)}
-              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-neutral-900 dark:text-white outline-none"
+              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 text-neutral-900 dark:text-[#d4cfc7] outline-none"
             />
           </div>
         </div>
@@ -172,14 +172,14 @@ export default function SearchForm() {
         <div className="w-full md:w-32 flex items-center gap-2.5 px-3 py-2">
           <Users className="w-5 h-5 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
           <div className="flex-1 text-left">
-            <label className="block text-[10px] font-bold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">Guests</label>
+            <label className="block text-[10px] font-bold text-neutral-500 dark:text-[#524d47] uppercase tracking-wider">Guests</label>
             <input
               type="number"
               placeholder="Guests"
               value={guests}
               onChange={(e) => setGuests(e.target.value)}
               min="1"
-              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder:text-neutral-400 text-neutral-900 dark:text-white outline-none"
+              className="w-full bg-transparent border-none p-0 text-sm font-medium focus:ring-0 placeholder:text-neutral-400 dark:placeholder:text-[#524d47] text-neutral-900 dark:text-[#d4cfc7] outline-none"
             />
           </div>
         </div>
@@ -191,8 +191,8 @@ export default function SearchForm() {
             onClick={() => setShowAdvanced(!showAdvanced)}
             className={`p-3 rounded-xl border transition-colors flex items-center justify-center cursor-pointer ${
               showAdvanced
-                ? "bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border-[#b8943d]/30 dark:border-[#c9a84c]/30 text-[#b8943d] dark:text-[#c9a84c]"
-                : "border-neutral-200 dark:border-neutral-800 text-neutral-500 hover:bg-neutral-50 dark:hover:bg-neutral-800"
+                ? "bg-[#b8943d]/10 dark:bg-[#c9a84c]/[0.08] border-[#b8943d]/30 dark:border-[#c9a84c]/[0.18] text-[#b8943d] dark:text-[#c9a84c]"
+                : "border-neutral-200 dark:border-[#fff8dc]/[0.07] text-neutral-500 dark:text-[#8a8278] hover:bg-neutral-50 dark:hover:bg-[#fff8dc]/[0.04]"
             }`}
             title="Advanced Filters"
           >
@@ -201,7 +201,7 @@ export default function SearchForm() {
 
           <button
             type="submit"
-            className="flex-1 md:flex-none bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white font-semibold h-11 px-5 rounded-xl flex items-center justify-center gap-2 shadow-md shadow-[#b8943d]/15 transition-all cursor-pointer"
+            className="flex-1 md:flex-none btn-primary h-11 px-5 rounded-xl flex items-center justify-center gap-2 cursor-pointer"
           >
             <Search className="w-4 h-4" />
             <span>Search</span>
@@ -211,41 +211,41 @@ export default function SearchForm() {
 
       {/* Advanced Filters Panel */}
       {showAdvanced && (
-        <div className="bg-white dark:bg-[#12121e] border border-neutral-200 dark:border-neutral-800 p-5 rounded-2xl shadow-xl grid grid-cols-1 sm:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2 duration-200 text-neutral-900 dark:text-white">
+        <div className="bg-white dark:bg-[#141310] border border-neutral-200 dark:border-[#fff8dc]/[0.07] p-5 rounded-2xl shadow-xl grid grid-cols-1 sm:grid-cols-3 gap-4 animate-in fade-in slide-in-from-top-2 duration-200 text-neutral-900 dark:text-[#d4cfc7]">
           {/* Min Price */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Min Price (ETB)</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]">Min Price (ETB)</label>
             <input
               type="number"
               placeholder="E.g. 1000"
               value={minPrice}
               onChange={(e) => setMinPrice(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:border-[#b8943d] dark:focus:border-[#c9a84c] focus:ring-2 focus:ring-[#b8943d]/20 outline-none text-neutral-900 dark:text-white"
+              className="w-full h-10 px-3.5 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 focus:ring-2 focus:ring-[#b8943d]/20 outline-none text-neutral-900 dark:text-[#d4cfc7]"
             />
           </div>
 
           {/* Max Price */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Max Price (ETB)</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]">Max Price (ETB)</label>
             <input
               type="number"
               placeholder="E.g. 10000"
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
-              className="w-full h-10 px-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:border-[#b8943d] dark:focus:border-[#c9a84c] focus:ring-2 focus:ring-[#b8943d]/20 outline-none text-neutral-900 dark:text-white"
+              className="w-full h-10 px-3.5 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 focus:ring-2 focus:ring-[#b8943d]/20 outline-none text-neutral-900 dark:text-[#d4cfc7]"
             />
           </div>
 
           {/* Bedrooms */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Bedrooms</label>
+            <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]">Bedrooms</label>
             <input
               type="number"
               placeholder="Any"
               value={bedrooms}
               onChange={(e) => setBedrooms(e.target.value)}
               min="0"
-              className="w-full h-10 px-3.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:border-[#b8943d] dark:focus:border-[#c9a84c] focus:ring-2 focus:ring-[#b8943d]/20 outline-none text-neutral-900 dark:text-white"
+              className="w-full h-10 px-3.5 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 focus:ring-2 focus:ring-[#b8943d]/20 outline-none text-neutral-900 dark:text-[#d4cfc7]"
             />
           </div>
         </div>

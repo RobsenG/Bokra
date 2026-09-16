@@ -38,19 +38,19 @@ export default async function EditPropertyPage({
     <div className="space-y-6 max-w-3xl font-sans">
       {/* Prominent Rejection Alert at Top of Edit Page if REJECTED */}
       {isRejected && (
-        <div className="bg-red-50 border border-red-200 rounded-2xl p-5 mb-6 shadow-2xs">
+        <div className="bg-red-50 dark:bg-[rgba(239,68,68,0.08)] border border-red-200 dark:border-[rgba(239,68,68,0.15)] rounded-2xl p-5 mb-6 shadow-2xs">
           <div className="flex items-start gap-3">
-            <AlertTriangle className="size-5 text-red-500 shrink-0 mt-0.5" />
+            <AlertTriangle className="size-5 text-red-500 dark:text-[#fca5a5] shrink-0 mt-0.5" />
             <div className="space-y-1">
-              <h3 className="text-red-800 font-semibold text-base">
+              <h3 className="text-red-800 dark:text-[#fca5a5] font-semibold text-base">
                 ⚠️ This property was rejected by admin
               </h3>
               {property.rejectionReason && (
-                <p className="text-red-700 text-sm italic mt-1 bg-white/60 p-2.5 rounded-xl border border-red-200/50">
+                <p className="text-red-700 dark:text-[#fca5a5] text-sm italic mt-1 bg-white/60 dark:bg-[#141310] p-2.5 rounded-xl border border-red-200/50 dark:border-[rgba(239,68,68,0.15)]">
                   Reason: &quot;{property.rejectionReason}&quot;
                 </p>
               )}
-              <p className="text-red-600 text-sm mt-2">
+              <p className="text-red-600 dark:text-[#fca5a5] text-sm mt-2">
                 Please update your property details and upload new or corrected
                 ownership documents below, then resubmit for review.
               </p>

@@ -16,7 +16,7 @@ export default async function RenterLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#faf9f7] dark:bg-[#0a0a0f] font-sans">
+    <div className="min-h-screen flex flex-col bg-[#faf9f7] dark:bg-[#0c0b09] font-sans">
       <Navbar />
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
         {children}

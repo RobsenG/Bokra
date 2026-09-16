@@ -22,12 +22,12 @@ export default async function RenterProfilePage() {
   return (
     <div className="space-y-6 max-w-xl mx-auto py-4">
       <div>
-        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">Your profile</h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+        <h1 className="text-2xl font-extrabold text-[#1a1208] dark:text-[#f5f0e8] tracking-tight">Your profile</h1>
+        <p className="text-sm text-[#6b5e4e] dark:text-[#8a8278] mt-0.5">
           Manage your details and contact info.
         </p>
       </div>
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm p-6 sm:p-8">
+      <div className="bg-white dark:bg-[#141310] rounded-2xl border border-black/[0.08] dark:border-[#fff8dc]/[0.06] shadow-sm p-6 sm:p-8">
         <ProfileForm user={{ ...user, role: user.role?.toString() || "RENTER" }} />
       </div>
     </div>

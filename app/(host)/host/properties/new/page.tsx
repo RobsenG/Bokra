@@ -8,7 +8,6 @@ import {
   UploadCloud,
   Loader2,
   Wand2,
-  DollarSign,
   AlertTriangle,
   FileText,
   Trash2,
@@ -288,27 +287,27 @@ export default function NewPropertyPage() {
   ];
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-3xl mx-auto px-4 py-8 space-y-6 font-sans">
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link
           href="/host/properties"
-          className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 transition-colors text-neutral-600 dark:text-neutral-300"
+          className="p-2 rounded-xl bg-neutral-100 hover:bg-neutral-200 dark:bg-[#fff8dc]/[0.04] dark:hover:bg-[#fff8dc]/[0.08] transition-colors text-neutral-600 dark:text-[#8a8278]"
         >
           <ArrowLeft className="size-4" />
         </Link>
         <div>
-          <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-white tracking-tight flex items-center gap-2">
+          <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-[#f5f0e8] tracking-tight flex items-center gap-2">
             <span>List your property</span>
             <Sparkles className="size-4 text-[#b8943d] dark:text-[#c9a84c]" />
           </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+          <p className="text-sm text-neutral-500 dark:text-[#8a8278] mt-0.5">
             Fill in your property details below
           </p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-[#12121e] rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-8 max-w-3xl mx-auto">
+      <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] shadow-sm dark:shadow-[0_1px_0_rgba(255,255,255,0.03)] p-8 max-w-3xl mx-auto">
         <form action={createProperty} onSubmit={handleSubmit} className="space-y-6">
           {/* Hidden inputs for pre-uploaded document URLs */}
           {uploadedDocs.map(
@@ -325,7 +324,7 @@ export default function NewPropertyPage() {
 
           {/* Section 1: Basic Info */}
           <div className="space-y-6">
-            <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#b8943d] dark:text-[#c9a84c] border-b border-neutral-200 dark:border-neutral-800 pb-2">
+            <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#b8943d] dark:text-[#c9a84c] border-b border-neutral-200 dark:border-[#fff8dc]/[0.05] pb-2">
               1. Property details
             </h2>
 
@@ -333,7 +332,7 @@ export default function NewPropertyPage() {
             <div className="space-y-1.5">
               <label
                 htmlFor="title"
-                className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]"
               >
                 Property name
               </label>
@@ -345,7 +344,7 @@ export default function NewPropertyPage() {
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Give your property a name"
                 required
-                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white placeholder:text-neutral-400"
+                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 text-neutral-900 dark:text-[#d4cfc7] placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
               />
             </div>
 
@@ -354,7 +353,7 @@ export default function NewPropertyPage() {
               <div className="flex items-center justify-between">
                 <label
                   htmlFor="description"
-                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]"
                 >
                   Description
                 </label>
@@ -362,7 +361,7 @@ export default function NewPropertyPage() {
                   type="button"
                   onClick={handleGenerateDescription}
                   disabled={descLoading || !title.trim()}
-                  className="flex items-center gap-1.5 px-3 py-1 rounded-lg bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white font-bold text-[11px] disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs"
+                  className="btn-primary inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-[11px] font-bold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-xs"
                   title={
                     !title.trim()
                       ? "Enter a name first"
@@ -385,7 +384,7 @@ export default function NewPropertyPage() {
                 placeholder="Describe your place..."
                 rows={4}
                 required
-                className="w-full p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white placeholder:text-neutral-400 resize-none"
+                className="w-full p-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 text-neutral-900 dark:text-[#d4cfc7] placeholder:text-neutral-400 dark:placeholder:text-[#524d47] resize-none"
               />
             </div>
 
@@ -394,7 +393,7 @@ export default function NewPropertyPage() {
               <div className="space-y-1.5">
                 <label
                   htmlFor="address"
-                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]"
                 >
                   Address
                 </label>
@@ -404,13 +403,13 @@ export default function NewPropertyPage() {
                   type="text"
                   placeholder="Street address"
                   required
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white placeholder:text-neutral-400"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 text-neutral-900 dark:text-[#d4cfc7] placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
                 />
               </div>
               <div className="space-y-1.5">
                 <label
                   htmlFor="city"
-                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                  className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]"
                 >
                   City
                 </label>
@@ -422,7 +421,7 @@ export default function NewPropertyPage() {
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="Addis Ababa"
                   required
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white placeholder:text-neutral-400"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 text-neutral-900 dark:text-[#d4cfc7] placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
                 />
               </div>
             </div>
@@ -431,7 +430,7 @@ export default function NewPropertyPage() {
             <div className="space-y-1.5">
               <label
                 htmlFor="amenities"
-                className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]"
               >
                 What does your place offer? (comma separated)
               </label>
@@ -442,7 +441,7 @@ export default function NewPropertyPage() {
                 value={amenities}
                 onChange={(e) => setAmenities(e.target.value)}
                 placeholder="WiFi, Kitchen, Air Conditioning, Free Parking"
-                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white placeholder:text-neutral-400"
+                className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 text-neutral-900 dark:text-[#d4cfc7] placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
               />
             </div>
 
@@ -452,7 +451,7 @@ export default function NewPropertyPage() {
                 <div className="flex items-center justify-between gap-1 h-5">
                   <label
                     htmlFor="pricePerNight"
-                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 truncate"
+                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47] truncate"
                   >
                     Price (ETB)
                   </label>
@@ -460,7 +459,7 @@ export default function NewPropertyPage() {
                     type="button"
                     onClick={handleSuggestPrice}
                     disabled={priceLoading || !city.trim()}
-                    className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white text-[10px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs shrink-0 whitespace-nowrap"
+                    className="flex items-center gap-1 px-2 py-0.5 rounded-lg bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#d4b458] text-white dark:text-[#0c0b09] text-[10px] font-bold disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-xs shrink-0 whitespace-nowrap"
                     title={!city.trim() ? "Enter a city first" : "Get AI price suggestion"}
                   >
                     {priceLoading ? (
@@ -481,14 +480,14 @@ export default function NewPropertyPage() {
                   value={pricePerNight}
                   onChange={(e) => setPricePerNight(e.target.value)}
                   placeholder="Price per night"
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white placeholder:text-neutral-400"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 text-neutral-900 dark:text-[#d4cfc7] placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
                 />
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center h-5">
                   <label
                     htmlFor="bedrooms"
-                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]"
                   >
                     Bedrooms
                   </label>
@@ -502,14 +501,14 @@ export default function NewPropertyPage() {
                   value={bedrooms}
                   onChange={(e) => setBedrooms(e.target.value)}
                   placeholder="How many bedrooms?"
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white placeholder:text-neutral-400"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 text-neutral-900 dark:text-[#d4cfc7] placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
                 />
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center h-5">
                   <label
                     htmlFor="bathrooms"
-                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]"
                   >
                     Bathrooms
                   </label>
@@ -523,14 +522,14 @@ export default function NewPropertyPage() {
                   value={bathrooms}
                   onChange={(e) => setBathrooms(e.target.value)}
                   placeholder="1"
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white placeholder:text-neutral-400"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 text-neutral-900 dark:text-[#d4cfc7] placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
                 />
               </div>
               <div className="space-y-1.5">
                 <div className="flex items-center h-5">
                   <label
                     htmlFor="maxGuests"
-                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                    className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]"
                   >
                     Max guests
                   </label>
@@ -542,7 +541,7 @@ export default function NewPropertyPage() {
                   min="1"
                   required
                   placeholder="2"
-                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 text-neutral-900 dark:text-white placeholder:text-neutral-400"
+                  className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 text-neutral-900 dark:text-[#d4cfc7] placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
                 />
               </div>
             </div>
@@ -551,7 +550,7 @@ export default function NewPropertyPage() {
             <div className="space-y-1.5">
               <label
                 htmlFor="propertyType"
-                className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400"
+                className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]"
               >
                 Property Type
               </label>
@@ -561,51 +560,51 @@ export default function NewPropertyPage() {
                   name="propertyType"
                   value={propertyType}
                   onChange={(e) => setPropertyType(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-neutral-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/20 focus:border-[#b8943d] dark:focus:border-[#c9a84c] transition-all duration-200 appearance-none cursor-pointer pr-10"
+                  className="w-full px-4 py-2.5 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-neutral-900 dark:text-[#d4cfc7] text-sm focus:outline-none focus:ring-2 focus:ring-[#b8943d]/20 dark:focus:ring-[#c9a84c]/10 focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 transition-all duration-200 appearance-none cursor-pointer pr-10"
                 >
-                  <option value="Studio">Studio</option>
-                  <option value="Apartment">Apartment</option>
-                  <option value="House">House</option>
-                  <option value="Guesthouse">Guesthouse</option>
-                  <option value="Villa">Villa</option>
+                  <option value="Studio" className="dark:bg-[#1c1a16] dark:text-[#d4cfc7]">Studio</option>
+                  <option value="Apartment" className="dark:bg-[#1c1a16] dark:text-[#d4cfc7]">Apartment</option>
+                  <option value="House" className="dark:bg-[#1c1a16] dark:text-[#d4cfc7]">House</option>
+                  <option value="Guesthouse" className="dark:bg-[#1c1a16] dark:text-[#d4cfc7]">Guesthouse</option>
+                  <option value="Villa" className="dark:bg-[#1c1a16] dark:text-[#d4cfc7]">Villa</option>
                 </select>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 dark:text-neutral-400 pointer-events-none" />
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500 dark:text-[#8a8278] pointer-events-none" />
               </div>
             </div>
 
             {/* AI Pricing Suggestion Card */}
             {priceSuggestion && (
-              <div className="rounded-2xl border border-[#b8943d]/20 dark:border-[#c9a84c]/20 bg-[#b8943d]/5 dark:bg-[#c9a84c]/5 p-4 space-y-3">
+              <div className="rounded-2xl border border-[#b8943d]/20 dark:border-[#c9a84c]/[0.15] bg-[#b8943d]/5 dark:bg-[#c9a84c]/[0.06] p-4 space-y-3">
                 <div className="flex items-center gap-2 text-[#b8943d] dark:text-[#c9a84c] font-extrabold text-xs">
                   <Sparkles className="size-4 shrink-0" />
                   <span>Price suggestion for {city}</span>
                 </div>
 
-                <div className="border-t border-[#b8943d]/15 dark:border-[#c9a84c]/15 pt-3 space-y-2">
+                <div className="border-t border-[#b8943d]/15 dark:border-[#c9a84c]/[0.12] pt-3 space-y-2">
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold">
+                    <span className="text-xs text-neutral-500 dark:text-[#8a8278] font-semibold">
                       Suggested Price
                     </span>
                     <span className="text-lg font-black text-[#b8943d] dark:text-[#c9a84c]">
                       {priceSuggestion.suggestedPrice.toLocaleString()} ETB
-                      <span className="text-xs font-normal text-neutral-500 dark:text-neutral-400">
+                      <span className="text-xs font-normal text-neutral-500 dark:text-[#8a8278]">
                         {" "}
                         / night
                       </span>
                     </span>
                   </div>
                   <div className="flex items-baseline justify-between">
-                    <span className="text-xs text-neutral-500 dark:text-neutral-400 font-semibold">
+                    <span className="text-xs text-neutral-500 dark:text-[#8a8278] font-semibold">
                       Market Range
                     </span>
-                    <span className="text-sm font-bold text-neutral-900 dark:text-white">
+                    <span className="text-sm font-bold text-neutral-900 dark:text-[#f5f0e8]">
                       {priceSuggestion.minRange.toLocaleString()} –{" "}
                       {priceSuggestion.maxRange.toLocaleString()} ETB
                     </span>
                   </div>
-                  <div className="border-t border-[#b8943d]/15 dark:border-[#c9a84c]/15 pt-2">
-                    <p className="text-[11px] text-neutral-500 dark:text-neutral-400 italic leading-relaxed">
-                      <span className="font-bold text-neutral-900 dark:text-white not-italic">
+                  <div className="border-t border-[#b8943d]/15 dark:border-[#c9a84c]/[0.12] pt-2">
+                    <p className="text-[11px] text-neutral-500 dark:text-[#8a8278] italic leading-relaxed">
+                      <span className="font-bold text-neutral-900 dark:text-[#f5f0e8] not-italic">
                         Why:{" "}
                       </span>
                       {priceSuggestion.reasoning}
@@ -615,7 +614,7 @@ export default function NewPropertyPage() {
 
                 {/* Price warning */}
                 {priceWarning === "above" && (
-                  <div className="flex items-start gap-2 p-2.5 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-[#b8943d]/20 dark:border-[#c9a84c]/20 text-xs text-[#b8943d] dark:text-[#c9a84c]">
+                  <div className="flex items-start gap-2 p-2.5 rounded-xl bg-[#b8943d]/10 dark:bg-[rgba(245,158,11,0.08)] border border-[#b8943d]/20 dark:border-[rgba(245,158,11,0.15)] text-xs text-[#b8943d] dark:text-[#fcd34d]">
                     <TrendingUp className="size-3.5 shrink-0 mt-0.5" />
                     <span>
                       Your price is above the suggested range. Higher prices might mean fewer bookings.
@@ -623,7 +622,7 @@ export default function NewPropertyPage() {
                   </div>
                 )}
                 {priceWarning === "below" && (
-                  <div className="flex items-start gap-2 p-2.5 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-[#b8943d]/20 dark:border-[#c9a84c]/20 text-xs text-[#b8943d] dark:text-[#c9a84c]">
+                  <div className="flex items-start gap-2 p-2.5 rounded-xl bg-[#b8943d]/10 dark:bg-[rgba(245,158,11,0.08)] border border-[#b8943d]/20 dark:border-[rgba(245,158,11,0.15)] text-xs text-[#b8943d] dark:text-[#fcd34d]">
                     <TrendingDown className="size-3.5 shrink-0 mt-0.5" />
                     <span>
                       Your price is below market rate. You might be missing out on earnings.
@@ -638,14 +637,14 @@ export default function NewPropertyPage() {
                     onClick={() =>
                       setPricePerNight(String(priceSuggestion.suggestedPrice))
                     }
-                    className="flex-1 py-2 rounded-xl bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white text-xs font-bold transition-colors cursor-pointer shadow-xs"
+                    className="btn-primary flex-1 py-2 rounded-xl text-xs font-bold cursor-pointer shadow-xs"
                   >
                     ✓ Use {priceSuggestion.suggestedPrice.toLocaleString()} ETB
                   </button>
                   <button
                     type="button"
                     onClick={() => setPriceSuggestion(null)}
-                    className="px-3 py-2 rounded-xl border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 text-xs font-semibold hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                    className="btn-secondary px-3 py-2 rounded-xl text-xs font-semibold cursor-pointer"
                   >
                     Keep my price
                   </button>
@@ -655,10 +654,10 @@ export default function NewPropertyPage() {
 
             {/* Image Upload */}
             <div className="space-y-2">
-              <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+              <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]">
                 Photos
               </label>
-              <div className="relative group border-2 border-dashed border-neutral-200 dark:border-neutral-800 hover:border-[#b8943d] dark:hover:border-[#c9a84c] rounded-2xl p-6 text-center cursor-pointer transition-colors">
+              <div className="relative group border-2 border-dashed border-neutral-200 dark:border-[#fff8dc]/[0.07] hover:border-[#b8943d] dark:hover:border-[#c9a84c] rounded-2xl p-6 text-center cursor-pointer transition-colors">
                 <input
                   id="images"
                   name="images"
@@ -670,14 +669,14 @@ export default function NewPropertyPage() {
                   }
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                 />
-                <div className="flex flex-col items-center justify-center space-y-2 text-neutral-500 dark:text-neutral-400">
+                <div className="flex flex-col items-center justify-center space-y-2 text-neutral-500 dark:text-[#8a8278]">
                   <UploadCloud className="size-8 group-hover:text-[#b8943d] dark:group-hover:text-[#c9a84c] transition-colors" />
-                  <p className="text-xs font-semibold text-neutral-900 dark:text-white">
+                  <p className="text-xs font-semibold text-neutral-900 dark:text-[#f5f0e8]">
                     {imagesSelected > 0
                       ? `${imagesSelected} photos selected`
                       : "Upload photos of your place"}
                   </p>
-                  <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                  <p className="text-[10px] text-neutral-500 dark:text-[#524d47]">
                     JPG, PNG or WEBP files supported
                   </p>
                 </div>
@@ -687,46 +686,46 @@ export default function NewPropertyPage() {
 
           {/* Section 2: Ownership Proof Step */}
           <div className="space-y-6 pt-4">
-            <div className="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-2">
+            <div className="flex items-center justify-between border-b border-neutral-200 dark:border-[#fff8dc]/[0.05] pb-2">
               <div>
                 <h2 className="text-sm font-extrabold uppercase tracking-wider text-[#b8943d] dark:text-[#c9a84c] flex items-center gap-2">
                   <ShieldCheck className="size-4 text-[#b8943d] dark:text-[#c9a84c]" />
                   2. Upload ownership documents
                 </h2>
-                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                <p className="text-xs text-neutral-500 dark:text-[#8a8278] mt-0.5">
                   Upload a document showing you own or have rights to this property
                 </p>
               </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] px-2.5 py-1 rounded-full border border-[#b8943d]/20 dark:border-[#c9a84c]/20">
+              <span className="text-[10px] font-bold uppercase tracking-wider bg-[#b8943d]/10 dark:bg-[rgba(201,168,76,0.08)] text-[#b8943d] dark:text-[#c9a84c] px-2.5 py-1 rounded-full border border-[#b8943d]/20 dark:border-[rgba(201,168,76,0.15)]">
                 AI Verified
               </span>
             </div>
 
             {/* Collapsible Info Section */}
-            <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-neutral-50 dark:bg-neutral-900/50 overflow-hidden">
+            <div className="rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] bg-neutral-50 dark:bg-[#fff8dc]/[0.02] overflow-hidden">
               <button
                 type="button"
                 onClick={() => setShowDocHelp(!showDocHelp)}
-                className="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-neutral-900 dark:text-white hover:bg-neutral-100 dark:hover:bg-neutral-800/50 transition-colors"
+                className="w-full px-4 py-3 flex items-center justify-between text-xs font-bold text-neutral-900 dark:text-[#f5f0e8] hover:bg-neutral-100 dark:hover:bg-[#fff8dc]/[0.04] transition-colors"
               >
                 <span className="flex items-center gap-2">
                   <HelpCircle className="size-4 text-[#b8943d] dark:text-[#c9a84c]" />
                   Which documents work?
                 </span>
                 {showDocHelp ? (
-                  <ChevronUp className="size-4 text-neutral-500 dark:text-neutral-400" />
+                  <ChevronUp className="size-4 text-neutral-500 dark:text-[#8a8278]" />
                 ) : (
-                  <ChevronDown className="size-4 text-neutral-500 dark:text-neutral-400" />
+                  <ChevronDown className="size-4 text-neutral-500 dark:text-[#8a8278]" />
                 )}
               </button>
 
               {showDocHelp && (
-                <div className="px-4 pb-4 pt-1 text-xs space-y-3 border-t border-neutral-200 dark:border-neutral-800">
+                <div className="px-4 pb-4 pt-1 text-xs space-y-3 border-t border-neutral-200 dark:border-[#fff8dc]/[0.05]">
                   <div>
                     <p className="font-bold text-[#b8943d] dark:text-[#c9a84c] mb-1">
                       📋 Accepted Documents:
                     </p>
-                    <ul className="list-disc list-inside space-y-0.5 text-neutral-600 dark:text-neutral-400">
+                    <ul className="list-disc list-inside space-y-0.5 text-neutral-600 dark:text-[#8a8278]">
                       <li>Property Title Deed or Land Certificate</li>
                       <li>House Registration Certificate (Kebele)</li>
                       <li>Lease Agreement (if you are subletting)</li>
@@ -735,10 +734,10 @@ export default function NewPropertyPage() {
                     </ul>
                   </div>
                   <div>
-                    <p className="font-bold text-red-600 dark:text-red-400 mb-1">
+                    <p className="font-bold text-red-600 dark:text-[#fca5a5] mb-1">
                       ❌ Not Accepted:
                     </p>
-                    <ul className="list-disc list-inside space-y-0.5 text-neutral-600 dark:text-neutral-400">
+                    <ul className="list-disc list-inside space-y-0.5 text-neutral-600 dark:text-[#8a8278]">
                       <li>Personal ID only (upload in identity verification instead)</li>
                       <li>Utility bills alone</li>
                       <li>Photos of the property</li>
@@ -750,7 +749,7 @@ export default function NewPropertyPage() {
             </div>
 
             {docError && (
-              <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 rounded-xl text-xs text-red-700 dark:text-red-300 flex items-center gap-2 font-medium">
+              <div className="p-3 bg-red-50 dark:bg-[rgba(239,68,68,0.08)] border border-red-200 dark:border-[rgba(239,68,68,0.15)] rounded-xl text-xs text-red-700 dark:text-[#fca5a5] flex items-center gap-2 font-medium">
                 <AlertTriangle className="size-4 shrink-0" />
                 <span>{docError}</span>
               </div>
@@ -767,16 +766,16 @@ export default function NewPropertyPage() {
                     key={typeObj.label}
                     className={`p-4 rounded-2xl border transition-all ${
                       uploaded
-                        ? "bg-[#b8943d]/5 dark:bg-[#c9a84c]/5 border-[#b8943d]/20 dark:border-[#c9a84c]/20"
-                        : "bg-neutral-50/50 dark:bg-neutral-900/30 border-neutral-200 dark:border-neutral-800"
+                        ? "bg-[#b8943d]/5 dark:bg-[rgba(201,168,76,0.06)] border-[#b8943d]/20 dark:border-[rgba(201,168,76,0.18)]"
+                        : "bg-neutral-50/50 dark:bg-[#fff8dc]/[0.02] border-neutral-200 dark:border-[#fff8dc]/[0.06]"
                     }`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="space-y-0.5">
-                        <p className="text-xs font-bold text-neutral-900 dark:text-white">
+                        <p className="text-xs font-bold text-neutral-900 dark:text-[#f5f0e8]">
                           {typeObj.label}
                         </p>
-                        <p className="text-[10px] text-neutral-500 dark:text-neutral-400">
+                        <p className="text-[10px] text-neutral-500 dark:text-[#8a8278]">
                           {typeObj.desc}
                         </p>
                       </div>
@@ -784,13 +783,13 @@ export default function NewPropertyPage() {
                         <button
                           type="button"
                           onClick={() => removeDoc(typeObj.label)}
-                          className="p-1 rounded-lg text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors cursor-pointer"
+                          className="p-1 rounded-lg text-neutral-500 dark:text-[#8a8278] hover:text-red-600 dark:hover:text-[#fca5a5] transition-colors cursor-pointer"
                           title="Remove document"
                         >
                           <Trash2 className="size-4" />
                         </button>
                       ) : (
-                        <label className="px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs font-semibold text-neutral-900 dark:text-white hover:border-[#b8943d] dark:hover:border-[#c9a84c] transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs">
+                        <label className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#1c1a16] border border-neutral-200 dark:border-[#fff8dc]/[0.08] text-xs font-semibold text-neutral-900 dark:text-[#d4cfc7] hover:border-[#b8943d] dark:hover:border-[#c9a84c] transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs">
                           <UploadCloud className="size-3.5 text-[#b8943d] dark:text-[#c9a84c]" />
                           <span>Upload</span>
                           <input
@@ -806,17 +805,17 @@ export default function NewPropertyPage() {
 
                     {/* File preview & AI check result */}
                     {uploaded && (
-                      <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800 space-y-2">
-                        <div className="flex items-center gap-2 text-xs text-neutral-900 dark:text-white font-medium">
+                      <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-[#fff8dc]/[0.05] space-y-2">
+                        <div className="flex items-center gap-2 text-xs text-neutral-900 dark:text-[#f5f0e8] font-medium">
                           <FileText className="size-4 text-[#b8943d] dark:text-[#c9a84c] shrink-0" />
                           <span className="truncate">{uploaded.file.name}</span>
-                          <span className="text-[10px] text-neutral-500 dark:text-neutral-400 shrink-0">
+                          <span className="text-[10px] text-neutral-500 dark:text-[#8a8278] shrink-0">
                             ({(uploaded.file.size / 1024).toFixed(1)} KB)
                           </span>
                         </div>
 
                         {/* AI Check badge */}
-                        <div className="bg-white dark:bg-[#1a1a2e] rounded-xl p-3 border border-[#b8943d]/20 dark:border-[#c9a84c]/20 text-xs space-y-2">
+                        <div className="bg-white dark:bg-[#1c1a16] rounded-xl p-3 border border-[#b8943d]/20 dark:border-[rgba(201,168,76,0.15)] text-xs space-y-2">
                           {uploaded.aiCheckStatus === "scanning" ? (
                             <div className="flex items-center gap-2 text-[#b8943d] dark:text-[#c9a84c] font-semibold">
                               <Loader2 className="size-4 animate-spin" />
@@ -832,22 +831,22 @@ export default function NewPropertyPage() {
                                   </span>
                                 )}
                                 {uploaded.aiResult.status === "warning" && (
-                                  <span className="text-amber-700 dark:text-amber-400 flex items-center gap-1.5">
+                                  <span className="text-amber-700 dark:text-[#fcd34d] flex items-center gap-1.5">
                                     🤖 AI Check Needs Review
                                   </span>
                                 )}
                                 {uploaded.aiResult.status === "rejected" && (
-                                  <span className="text-red-700 dark:text-red-400 flex items-center gap-1.5">
+                                  <span className="text-red-700 dark:text-[#fca5a5] flex items-center gap-1.5">
                                     🤖 AI Check Failed
                                   </span>
                                 )}
-                                <span className="text-[11px] text-neutral-500 dark:text-neutral-400">
+                                <span className="text-[11px] text-neutral-500 dark:text-[#8a8278]">
                                   {uploaded.aiResult.confidence}%
                                 </span>
                               </div>
 
                               {/* Progress bar */}
-                              <div className="w-full bg-neutral-100 dark:bg-neutral-800 h-2 rounded-full overflow-hidden border border-neutral-200 dark:border-neutral-700">
+                              <div className="w-full bg-neutral-100 dark:bg-[#fff8dc]/[0.04] h-2 rounded-full overflow-hidden border border-neutral-200 dark:border-[#fff8dc]/[0.06]">
                                 <div
                                   className="bg-[#b8943d] dark:bg-[#c9a84c] h-2 rounded-full transition-all duration-500"
                                   style={{
@@ -857,7 +856,7 @@ export default function NewPropertyPage() {
                               </div>
 
                               {/* Check items */}
-                              <div className="space-y-1 text-[11px] text-neutral-500 dark:text-neutral-400">
+                              <div className="space-y-1 text-[11px] text-neutral-500 dark:text-[#8a8278]">
                                 {uploaded.aiResult.status === "approved" && (
                                   <>
                                     <p className="flex items-center gap-1 text-[#b8943d] dark:text-[#c9a84c]">
@@ -880,25 +879,25 @@ export default function NewPropertyPage() {
                                     <p className="flex items-center gap-1 text-[#b8943d] dark:text-[#c9a84c]">
                                       ✓ File size looks good
                                     </p>
-                                    <p className="flex items-center gap-1 text-amber-700 dark:text-amber-400">
+                                    <p className="flex items-center gap-1 text-amber-700 dark:text-[#fcd34d]">
                                       ⚠ Keywords didn&apos;t match property title
                                     </p>
                                   </>
                                 )}
 
                                 {uploaded.aiResult.status === "rejected" && (
-                                  <p className="flex items-center gap-1 text-red-700 dark:text-red-400">
+                                  <p className="flex items-center gap-1 text-red-700 dark:text-[#fca5a5]">
                                     ✗ {uploaded.aiResult.message}
                                   </p>
                                 )}
                               </div>
 
                               {/* Reasoning quote */}
-                              <p className="text-[11px] text-neutral-900 dark:text-white italic bg-neutral-50 dark:bg-neutral-900/50 p-2 rounded-lg border border-neutral-200 dark:border-neutral-800">
+                              <p className="text-[11px] text-neutral-900 dark:text-[#d4cfc7] italic bg-neutral-50 dark:bg-[#fff8dc]/[0.02] p-2 rounded-lg border border-neutral-200 dark:border-[#fff8dc]/[0.05]">
                                 &quot;{uploaded.aiResult.message}&quot;
                               </p>
 
-                              <p className="text-[10px] text-neutral-500 dark:text-neutral-400 uppercase tracking-wider font-semibold pt-0.5">
+                              <p className="text-[10px] text-neutral-500 dark:text-[#524d47] uppercase tracking-wider font-semibold pt-0.5">
                                 Powered by Bokra Stay AI ·{" "}
                                 {uploaded.aiResult.status === "rejected"
                                   ? "Document Not Accepted"
@@ -913,17 +912,17 @@ export default function NewPropertyPage() {
                 );
               })}
             </div>
-            <p className="text-[11px] text-neutral-500 dark:text-neutral-400 italic">
+            <p className="text-[11px] text-neutral-500 dark:text-[#8a8278] italic">
               We review all documents within 48 hours.
             </p>
           </div>
 
           {/* Action Buttons / Navigation */}
-          <div className="flex justify-between items-center mt-8 pt-6 border-t border-neutral-200 dark:border-neutral-800">
+          <div className="flex justify-between items-center mt-8 pt-6 border-t border-neutral-200 dark:border-[#fff8dc]/[0.05]">
             <Link href="/host/properties">
               <button
                 type="button"
-                className="px-5 py-2.5 rounded-xl text-xs font-semibold border border-neutral-200 dark:border-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                className="btn-secondary px-5 py-2.5 rounded-xl text-xs font-semibold cursor-pointer"
               >
                 Cancel
               </button>
@@ -931,7 +930,7 @@ export default function NewPropertyPage() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 rounded-xl text-xs font-semibold bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] active:opacity-90 text-white shadow-md shadow-[#b8943d]/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center gap-2"
+              className="btn-primary px-6 py-2.5 rounded-xl text-xs font-semibold cursor-pointer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <>

@@ -69,46 +69,46 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-5 shadow-xs space-y-4">
+    <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] p-5 shadow-xs space-y-4">
       <div className="flex justify-between items-start gap-4">
         <div className="space-y-1">
-          <h3 className="font-bold text-neutral-800 dark:text-neutral-200 text-sm line-clamp-1">
+          <h3 className="font-bold text-neutral-800 dark:text-[#f5f0e8] text-sm line-clamp-1">
             {property.title}
           </h3>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Submitted by: <span className="font-semibold text-neutral-800 dark:text-neutral-200">{property.host.name || property.host.email}</span>
+          <p className="text-xs text-neutral-500 dark:text-[#8a8278]">
+            Submitted by: <span className="font-semibold text-neutral-800 dark:text-[#f5f0e8]">{property.host.name || property.host.email}</span>
           </p>
-          <p className="text-xs text-neutral-500 dark:text-neutral-400">
-            Location: <span className="font-semibold text-neutral-800 dark:text-neutral-200">{property.address}, {property.city}</span>
+          <p className="text-xs text-neutral-500 dark:text-[#8a8278]">
+            Location: <span className="font-semibold text-neutral-800 dark:text-[#f5f0e8]">{property.address}, {property.city}</span>
           </p>
         </div>
-        <span className="text-xs font-bold text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/30 px-2.5 py-1 rounded-full shrink-0">
+        <span className="text-xs font-bold text-teal-600 dark:text-[#c9a84c] bg-teal-50 dark:bg-[#c9a84c]/10 px-2.5 py-1 rounded-full shrink-0">
           {property.pricePerNight.toLocaleString()} ETB / night
         </span>
       </div>
 
       {property.images[0] && (
         <div
-          className="h-32 w-full rounded-xl bg-cover bg-center bg-neutral-100 dark:bg-neutral-800"
+          className="h-32 w-full rounded-xl bg-cover bg-center bg-neutral-100 dark:bg-[#1c1a16]"
           style={{ backgroundImage: `url(${property.images[0]})` }}
         />
       )}
 
       {/* Uploaded Property Ownership Documents */}
-      <div className="bg-neutral-50 dark:bg-neutral-800/40 rounded-xl p-3.5 border border-neutral-100 dark:border-neutral-800 space-y-2">
-        <p className="text-xs font-bold text-neutral-700 dark:text-neutral-300 flex items-center gap-1.5">
-          <FileText className="size-4 text-teal-600" />
+      <div className="bg-neutral-50 dark:bg-[#1c1a16] rounded-xl p-3.5 border border-neutral-100 dark:border-[#fff8dc]/[0.06] space-y-2">
+        <p className="text-xs font-bold text-neutral-700 dark:text-[#d4cfc7] flex items-center gap-1.5">
+          <FileText className="size-4 text-teal-600 dark:text-[#c9a84c]" />
           <span>Property Ownership Proof Documents</span>
         </p>
         {property.documents.length === 0 ? (
-          <p className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
+          <p className="text-[11px] text-amber-600 dark:text-[#fcd34d] font-medium">
             ⚠️ No explicit ownership docs uploaded for this listing.
           </p>
         ) : (
           <div className="space-y-1.5">
             {property.documents.map((doc) => (
-              <div key={doc.id} className="flex items-center justify-between bg-white dark:bg-neutral-900 p-2 px-3 rounded-lg border border-neutral-200/60 dark:border-neutral-800 text-xs">
-                <span className="font-medium text-neutral-700 dark:text-neutral-300 truncate max-w-[180px]">
+              <div key={doc.id} className="flex items-center justify-between bg-white dark:bg-[#141310] p-2 px-3 rounded-lg border border-neutral-200/60 dark:border-[#fff8dc]/[0.06] text-xs">
+                <span className="font-medium text-neutral-700 dark:text-[#d4cfc7] truncate max-w-[180px]">
                   {doc.type.replace(/_/g, " ")}
                 </span>
                 <DocumentLink fileUrl={doc.fileUrl} label="View Document" />
@@ -121,7 +121,7 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
       <div className="flex justify-end">
         <Link
           href={`/admin/verifications/${property.id}`}
-          className="text-xs font-bold text-teal-600 dark:text-teal-400 hover:underline inline-flex items-center gap-1"
+          className="text-xs font-bold text-teal-600 dark:text-[#c9a84c] hover:underline inline-flex items-center gap-1"
         >
           <span>View Full Details</span>
           <ArrowRight className="size-3.5" />
@@ -129,7 +129,7 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 rounded-xl text-xs text-red-700 dark:text-red-300 flex items-center gap-2">
+        <div className="p-3 bg-red-50 dark:bg-[#ef4444]/10 border border-red-200 dark:border-[#ef4444]/20 rounded-xl text-xs text-red-700 dark:text-[#fca5a5] flex items-center gap-2">
           <AlertCircle className="size-4 shrink-0" />
           <span>{error}</span>
         </div>
@@ -137,9 +137,9 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
 
       {/* Reject Reason Form Inline */}
       {showRejectForm ? (
-        <form onSubmit={handleRejectSubmit} className="space-y-3 p-3.5 bg-red-50/50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/40 rounded-xl">
+        <form onSubmit={handleRejectSubmit} className="space-y-3 p-3.5 bg-red-50/50 dark:bg-[#ef4444]/10 border border-red-200 dark:border-[#ef4444]/20 rounded-xl">
           <div className="flex items-center justify-between">
-            <label className="text-xs font-bold text-red-800 dark:text-red-300">
+            <label className="text-xs font-bold text-red-800 dark:text-[#fca5a5]">
               Reason for Rejection (Required, min 10 chars)
             </label>
             <button
@@ -148,7 +148,7 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
                 setShowRejectForm(false);
                 setError(null);
               }}
-              className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 p-1 rounded cursor-pointer"
+              className="text-neutral-400 dark:text-[#8a8278] hover:text-neutral-600 dark:hover:text-[#d4cfc7] p-1 rounded cursor-pointer"
             >
               <X className="size-4" />
             </button>
@@ -159,14 +159,14 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
             onChange={(e) => setReason(e.target.value)}
             placeholder="e.g. Documents appear incomplete. The ownership proof does not match the property address provided."
             required
-            className="w-full p-2.5 rounded-lg border border-red-200 dark:border-red-900/40 bg-white dark:bg-neutral-900 text-xs text-neutral-900 dark:text-white outline-none focus:ring-2 focus:ring-red-500/20"
+            className="w-full p-2.5 rounded-lg border border-red-200 dark:border-[#ef4444]/30 bg-white dark:bg-[#141310] text-xs text-neutral-900 dark:text-[#f5f0e8] outline-none focus:ring-2 focus:ring-red-500/20"
           />
           <div className="flex gap-2">
             <button
               type="button"
               onClick={() => setShowRejectForm(false)}
               disabled={loading}
-              className="flex-1 py-2 rounded-lg text-xs font-semibold border border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+              className="flex-1 py-2 rounded-lg text-xs font-semibold border border-neutral-200 dark:border-[#fff8dc]/[0.07] text-neutral-600 dark:text-[#d4cfc7] hover:bg-neutral-100 dark:hover:bg-[#1c1a16] transition-colors cursor-pointer"
             >
               Cancel
             </button>
@@ -185,7 +185,7 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
             type="button"
             onClick={() => setShowRejectForm(true)}
             disabled={loading}
-            className="flex-1 text-xs py-2.5 rounded-xl border border-red-200 dark:border-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/20 font-semibold transition-colors cursor-pointer"
+            className="flex-1 text-xs py-2.5 rounded-xl border border-red-200 dark:border-[#ef4444]/20 text-red-600 dark:text-[#fca5a5] hover:bg-red-50 dark:hover:bg-[#ef4444]/10 font-semibold transition-colors cursor-pointer"
           >
             Reject Listing
           </button>
@@ -193,7 +193,7 @@ export default function PropertyVerificationCard({ property }: PropertyVerificat
             type="button"
             onClick={handleApprove}
             disabled={loading}
-            className="flex-1 text-xs py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold shadow-md shadow-teal-600/10 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+            className="flex-1 text-xs py-2.5 rounded-xl bg-[#c9a84c] hover:bg-[#d4b458] text-[#0c0b09] font-bold shadow-md shadow-[#c9a84c]/20 transition-colors cursor-pointer flex items-center justify-center gap-1.5"
           >
             {loading ? <Loader2 className="size-3.5 animate-spin" /> : "Approve & Publish Listing"}
           </button>

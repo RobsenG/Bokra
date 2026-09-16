@@ -118,65 +118,65 @@ export default async function AdminSystemPage() {
     <div className="space-y-8 pb-12">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">
+        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-[#f5f0e8] tracking-tight">
           System Health &amp; Diagnostics
         </h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+        <p className="text-sm text-neutral-500 dark:text-[#8a8278] mt-0.5">
           Platform-wide operations, audit log feed, and infrastructure parameters.
         </p>
       </div>
 
       {/* SECTION 1 — Platform Health (Stats Grid) */}
       <div className="space-y-4">
-        <h2 className="font-bold text-neutral-800 dark:text-white text-base flex items-center gap-2">
-          <Activity className="size-4 text-teal-600" />
+        <h2 className="font-bold text-neutral-800 dark:text-[#f5f0e8] text-base flex items-center gap-2">
+          <Activity className="size-4 text-teal-600 dark:text-[#c9a84c]" />
           <span>Platform Health Metrics</span>
         </h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3.5">
-          <div className="bg-white dark:bg-neutral-900 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs">
-            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Total Users</p>
-            <p className="text-xl font-extrabold text-neutral-800 dark:text-white mt-1">{totalUsers}</p>
-            <p className="text-[10px] text-neutral-400 mt-0.5">{totalHosts} Hosts • {totalRenters} Renters</p>
+          <div className="bg-white dark:bg-[#141310] p-4 rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] shadow-xs">
+            <p className="text-[10px] font-bold text-neutral-400 dark:text-[#8a8278] uppercase tracking-wider">Total Users</p>
+            <p className="text-xl font-extrabold text-neutral-800 dark:text-[#f5f0e8] mt-1">{totalUsers}</p>
+            <p className="text-[10px] text-neutral-400 dark:text-[#8a8278] mt-0.5">{totalHosts} Hosts • {totalRenters} Renters</p>
           </div>
 
-          <div className="bg-white dark:bg-neutral-900 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs">
-            <p className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider">Total Properties</p>
-            <p className="text-xl font-extrabold text-neutral-800 dark:text-white mt-1">{totalProperties}</p>
-            <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold mt-0.5">{approvedProperties} Approved</p>
+          <div className="bg-white dark:bg-[#141310] p-4 rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] shadow-xs">
+            <p className="text-[10px] font-bold text-neutral-400 dark:text-[#8a8278] uppercase tracking-wider">Total Properties</p>
+            <p className="text-xl font-extrabold text-neutral-800 dark:text-[#f5f0e8] mt-1">{totalProperties}</p>
+            <p className="text-[10px] text-emerald-600 dark:text-[#86efac] font-bold mt-0.5">{approvedProperties} Approved</p>
           </div>
 
-          <div className="bg-white dark:bg-neutral-900 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs">
-            <p className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">Pending Review</p>
-            <p className="text-xl font-extrabold text-orange-700 dark:text-orange-300 mt-1">{pendingProperties}</p>
-            <p className="text-[10px] text-neutral-400 mt-0.5">Listings awaiting admin</p>
+          <div className="bg-white dark:bg-[#141310] p-4 rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] shadow-xs">
+            <p className="text-[10px] font-bold text-amber-600 dark:text-[#fcd34d] uppercase tracking-wider">Pending Review</p>
+            <p className="text-xl font-extrabold text-amber-700 dark:text-[#fcd34d] mt-1">{pendingProperties}</p>
+            <p className="text-[10px] text-neutral-400 dark:text-[#8a8278] mt-0.5">Listings awaiting admin</p>
           </div>
 
-          <div className="bg-white dark:bg-neutral-900 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs">
-            <p className="text-[10px] font-bold text-red-600 dark:text-red-400 uppercase tracking-wider">Rejected Listings</p>
-            <p className="text-xl font-extrabold text-red-700 dark:text-red-300 mt-1">{rejectedProperties}</p>
-            <p className="text-[10px] text-neutral-400 mt-0.5">Require host edit</p>
+          <div className="bg-white dark:bg-[#141310] p-4 rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] shadow-xs">
+            <p className="text-[10px] font-bold text-red-600 dark:text-[#fca5a5] uppercase tracking-wider">Rejected Listings</p>
+            <p className="text-xl font-extrabold text-red-700 dark:text-[#fca5a5] mt-1">{rejectedProperties}</p>
+            <p className="text-[10px] text-neutral-400 dark:text-[#8a8278] mt-0.5">Require host edit</p>
           </div>
 
-          <div className="bg-white dark:bg-neutral-900 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs">
-            <p className="text-[10px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Total Bookings</p>
-            <p className="text-xl font-extrabold text-blue-700 dark:text-blue-300 mt-1">{totalBookings}</p>
-            <p className="text-[10px] text-neutral-400 mt-0.5">{confirmedBookings} Confirmed</p>
+          <div className="bg-white dark:bg-[#141310] p-4 rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] shadow-xs">
+            <p className="text-[10px] font-bold text-blue-600 dark:text-[#93c5fd] uppercase tracking-wider">Total Bookings</p>
+            <p className="text-xl font-extrabold text-blue-700 dark:text-[#93c5fd] mt-1">{totalBookings}</p>
+            <p className="text-[10px] text-neutral-400 dark:text-[#8a8278] mt-0.5">{confirmedBookings} Confirmed</p>
           </div>
 
-          <div className="bg-white dark:bg-neutral-900 p-4 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-xs">
-            <p className="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider">Payment Volume</p>
-            <p className="text-xl font-extrabold text-teal-700 dark:text-teal-300 mt-1">{revenueVolume.toLocaleString()} ETB</p>
-            <p className="text-[10px] text-neutral-400 mt-0.5">{totalPayments} Success Payments</p>
+          <div className="bg-white dark:bg-[#141310] p-4 rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] shadow-xs">
+            <p className="text-[10px] font-bold text-teal-600 dark:text-[#c9a84c] uppercase tracking-wider">Payment Volume</p>
+            <p className="text-xl font-extrabold text-teal-700 dark:text-[#c9a84c] mt-1">{revenueVolume.toLocaleString()} ETB</p>
+            <p className="text-[10px] text-neutral-400 dark:text-[#8a8278] mt-0.5">{totalPayments} Success Payments</p>
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* SECTION 2 — Recent Activity Feed */}
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-4">
-          <h2 className="font-bold text-neutral-800 dark:text-white text-base flex items-center gap-2">
-            <Clock className="size-4 text-teal-600" />
+        <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] p-6 shadow-xs space-y-4">
+          <h2 className="font-bold text-neutral-800 dark:text-[#f5f0e8] text-base flex items-center gap-2">
+            <Clock className="size-4 text-teal-600 dark:text-[#c9a84c]" />
             <span>Recent Activity Feed</span>
           </h2>
 
@@ -184,15 +184,15 @@ export default async function AdminSystemPage() {
             {activityFeed.map((event) => {
               const Icon = event.icon;
               return (
-                <div key={event.id} className="flex items-start gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800 text-xs">
-                  <div className="p-2 rounded-lg bg-teal-50 dark:bg-teal-950/30 text-teal-600 shrink-0 mt-0.5">
+                <div key={event.id} className="flex items-start gap-3 p-3 rounded-xl bg-neutral-50 dark:bg-[#1c1a16] border border-neutral-100 dark:border-[#fff8dc]/[0.06] text-xs">
+                  <div className="p-2 rounded-lg bg-teal-50 dark:bg-[#c9a84c]/10 text-teal-600 dark:text-[#c9a84c] shrink-0 mt-0.5">
                     <Icon className="size-4" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-bold text-neutral-800 dark:text-white truncate">{event.title}</p>
-                    <p className="text-neutral-500 text-[11px] truncate">{event.subtitle}</p>
+                    <p className="font-bold text-neutral-800 dark:text-[#f5f0e8] truncate">{event.title}</p>
+                    <p className="text-neutral-500 dark:text-[#8a8278] text-[11px] truncate">{event.subtitle}</p>
                   </div>
-                  <span className="text-[10px] text-neutral-400 shrink-0 font-medium">
+                  <span className="text-[10px] text-neutral-400 dark:text-[#524d47] shrink-0 font-medium">
                     {new Date(event.date).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                   </span>
                 </div>
@@ -215,53 +215,53 @@ export default async function AdminSystemPage() {
       </div>
 
       {/* SECTION 4 — System Information Card */}
-      <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-4">
-        <h2 className="font-bold text-neutral-800 dark:text-white text-base flex items-center gap-2">
-          <Server className="size-4 text-teal-600" />
+      <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] p-6 shadow-xs space-y-4">
+        <h2 className="font-bold text-neutral-800 dark:text-[#f5f0e8] text-base flex items-center gap-2">
+          <Server className="size-4 text-teal-600 dark:text-[#c9a84c]" />
           <span>System Environment &amp; Infrastructure</span>
         </h2>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 text-xs">
-          <div className="p-3.5 bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-neutral-100 dark:border-neutral-800 space-y-1">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-              <Zap className="size-3 text-amber-500" /> Version
+          <div className="p-3.5 bg-neutral-50 dark:bg-[#1c1a16] rounded-xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] space-y-1">
+            <span className="text-[10px] font-bold text-neutral-400 dark:text-[#8a8278] uppercase tracking-wider flex items-center gap-1">
+              <Zap className="size-3 text-amber-500 dark:text-[#fcd34d]" /> Version
             </span>
-            <p className="font-bold text-neutral-800 dark:text-white">v1.0.0 (Production)</p>
+            <p className="font-bold text-neutral-800 dark:text-[#f5f0e8]">v1.0.0 (Production)</p>
           </div>
 
-          <div className="p-3.5 bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-neutral-100 dark:border-neutral-800 space-y-1">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-              <Database className="size-3 text-blue-500" /> Database
+          <div className="p-3.5 bg-neutral-50 dark:bg-[#1c1a16] rounded-xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] space-y-1">
+            <span className="text-[10px] font-bold text-neutral-400 dark:text-[#8a8278] uppercase tracking-wider flex items-center gap-1">
+              <Database className="size-3 text-blue-500 dark:text-[#93c5fd]" /> Database
             </span>
-            <p className="font-bold text-neutral-800 dark:text-white">PostgreSQL (Supabase)</p>
+            <p className="font-bold text-neutral-800 dark:text-[#f5f0e8]">PostgreSQL (Supabase)</p>
           </div>
 
-          <div className="p-3.5 bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-neutral-100 dark:border-neutral-800 space-y-1">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-              <Cpu className="size-3 text-violet-500" /> AI Provider
+          <div className="p-3.5 bg-neutral-50 dark:bg-[#1c1a16] rounded-xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] space-y-1">
+            <span className="text-[10px] font-bold text-neutral-400 dark:text-[#8a8278] uppercase tracking-wider flex items-center gap-1">
+              <Cpu className="size-3 text-violet-500 dark:text-[#c9a84c]" /> AI Provider
             </span>
-            <p className="font-bold text-neutral-800 dark:text-white">Groq (LLaMA 3.1)</p>
+            <p className="font-bold text-neutral-800 dark:text-[#f5f0e8]">Groq (LLaMA 3.1)</p>
           </div>
 
-          <div className="p-3.5 bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-neutral-100 dark:border-neutral-800 space-y-1">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-              <CreditCard className="size-3 text-emerald-500" /> Payment Gateway
+          <div className="p-3.5 bg-neutral-50 dark:bg-[#1c1a16] rounded-xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] space-y-1">
+            <span className="text-[10px] font-bold text-neutral-400 dark:text-[#8a8278] uppercase tracking-wider flex items-center gap-1">
+              <CreditCard className="size-3 text-emerald-500 dark:text-[#86efac]" /> Payment Gateway
             </span>
-            <p className="font-bold text-neutral-800 dark:text-white">Chapa (Sandbox Mode)</p>
+            <p className="font-bold text-neutral-800 dark:text-[#f5f0e8]">Chapa (Sandbox Mode)</p>
           </div>
 
-          <div className="p-3.5 bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-neutral-100 dark:border-neutral-800 space-y-1">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-              <Globe className="size-3 text-teal-500" /> Deployment
+          <div className="p-3.5 bg-neutral-50 dark:bg-[#1c1a16] rounded-xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] space-y-1">
+            <span className="text-[10px] font-bold text-neutral-400 dark:text-[#8a8278] uppercase tracking-wider flex items-center gap-1">
+              <Globe className="size-3 text-teal-500 dark:text-[#c9a84c]" /> Deployment
             </span>
-            <p className="font-bold text-neutral-800 dark:text-white">Vercel Edge Platform</p>
+            <p className="font-bold text-neutral-800 dark:text-[#f5f0e8]">Vercel Edge Platform</p>
           </div>
 
-          <div className="p-3.5 bg-neutral-50 dark:bg-neutral-800/40 rounded-xl border border-neutral-100 dark:border-neutral-800 space-y-1">
-            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider flex items-center gap-1">
-              <Activity className="size-3 text-teal-500" /> Last DB Sync
+          <div className="p-3.5 bg-neutral-50 dark:bg-[#1c1a16] rounded-xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] space-y-1">
+            <span className="text-[10px] font-bold text-neutral-400 dark:text-[#8a8278] uppercase tracking-wider flex items-center gap-1">
+              <Activity className="size-3 text-teal-500 dark:text-[#c9a84c]" /> Last DB Sync
             </span>
-            <p className="font-mono font-bold text-neutral-800 dark:text-white text-[11px]">
+            <p className="font-mono font-bold text-neutral-800 dark:text-[#f5f0e8] text-[11px]">
               {new Date().toLocaleTimeString()}
             </p>
           </div>

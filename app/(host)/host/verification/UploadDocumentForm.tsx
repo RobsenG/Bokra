@@ -61,18 +61,18 @@ export default function UploadDocumentForm() {
   };
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 shadow-sm p-6 space-y-5">
-      <h2 className="font-bold text-neutral-800 dark:text-neutral-200 text-sm">Upload a Document</h2>
+    <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] shadow-sm p-6 space-y-5">
+      <h2 className="font-bold text-neutral-800 dark:text-[#f5f0e8] text-sm">Upload a Document</h2>
 
       {success && (
-        <div className="flex items-center gap-2 p-3 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-100 dark:border-emerald-900/30 rounded-xl text-emerald-700 dark:text-emerald-400 text-xs font-semibold">
+        <div className="flex items-center gap-2 p-3 bg-emerald-50 dark:bg-[#22c55e]/10 border border-emerald-100 dark:border-[#22c55e]/20 rounded-xl text-emerald-700 dark:text-[#86efac] text-xs font-semibold">
           <CheckCircle className="size-4 shrink-0" />
           Document uploaded successfully. Our team will review it within 24 hours.
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/30 rounded-xl text-red-600 dark:text-red-400 text-xs font-semibold">
+        <div className="flex items-center gap-2 p-3 bg-red-50 dark:bg-[#ef4444]/10 border border-red-100 dark:border-[#ef4444]/20 rounded-xl text-red-600 dark:text-[#fca5a5] text-xs font-semibold">
           <AlertCircle className="size-4 shrink-0" />
           {error}
         </div>
@@ -80,7 +80,7 @@ export default function UploadDocumentForm() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <label htmlFor="type" className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+          <label htmlFor="type" className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#8a8278]">
             Document Type
           </label>
           <select
@@ -89,20 +89,20 @@ export default function UploadDocumentForm() {
             required
             value={selectedType}
             onChange={(e) => setSelectedType(e.target.value)}
-            className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-neutral-700 bg-transparent text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 outline-none text-neutral-800 dark:text-neutral-100"
+            className="w-full h-11 px-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-transparent dark:bg-[#fff8dc]/[0.03] text-sm focus:border-teal-500 focus:ring-2 focus:ring-teal-500/10 focus:dark:border-[#c9a84c]/30 focus:dark:ring-[#c9a84c]/10 outline-none text-neutral-800 dark:text-[#d4cfc7]"
           >
-            <option value="">Select document type...</option>
+            <option value="" className="dark:bg-[#141310] dark:text-[#d4cfc7]">Select document type...</option>
             {DOC_TYPES.map((t) => (
-              <option key={t.value} value={t.value}>{t.label}</option>
+              <option key={t.value} value={t.value} className="dark:bg-[#141310] dark:text-[#d4cfc7]">{t.label}</option>
             ))}
           </select>
         </div>
 
         <div className="space-y-1.5">
-          <label className="text-xs font-bold uppercase tracking-wider text-neutral-500">
+          <label className="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-[#8a8278]">
             File
           </label>
-          <div className="relative group border-2 border-dashed border-neutral-200 dark:border-neutral-700 hover:border-teal-500 dark:hover:border-teal-400 rounded-2xl p-6 text-center cursor-pointer transition-colors">
+          <div className="relative group border-2 border-dashed border-neutral-200 dark:border-[#fff8dc]/[0.07] hover:border-teal-500 dark:hover:border-[#c9a84c] rounded-2xl p-6 text-center cursor-pointer transition-colors">
             <input
               type="file"
               name="file"
@@ -115,12 +115,12 @@ export default function UploadDocumentForm() {
               }}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
-            <div className="flex flex-col items-center gap-2 text-neutral-500">
-              <UploadCloud className="size-7 text-neutral-400 group-hover:text-teal-500 dark:group-hover:text-teal-400 transition-colors" />
-              <p className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+            <div className="flex flex-col items-center gap-2 text-neutral-500 dark:text-[#8a8278]">
+              <UploadCloud className="size-7 text-neutral-400 dark:text-[#8a8278] group-hover:text-teal-500 dark:group-hover:text-[#c9a84c] transition-colors" />
+              <p className="text-xs font-semibold text-neutral-700 dark:text-[#d4cfc7]">
                 {fileName || "Click or drag file to upload"}
               </p>
-              <p className="text-[10px] text-neutral-400">JPG, PNG, or PDF — max 10MB</p>
+              <p className="text-[10px] text-neutral-400 dark:text-[#524d47]">JPG, PNG, or PDF — max 10MB</p>
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@ export default function UploadDocumentForm() {
         <button
           type="submit"
           disabled={loading || !selectedType || !fileObject}
-          className="w-full h-11 rounded-xl text-xs font-semibold bg-teal-600 hover:bg-teal-700 text-white shadow-md shadow-teal-600/10 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center justify-center gap-2"
+          className="w-full h-11 rounded-xl text-xs font-bold bg-[#c9a84c] hover:bg-[#d4b458] text-[#0c0b09] shadow-md shadow-[#c9a84c]/20 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer flex items-center justify-center gap-2"
         >
           {loading ? (
             <>

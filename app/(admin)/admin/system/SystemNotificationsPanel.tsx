@@ -61,34 +61,34 @@ export default function SystemNotificationsPanel({
         return <AlertTriangle className="size-4 text-amber-500 shrink-0 mt-0.5" />;
       case "NEW_LISTING":
       case "DOCUMENT_UPLOADED":
-        return <FileText className="size-4 text-blue-500 shrink-0 mt-0.5" />;
+        return <FileText className="size-4 text-blue-500 dark:text-[#93c5fd] shrink-0 mt-0.5" />;
       case "PROPERTY_REJECTED":
-        return <XCircle className="size-4 text-red-500 shrink-0 mt-0.5" />;
+        return <XCircle className="size-4 text-red-500 dark:text-[#fca5a5] shrink-0 mt-0.5" />;
       case "PROPERTY_APPROVED":
-        return <CheckCircle2 className="size-4 text-emerald-500 shrink-0 mt-0.5" />;
+        return <CheckCircle2 className="size-4 text-emerald-500 dark:text-[#86efac] shrink-0 mt-0.5" />;
       default:
-        return <Bell className="size-4 text-teal-500 shrink-0 mt-0.5" />;
+        return <Bell className="size-4 text-[#c9a84c] shrink-0 mt-0.5" />;
     }
   };
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
   return (
-    <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-100 dark:border-neutral-800 p-6 shadow-xs space-y-4">
-      <div className="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-800 pb-4">
+    <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-100 dark:border-[#fff8dc]/[0.06] p-6 shadow-xs space-y-4">
+      <div className="flex items-center justify-between border-b border-neutral-100 dark:border-[#fff8dc]/[0.06] pb-4">
         <div>
-          <h2 className="font-bold text-neutral-800 dark:text-white text-base flex items-center gap-2">
-            <Bell className="size-4 text-teal-600" />
+          <h2 className="font-bold text-neutral-800 dark:text-[#f5f0e8] text-base flex items-center gap-2">
+            <Bell className="size-4 text-teal-600 dark:text-[#c9a84c]" />
             <span>Admin System Notifications</span>
           </h2>
-          <p className="text-xs text-neutral-400">Log of security alerts, submissions, and status updates.</p>
+          <p className="text-xs text-neutral-400 dark:text-[#8a8278]">Log of security alerts, submissions, and status updates.</p>
         </div>
 
         {unreadCount > 0 && (
           <button
             onClick={handleMarkAllRead}
             disabled={loading}
-            className="px-3 py-1.5 rounded-xl bg-teal-50 dark:bg-teal-950/30 text-teal-700 dark:text-teal-300 hover:bg-teal-100 font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5"
+            className="px-3 py-1.5 rounded-xl bg-teal-50 dark:bg-[#c9a84c]/10 text-teal-700 dark:text-[#c9a84c] hover:bg-teal-100 dark:hover:bg-[#c9a84c]/20 font-bold text-xs transition-colors cursor-pointer flex items-center gap-1.5"
           >
             <CheckCheck className="size-3.5" />
             <span>Mark all as read ({unreadCount})</span>
@@ -98,7 +98,7 @@ export default function SystemNotificationsPanel({
 
       <div className="space-y-2.5 max-h-96 overflow-y-auto pr-1">
         {notifications.length === 0 ? (
-          <div className="py-8 text-center text-xs text-neutral-400">
+          <div className="py-8 text-center text-xs text-neutral-400 dark:text-[#8a8278]">
             No system notifications recorded.
           </div>
         ) : (
@@ -107,17 +107,17 @@ export default function SystemNotificationsPanel({
               key={notif.id}
               className={`flex items-start justify-between gap-3 p-3.5 rounded-xl border text-xs transition-all ${
                 !notif.isRead
-                  ? "bg-teal-50/40 dark:bg-teal-950/20 border-l-4 border-l-teal-500 border-teal-200/60 dark:border-teal-900/40"
-                  : "bg-neutral-50/60 dark:bg-neutral-800/30 border-neutral-100 dark:border-neutral-800 opacity-80"
+                  ? "bg-teal-50/40 dark:bg-[#c9a84c]/10 border-l-4 border-l-[#c9a84c] border-teal-200/60 dark:border-[#c9a84c]/20"
+                  : "bg-neutral-50/60 dark:bg-[#1c1a16] border-neutral-100 dark:border-[#fff8dc]/[0.06] opacity-80"
               }`}
             >
               <div className="flex items-start gap-2.5">
                 {renderIcon(notif.type)}
                 <div className="space-y-0.5">
-                  <p className="font-semibold text-neutral-800 dark:text-neutral-200 leading-relaxed">
+                  <p className="font-semibold text-neutral-800 dark:text-[#d4cfc7] leading-relaxed">
                     {notif.message}
                   </p>
-                  <p className="text-[10px] text-neutral-400">
+                  <p className="text-[10px] text-neutral-400 dark:text-[#8a8278]">
                     {new Date(notif.createdAt).toLocaleString()}
                   </p>
                 </div>
@@ -127,7 +127,7 @@ export default function SystemNotificationsPanel({
                 <button
                   type="button"
                   onClick={() => handleMarkRead(notif.id)}
-                  className="p-1 rounded-lg text-neutral-400 hover:text-teal-600 hover:bg-teal-100/50 transition-colors cursor-pointer shrink-0"
+                  className="p-1 rounded-lg text-neutral-400 dark:text-[#8a8278] hover:text-teal-600 dark:hover:text-[#c9a84c] hover:bg-teal-100/50 dark:hover:bg-[#c9a84c]/10 transition-colors cursor-pointer shrink-0"
                   title="Mark as read"
                 >
                   <Check className="size-4" />

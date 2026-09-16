@@ -7,7 +7,7 @@
 
 /* ── CSS Custom Properties (Light/Dark) ─────────────────────────────────── */
 :root {
-  /* Light mode defaults */
+  /* Light mode defaults (DO NOT TOUCH - UNCHANGED) */
   --bg-primary:        #faf9f7;
   --bg-surface:        #ffffff;
   --bg-surface-raised: #f5f3ef;
@@ -58,48 +58,49 @@
 }
 
 .dark {
-  /* Refreshed Luminous & Warm Dark Mode Scheme */
-  --bg-primary:        #141722;
-  --bg-surface:        #1d2232;
-  --bg-surface-raised: #272c40;
-  --bg-sidebar:        #10131d;
+  /* Premium Warm Dark Mode Color System */
+  --bg-primary:        #0c0b09;
+  --bg-surface:        #141310;
+  --bg-surface-raised: #1c1a16;
+  --bg-sidebar:        #080806;
 
-  --border:            rgba(255, 255, 255, 0.12);
-  --border-hover:      rgba(229, 193, 88, 0.35);
+  --border:            rgba(255, 248, 220, 0.06);
+  --border-hover:      rgba(255, 248, 220, 0.10);
 
-  --gold:              #e5c158;
-  --gold-light:        #f5d57b;
-  --gold-dark:         #b8943d;
-  --gold-subtle:       rgba(229, 193, 88, 0.12);
-  --gold-border:       rgba(229, 193, 88, 0.28);
+  --gold:              #c9a84c;
+  --gold-hover:        #d4b458;
+  --gold-muted:        #a07830;
+  --gold-subtle:       rgba(201, 168, 76, 0.08);
+  --gold-border:       rgba(201, 168, 76, 0.18);
 
-  --text-primary:      #f8fafc;
-  --text-secondary:    #cbd5e1;
-  --text-muted:        #94a3b8;
+  --text-primary:      #f5f0e8;
+  --text-secondary:    #d4cfc7;
+  --text-muted:        #8a8278;
+  --text-disabled:     #524d47;
 
-  --shadow-card:       0 2px 8px rgba(0, 0, 0, 0.25);
-  --shadow-elevated:   0 20px 60px rgba(0, 0, 0, 0.5);
-  --shadow-gold:       0 4px 24px rgba(229, 193, 88, 0.3);
+  --shadow-card:       0 1px 0 rgba(255,255,255,0.03);
+  --shadow-elevated:   0 24px 64px rgba(0,0,0,0.6);
+  --shadow-gold:       0 4px 16px rgba(201,168,76,0.2);
 
-  /* Shadcn dark */
-  --color-background:     #141722;
-  --color-foreground:     #f8fafc;
-  --color-card:           #1d2232;
-  --color-card-foreground: #f8fafc;
-  --color-popover:        #1d2232;
-  --color-popover-foreground: #f8fafc;
-  --color-primary:        #e5c158;
-  --color-primary-foreground: #141722;
-  --color-secondary:      #272c40;
-  --color-secondary-foreground: #f8fafc;
-  --color-muted:          #272c40;
-  --color-muted-foreground: #94a3b8;
-  --color-accent:         rgba(229, 193, 88, 0.12);
-  --color-accent-foreground: #e5c158;
-  --color-destructive:    #f87171;
-  --color-border-css:     rgba(255, 255, 255, 0.12);
-  --color-input:          rgba(255, 255, 255, 0.12);
-  --color-ring:           #e5c158;
+  /* Shadcn dark compatibility */
+  --color-background:     #0c0b09;
+  --color-foreground:     #f5f0e8;
+  --color-card:           #141310;
+  --color-card-foreground: #d4cfc7;
+  --color-popover:        #1c1a16;
+  --color-popover-foreground: #d4cfc7;
+  --color-primary:        #c9a84c;
+  --color-primary-foreground: #0c0b09;
+  --color-secondary:      #1c1a16;
+  --color-secondary-foreground: #d4cfc7;
+  --color-muted:          #1c1a16;
+  --color-muted-foreground: #8a8278;
+  --color-accent:         rgba(201, 168, 76, 0.08);
+  --color-accent-foreground: #c9a84c;
+  --color-destructive:    #ef4444;
+  --color-border-css:     rgba(255, 248, 220, 0.06);
+  --color-input:          rgba(255, 248, 220, 0.07);
+  --color-ring:           #c9a84c;
 }
 
 /* ── Design Token Overrides via Tailwind v4 @theme ─────────────────────── */
@@ -107,24 +108,24 @@
   --font-sans: "Manrope", Inter, system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
 
-  --color-gold:       #e5c158;
-  --color-gold-light: #f5d57b;
-  --color-gold-dark:  #b8943d;
+  --color-gold:       #c9a84c;
+  --color-gold-light: #d4b458;
+  --color-gold-dark:  #a07830;
 
-  --color-sidebar:                    #10131d;
-  --color-sidebar-foreground:         #f8fafc;
-  --color-sidebar-primary:            #e5c158;
-  --color-sidebar-primary-foreground: #141722;
-  --color-sidebar-accent:             rgba(229, 193, 88, 0.12);
-  --color-sidebar-accent-foreground:  #f8fafc;
-  --color-sidebar-border:             rgba(255, 255, 255, 0.12);
-  --color-sidebar-ring:               #e5c158;
+  --color-sidebar:                    #080806;
+  --color-sidebar-foreground:         #f5f0e8;
+  --color-sidebar-primary:            #c9a84c;
+  --color-sidebar-primary-foreground: #080806;
+  --color-sidebar-accent:             rgba(201, 168, 76, 0.08);
+  --color-sidebar-accent-foreground:  #f5f0e8;
+  --color-sidebar-border:             rgba(255, 248, 220, 0.04);
+  --color-sidebar-ring:               #c9a84c;
 
-  --color-chart-1: #e5c158;
-  --color-chart-2: #34d399;
-  --color-chart-3: #fbbf24;
-  --color-chart-4: #60a5fa;
-  --color-chart-5: #f472b6;
+  --color-chart-1: #c9a84c;
+  --color-chart-2: #86efac;
+  --color-chart-3: #fcd34d;
+  --color-chart-4: #93c5fd;
+  --color-chart-5: #fca5a5;
 }
 
 /* ── Hero Section ───────────────────────────────────────────────────────── */
@@ -133,7 +134,7 @@
 }
 .dark .hero-section,
 :is(.dark *) .hero-section {
-  background: radial-gradient(ellipse 80% 50% at 50% -10%, rgba(229, 193, 88, 0.12) 0%, transparent 70%), #141722;
+  background: radial-gradient(ellipse 80% 50% at 50% -5%, rgba(201,168,76,0.06) 0%, transparent 65%), #0c0b09;
 }
 
 /* ── Hero Grid ──────────────────────────────────────────────────────────── */
@@ -144,7 +145,7 @@
   background-size: 48px 48px;
 }
 .dark .hero-grid,
-:is(.dark *) .hero-grid { --grid-color: rgba(255, 255, 255, 0.05); }
+:is(.dark *) .hero-grid { --grid-color: rgba(255, 248, 220, 0.02); }
 .hero-grid       { --grid-color: rgba(0,0,0,0.04); }
 
 /* ── Animations ─────────────────────────────────────────────────────────── */
@@ -164,8 +165,8 @@
 }
 
 @keyframes pulse-gold {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(229, 193, 88, 0); }
-  50%       { box-shadow: 0 0 0 8px rgba(229, 193, 88, 0.15); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 168, 76, 0); }
+  50%       { box-shadow: 0 0 0 8px rgba(201, 168, 76, 0.12); }
 }
 
 @keyframes float {
@@ -219,8 +220,8 @@
   }
 
   ::selection {
-    background-color: #e5c158;
-    color: #141722;
+    background-color: #c9a84c;
+    color: #0c0b09;
   }
 
   /* Custom scrollbar */
@@ -236,7 +237,7 @@
     border-radius: 999px;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--gold-light);
+    background: var(--gold-hover);
   }
 }
 
@@ -245,14 +246,15 @@
   /* Primary gold button */
   .btn-primary {
     @apply inline-flex items-center justify-center gap-2
-           bg-[#b8943d] dark:bg-[#e5c158]
-           hover:bg-[#c9a84c] dark:hover:bg-[#f5d57b]
-           text-white dark:text-[#141722]
+           bg-[#b8943d] dark:bg-[#c9a84c]
+           hover:bg-[#c9a84c] dark:hover:bg-[#d4b458]
+           active:bg-[#8a6e2a] dark:active:bg-[#a07830]
+           text-white dark:text-[#0c0b09]
            font-semibold text-sm px-6 py-3 rounded-xl
            shadow-[0_4px_20px_rgba(184,148,61,0.25)]
-           dark:shadow-[0_4px_20px_rgba(229,193,88,0.3)]
+           dark:shadow-[0_4px_16px_rgba(201,168,76,0.2)]
            hover:shadow-[0_6px_28px_rgba(184,148,61,0.4)]
-           dark:hover:shadow-[0_6px_28px_rgba(229,193,88,0.45)]
+           dark:hover:shadow-[0_6px_24px_rgba(201,168,76,0.3)]
            transition-all duration-200
            disabled:opacity-40 disabled:cursor-not-allowed;
   }
@@ -260,10 +262,10 @@
   /* Secondary outlined button */
   .btn-secondary {
     @apply inline-flex items-center justify-center gap-2
-           border border-[#b8943d]/25 dark:border-[#e5c158]/35
-           hover:border-[#b8943d] dark:hover:border-[#e5c158]
-           text-[#b8943d] dark:text-[#e5c158]
-           hover:bg-[#b8943d]/[0.08] dark:hover:bg-[#e5c158]/[0.12]
+           border border-[#b8943d]/25 dark:border-[#c9a84c]/20
+           hover:border-[#b8943d] dark:hover:border-[#c9a84c]/35
+           text-[#b8943d] dark:text-[#c9a84c]
+           hover:bg-[#b8943d]/[0.08] dark:hover:bg-[#c9a84c]/[0.06]
            font-semibold text-sm px-6 py-3 rounded-xl
            transition-all duration-200
            disabled:opacity-40 disabled:cursor-not-allowed;
@@ -272,9 +274,9 @@
   /* Ghost button */
   .btn-ghost {
     @apply inline-flex items-center justify-center gap-2
-           text-[#6b5e4e] dark:text-[#cbd5e1]
-           hover:text-[#1a1208] dark:hover:text-[#f8fafc]
-           hover:bg-black/5 dark:hover:bg-white/10
+           text-[#6b5e4e] dark:text-[#8a8278]
+           hover:text-[#1a1208] dark:hover:text-[#d4cfc7]
+           hover:bg-black/5 dark:hover:bg-[#fff8dc]/[0.04]
            font-medium text-sm px-4 py-2.5 rounded-xl
            transition-all duration-200;
   }
@@ -282,28 +284,28 @@
   /* Danger button */
   .btn-danger {
     @apply inline-flex items-center justify-center gap-2
-           bg-red-500/[0.08] dark:bg-red-500/15
-           hover:bg-red-500/15 dark:hover:bg-red-500/25
-           border border-red-500/15 dark:border-red-500/30
-           text-red-600 dark:text-red-400
+           bg-red-500/[0.08] dark:bg-red-500/[0.07]
+           hover:bg-red-500/15 dark:hover:bg-red-500/12
+           border border-red-500/15 dark:border-red-500/15
+           text-red-600 dark:text-[#fca5a5]
            font-semibold text-sm px-6 py-3 rounded-xl
            transition-all duration-200;
   }
 
   /* Standard card */
   .card {
-    @apply bg-white dark:bg-[#1d2232]
+    @apply bg-white dark:bg-[#141310]
            rounded-2xl
-           border border-black/[0.06] dark:border-white/10
-           shadow-[0_1px_3px_rgba(0,0,0,0.06)] dark:shadow-md
+           border border-black/[0.06] dark:border-[#fff8dc]/[0.06]
+           shadow-[0_1px_3px_rgba(0,0,0,0.06)] dark:shadow-[0_1px_0_rgba(255,255,255,0.03)]
            p-6;
   }
 
   /* Hover card */
   .card-hover {
-    @apply bg-white dark:bg-[#1d2232] rounded-2xl
-           border border-black/[0.06] dark:border-white/10
-           hover:border-[#b8943d]/30 dark:hover:border-[#e5c158]/40
+    @apply bg-white dark:bg-[#141310] rounded-2xl
+           border border-black/[0.06] dark:border-[#fff8dc]/[0.06]
+           hover:border-[#b8943d]/30 dark:hover:bg-[#1c1a16] dark:hover:border-[#fff8dc]/10
            hover:shadow-[0_8px_32px_rgba(0,0,0,0.08)]
            dark:hover:shadow-[0_8px_32px_rgba(0,0,0,0.4)]
            hover:-translate-y-0.5
@@ -313,22 +315,22 @@
   /* Input field */
   .input {
     @apply w-full px-4 py-3 rounded-xl
-           bg-black/[0.03] dark:bg-[#272c40]
-           border border-black/[0.08] dark:border-white/12
-           text-[#1a1208] dark:text-[#f8fafc] text-sm
-           placeholder:text-[#9b8e7e] dark:placeholder:text-[#94a3b8]
+           bg-black/[0.03] dark:bg-[#fff8dc]/[0.03]
+           border border-black/[0.08] dark:border-[#fff8dc]/[0.07]
+           text-[#1a1208] dark:text-[#d4cfc7] text-sm
+           placeholder:text-[#9b8e7e] dark:placeholder:text-[#524d47]
            focus:outline-none
-           focus:border-[#b8943d]/40 dark:focus:border-[#e5c158]/50
-           focus:bg-white dark:focus:bg-[#272c40]
+           focus:border-[#b8943d]/40 dark:focus:border-[#c9a84c]/30
+           focus:bg-white dark:focus:bg-[#fff8dc]/[0.05]
            focus:ring-1
-           focus:ring-[#b8943d]/15 dark:focus:ring-[#e5c158]/25
+           focus:ring-[#b8943d]/15 dark:focus:ring-[#c9a84c]/[0.08]
            transition-all duration-200;
   }
 
   /* Label */
   .label {
     @apply text-[10px] font-bold uppercase tracking-wider
-           text-[#9b8e7e] dark:text-[#cbd5e1] mb-1.5 block;
+           text-[#9b8e7e] dark:text-[#8a8278] mb-1.5 block;
   }
 
   /* Page container */
@@ -338,7 +340,7 @@
 
   /* Gold gradient text */
   .text-gradient-gold {
-    @apply bg-gradient-to-r from-[#b8943d] to-[#f5d57b]
+    @apply bg-gradient-to-r from-[#b8943d] to-[#d4b458]
            bg-clip-text text-transparent;
   }
 
@@ -351,30 +353,30 @@
 
   .badge-pending {
     @apply bg-amber-50 text-amber-700 border border-amber-200
-           dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30;
+           dark:bg-[#f59e0b]/[0.08] dark:text-[#fcd34d] dark:border-[#f59e0b]/15;
   }
   .badge-confirmed {
     @apply bg-emerald-50 text-emerald-700 border border-emerald-200
-           dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30;
+           dark:bg-[#22c55e]/[0.08] dark:text-[#86efac] dark:border-[#22c55e]/15;
   }
   .badge-cancelled {
     @apply bg-red-50 text-red-700 border border-red-200
-           dark:bg-red-500/15 dark:text-red-300 dark:border-red-500/30;
+           dark:bg-[#ef4444]/[0.08] dark:text-[#fca5a5] dark:border-[#ef4444]/15;
   }
   .badge-completed {
     @apply bg-[#b8943d]/10 text-[#8a6e2a] border border-[#b8943d]/20
-           dark:bg-[#e5c158]/15 dark:text-[#e5c158] dark:border-[#e5c158]/30;
+           dark:bg-[#c9a84c]/[0.08] dark:text-[#c9a84c] dark:border-[#c9a84c]/15;
   }
   .badge-host {
     @apply bg-[#b8943d]/10 text-[#8a6e2a] border border-[#b8943d]/20
-           dark:bg-[#e5c158]/15 dark:text-[#e5c158] dark:border-[#e5c158]/30;
+           dark:bg-[#c9a84c]/[0.08] dark:text-[#c9a84c] dark:border-[#c9a84c]/15;
   }
   .badge-renter {
     @apply bg-blue-50 text-blue-700 border border-blue-200
-           dark:bg-blue-500/15 dark:text-blue-300 dark:border-blue-500/30;
+           dark:bg-[#60a5fa]/[0.08] dark:text-[#93c5fd] dark:border-[#60a5fa]/15;
   }
   .badge-admin {
     @apply bg-[#1a1208] text-white border border-[#1a1208]
-           dark:bg-white/15 dark:text-white dark:border-white/30;
+           dark:bg-[#fff8dc]/[0.06] dark:text-[#d4cfc7] dark:border-[#fff8dc]/12;
   }
 }

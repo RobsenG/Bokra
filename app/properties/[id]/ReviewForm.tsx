@@ -31,24 +31,24 @@ export default function ReviewForm({ propertyId }: { propertyId: string }) {
 
   if (success) {
     return (
-      <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 rounded-2xl text-emerald-800 dark:text-emerald-300 text-sm font-medium">
+      <div className="p-4 bg-emerald-50 dark:bg-[rgba(34,197,94,0.08)] border border-emerald-200 dark:border-[rgba(34,197,94,0.15)] rounded-2xl text-emerald-800 dark:text-[#86efac] text-sm font-medium">
         Thank you! Your review has been published.
       </div>
     );
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 bg-white dark:bg-[#12121e] border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm font-sans">
-      <h3 className="font-bold text-neutral-900 dark:text-white text-lg">Leave a Review</h3>
+    <form onSubmit={handleSubmit} className="space-y-4 bg-white dark:bg-[#141310] border border-neutral-200 dark:border-[#fff8dc]/[0.06] rounded-2xl p-6 shadow-sm font-sans">
+      <h3 className="font-bold text-neutral-900 dark:text-[#f5f0e8] text-lg">Leave a Review</h3>
       
       {error && (
-        <div className="p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-300 rounded-xl text-xs font-semibold">
+        <div className="p-3 bg-red-50 dark:bg-[rgba(239,68,68,0.08)] border border-red-200 dark:border-[rgba(239,68,68,0.15)] text-red-600 dark:text-[#fca5a5] rounded-xl text-xs font-semibold">
           {error}
         </div>
       )}
 
       <div className="space-y-2">
-        <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">Rating</label>
+        <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]">Rating</label>
         <div className="flex gap-1">
           {[1, 2, 3, 4, 5].map((star) => (
             <button
@@ -59,7 +59,7 @@ export default function ReviewForm({ propertyId }: { propertyId: string }) {
             >
               <Star
                 className={`w-6 h-6 ${
-                  star <= rating ? "fill-amber-500 text-amber-500" : "text-neutral-300 dark:text-neutral-700"
+                  star <= rating ? "fill-amber-500 text-amber-500" : "text-neutral-300 dark:text-[#524d47]"
                 }`}
               />
             </button>
@@ -68,7 +68,7 @@ export default function ReviewForm({ propertyId }: { propertyId: string }) {
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="comment" className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+        <label htmlFor="comment" className="block text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-[#524d47]">
           Your Comment
         </label>
         <textarea
@@ -78,14 +78,14 @@ export default function ReviewForm({ propertyId }: { propertyId: string }) {
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="Share your experience..."
-          className="w-full p-4 rounded-xl border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] text-sm text-neutral-900 dark:text-white focus:border-[#b8943d] dark:focus:border-[#c9a84c] focus:ring-2 focus:ring-[#b8943d]/20 outline-none transition-all resize-none placeholder:text-neutral-400"
+          className="w-full p-4 rounded-xl border border-neutral-200 dark:border-[#fff8dc]/[0.07] bg-white dark:bg-[#fff8dc]/[0.03] text-sm text-neutral-900 dark:text-[#d4cfc7] focus:border-[#b8943d] dark:focus:border-[#c9a84c]/30 focus:ring-2 focus:ring-[#b8943d]/20 outline-none transition-all resize-none placeholder:text-neutral-400 dark:placeholder:text-[#524d47]"
         />
       </div>
 
       <button
         type="submit"
         disabled={loading}
-        className="bg-[#b8943d] hover:bg-[#a38233] dark:bg-[#c9a84c] dark:hover:bg-[#b8943d] text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-sm transition-all duration-200 disabled:opacity-50 cursor-pointer"
+        className="btn-primary px-5 py-2.5 rounded-xl text-sm font-semibold cursor-pointer disabled:opacity-50"
       >
         {loading ? "Posting..." : "Submit Review"}
       </button>

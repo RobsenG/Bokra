@@ -60,27 +60,27 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full bg-white dark:bg-[#12121a] rounded-2xl border border-black/[0.08] dark:border-white/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_60px_rgba(0,0,0,0.5)] p-6 sm:p-8 space-y-6">
+    <div className="w-full bg-white dark:bg-[#141310] rounded-2xl border border-black/[0.08] dark:border-[#fff8dc]/[0.07] shadow-[0_8px_32px_rgba(0,0,0,0.08)] dark:shadow-[0_32px_80px_rgba(0,0,0,0.6)] p-6 sm:p-8 space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-extrabold tracking-tight text-[#1a1208] dark:text-[#f8f6f0]">
+        <h1 className="text-3xl font-extrabold tracking-tight text-[#1a1208] dark:text-[#f5f0e8]">
           Welcome back
         </h1>
-        <p className="text-[#9b8e7e] dark:text-[#5a5348] text-sm">
+        <p className="text-[#9b8e7e] dark:text-[#8a8278] text-sm">
           Sign in to your account to continue
         </p>
       </div>
 
       {/* Banners */}
       {registered && (
-        <div className="flex items-center gap-2.5 p-3 text-sm text-emerald-800 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/[0.05] border border-emerald-200 dark:border-emerald-500/20 rounded-xl">
-          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+        <div className="flex items-center gap-2.5 p-3 text-sm text-emerald-800 dark:text-[#86efac] bg-emerald-50 dark:bg-[rgba(34,197,94,0.08)] border border-emerald-200 dark:border-[rgba(34,197,94,0.15)] rounded-xl">
+          <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-600 dark:text-[#86efac]" />
           <span>You&apos;re all set! Sign in to get started</span>
         </div>
       )}
 
       {message && !registered && (
-        <div className="flex items-center gap-2.5 p-3 text-sm text-[#b8943d] dark:text-[#c9a84c] bg-[#b8943d]/[0.08] dark:bg-[#c9a84c]/[0.08] border border-[#b8943d]/20 dark:border-[#c9a84c]/20 rounded-xl">
+        <div className="flex items-center gap-2.5 p-3 text-sm text-[#b8943d] dark:text-[#c9a84c] bg-[#b8943d]/[0.08] dark:bg-[rgba(201,168,76,0.08)] border border-[#b8943d]/20 dark:border-[rgba(201,168,76,0.15)] rounded-xl">
           <Info className="w-4 h-4 shrink-0" />
           <span>{decodeURIComponent(message)}</span>
         </div>
@@ -88,8 +88,8 @@ function LoginForm() {
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         {error && (
-          <div className="flex items-center gap-2.5 p-3 text-sm text-red-700 dark:text-red-400 bg-red-50 dark:bg-red-500/[0.05] border border-red-200 dark:border-red-500/15 rounded-xl">
-            <AlertCircle className="w-4 h-4 shrink-0 text-red-600 dark:text-red-400" />
+          <div className="flex items-center gap-2.5 p-3 text-sm text-red-700 dark:text-[#fca5a5] bg-red-50 dark:bg-[rgba(239,68,68,0.08)] border border-red-200 dark:border-[rgba(239,68,68,0.15)] rounded-xl">
+            <AlertCircle className="w-4 h-4 shrink-0 text-red-600 dark:text-[#fca5a5]" />
             <span>{error}</span>
           </div>
         )}
@@ -104,7 +104,7 @@ function LoginForm() {
             {...register("email")}
           />
           {errors.email && (
-            <p className="text-xs font-medium text-red-500">{errors.email.message}</p>
+            <p className="text-xs font-medium text-red-500 dark:text-[#fca5a5]">{errors.email.message}</p>
           )}
         </div>
 
@@ -118,7 +118,7 @@ function LoginForm() {
             {...register("password")}
           />
           {errors.password && (
-            <p className="text-xs font-medium text-red-500">{errors.password.message}</p>
+            <p className="text-xs font-medium text-red-500 dark:text-[#fca5a5]">{errors.password.message}</p>
           )}
         </div>
 
@@ -138,11 +138,11 @@ function LoginForm() {
         </button>
       </form>
 
-      <div className="pt-4 border-t border-black/[0.06] dark:border-white/[0.06] text-center text-sm text-[#9b8e7e] dark:text-[#5a5348]">
+      <div className="pt-4 border-t border-black/[0.06] dark:border-[#fff8dc]/[0.06] text-center text-sm text-[#9b8e7e] dark:text-[#8a8278]">
         New to Bokra Stay?{" "}
         <Link
           href="/register"
-          className="text-[#b8943d] dark:text-[#c9a84c] hover:text-[#8a6e2a] dark:hover:text-[#e8c96d] font-semibold hover:underline"
+          className="text-[#b8943d] dark:text-[#c9a84c] hover:text-[#8a6e2a] dark:hover:text-[#d4b458] font-semibold hover:underline"
         >
           Create account
         </Link>

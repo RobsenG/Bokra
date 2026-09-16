@@ -32,21 +32,21 @@ export default async function FavoritesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-white tracking-tight">Your Favorites</h1>
-        <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-0.5">
+        <h1 className="text-2xl font-extrabold text-neutral-800 dark:text-[#f5f0e8] tracking-tight">Your Favorites</h1>
+        <p className="text-sm text-neutral-500 dark:text-[#8a8278] mt-0.5">
           Properties you have saved to your wishlist.
         </p>
       </div>
 
       {favorites.length === 0 ? (
-        <div className="text-center py-16 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-3xl bg-white dark:bg-neutral-900/50 max-w-lg mx-auto">
-          <Compass className="size-10 text-neutral-400 mx-auto mb-3.5" />
-          <h3 className="text-lg font-bold text-neutral-800 dark:text-neutral-200 mb-1">No saved properties yet</h3>
-          <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-sm mx-auto px-4 mb-6">
+        <div className="text-center py-16 border border-dashed border-neutral-200 dark:border-[#fff8dc]/[0.06] rounded-3xl bg-white dark:bg-[#141310] max-w-lg mx-auto">
+          <Compass className="size-10 text-neutral-400 dark:text-[#8a8278] mx-auto mb-3.5" />
+          <h3 className="text-lg font-bold text-neutral-800 dark:text-[#f5f0e8] mb-1">No saved properties yet</h3>
+          <p className="text-neutral-500 dark:text-[#8a8278] text-sm max-w-sm mx-auto px-4 mb-6">
             When you find a stay you love, tap the heart icon to save it for later.
           </p>
           <Link href="/">
-            <button className="bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold h-10 px-5 rounded-xl transition-all shadow-sm cursor-pointer">
+            <button className="bg-[#b8943d] dark:bg-[#c9a84c] hover:bg-[#d4b458] text-white dark:text-[#0c0b09] font-bold h-10 px-5 rounded-xl transition-all shadow-sm cursor-pointer">
               Explore Stays
             </button>
           </Link>
@@ -59,9 +59,9 @@ export default async function FavoritesPage() {
 
             return (
               <Link href={`/properties/${property.id}`} key={property.id} className="group">
-                <article className="bg-white dark:bg-neutral-900 rounded-2xl overflow-hidden border border-neutral-100 dark:border-neutral-800 shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+                <article className="bg-white dark:bg-[#141310] rounded-2xl overflow-hidden border border-neutral-100 dark:border-[#fff8dc]/[0.06] shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col">
                   {/* Image container */}
-                  <div className="relative aspect-video w-full overflow-hidden bg-neutral-200">
+                  <div className="relative aspect-video w-full overflow-hidden bg-neutral-200 dark:bg-[#1c1a16]">
                     {property.images[0] ? (
                       <img 
                         src={property.images[0]} 
@@ -69,16 +69,16 @@ export default async function FavoritesPage() {
                         className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-teal-50 dark:bg-teal-950/20 text-teal-600/60 dark:text-teal-400/40">
+                      <div className="w-full h-full flex items-center justify-center bg-amber-50 dark:bg-[#c9a84c]/10 text-amber-600 dark:text-[#c9a84c]">
                         <MapPin className="size-8" />
                       </div>
                     )}
-                    <span className="absolute top-3 left-3 bg-white/95 dark:bg-neutral-900/95 text-neutral-800 dark:text-neutral-200 text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
+                    <span className="absolute top-3 left-3 bg-white/95 dark:bg-[#1c1a16]/95 text-neutral-800 dark:text-[#f5f0e8] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm">
                       {property.city}
                     </span>
                     {property.isVerified && (
-                      <span className="absolute top-3 right-14 bg-teal-600 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1 z-10">
-                        <BadgeCheck className="size-3 text-white fill-white" /> Verified
+                      <span className="absolute top-3 right-14 bg-[#b8943d] dark:bg-[#c9a84c] text-white dark:text-[#0c0b09] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm flex items-center gap-1 z-10">
+                        <BadgeCheck className="size-3 fill-current" /> Verified
                       </span>
                     )}
                     <FavoriteButton 
@@ -91,23 +91,23 @@ export default async function FavoritesPage() {
                   <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
                     <div className="space-y-2">
                       <div className="flex justify-between items-start gap-2">
-                        <h3 className="font-bold text-neutral-800 dark:text-neutral-200 line-clamp-1 group-hover:text-teal-600 transition-colors text-lg">
+                        <h3 className="font-bold text-neutral-800 dark:text-[#f5f0e8] line-clamp-1 group-hover:text-[#b8943d] dark:group-hover:text-[#c9a84c] transition-colors text-lg">
                           {property.title}
                         </h3>
                         {averageRating && (
-                          <div className="flex items-center gap-1 text-orange-500 text-sm font-semibold shrink-0">
-                            <Star className="size-3.5 fill-orange-500 text-orange-500" />
+                          <div className="flex items-center gap-1 text-amber-500 text-sm font-semibold shrink-0">
+                            <Star className="size-3.5 fill-amber-500 text-amber-500" />
                             <span>{averageRating}</span>
                           </div>
                         )}
                       </div>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2">
+                      <p className="text-xs text-neutral-500 dark:text-[#8a8278] line-clamp-2">
                         {property.description}
                       </p>
                     </div>
 
                     <div>
-                      <div className="flex gap-3 text-xs text-neutral-500 dark:text-neutral-400 pb-3 border-b border-neutral-100 dark:border-neutral-800/60">
+                      <div className="flex gap-3 text-xs text-neutral-500 dark:text-[#8a8278] pb-3 border-b border-neutral-100 dark:border-[#fff8dc]/[0.06]">
                         <span>{property.bedrooms} Beds</span>
                         <span>•</span>
                         <span>{property.bathrooms} Baths</span>
@@ -116,8 +116,8 @@ export default async function FavoritesPage() {
                       </div>
 
                       <div className="flex items-center justify-between pt-3">
-                        <p className="text-neutral-500 dark:text-neutral-400 text-xs">Price per night</p>
-                        <p className="font-extrabold text-teal-700 dark:text-teal-300 text-lg">
+                        <p className="text-neutral-500 dark:text-[#8a8278] text-xs">Price per night</p>
+                        <p className="font-extrabold text-[#b8943d] dark:text-[#c9a84c] text-lg">
                           {Number(property.pricePerNight).toLocaleString()} ETB
                         </p>
                       </div>
