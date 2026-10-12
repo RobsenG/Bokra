@@ -17,6 +17,7 @@ import {
 import Navbar from "@/components/common/Navbar";
 import Footer from "@/components/common/Footer";
 import LandingSearchForm from "@/components/common/LandingSearchForm";
+import HomePropertiesSlider, { HomePropertyItem } from "@/components/home/HomePropertiesSlider";
 
 export default async function HomePage() {
   const session = await auth();
@@ -26,13 +27,26 @@ export default async function HomePage() {
   try {
     properties = await prisma.property.findMany({
       where: { isVerified: true, isAvailable: true },
-      take: 6,
       orderBy: { createdAt: "desc" },
       include: { reviews: { select: { rating: true } } },
     });
   } catch (error) {
     console.error("[DB Error] Could not fetch featured properties:", error);
   }
+
+  const serializableProperties: HomePropertyItem[] = properties.map((p) => ({
+    id: p.id,
+    title: p.title,
+    description: p.description,
+    city: p.city,
+    pricePerNight: Number(p.pricePerNight),
+    bedrooms: p.bedrooms,
+    bathrooms: p.bathrooms,
+    maxGuests: p.maxGuests,
+    images: p.images || [],
+    isVerified: p.isVerified,
+    reviews: p.reviews || [],
+  }));
 
   return (
     <div className="min-h-screen flex flex-col bg-[#faf9f7] dark:bg-[#0c0b09] font-sans">
@@ -143,9 +157,9 @@ export default async function HomePage() {
         </section>
 
         {/* ── FEATURED PROPERTIES ───────────────────────────────────────── */}
-        <section className="py-24 bg-[#faf9f7] dark:bg-[#0c0b09]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-12">
+        <section id="featured-properties-section" className="py-24 bg-[#faf9f7] dark:bg-[#0c0b09]">
+          <div className="max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-8">
               <div className="animate-fade-up">
                 <span className="text-[#b8943d] dark:text-[#c9a84c] font-bold text-xs uppercase tracking-widest block mb-1">
                   Featured stays
@@ -154,7 +168,7 @@ export default async function HomePage() {
                   Places to stay
                 </h2>
                 <p className="text-[#6b5e4e] dark:text-[#8a8278] text-sm mt-1">
-                  Verified properties ready for your trip
+                  Verified properties ready for your trip in Ethiopia
                 </p>
               </div>
               <Link
@@ -166,7 +180,7 @@ export default async function HomePage() {
               </Link>
             </div>
 
-            {properties.length === 0 ? (
+            {serializableProperties.length === 0 ? (
               <div className="text-center py-20 border border-dashed border-black/[0.08] dark:border-[#fff8dc]/[0.06] rounded-3xl">
                 <MapPin className="w-10 h-10 text-black/15 dark:text-[#524d47] mx-auto mb-3" />
                 <p className="text-[#6b5e4e] dark:text-[#8a8278] text-sm">
@@ -174,83 +188,10 @@ export default async function HomePage() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 stagger-children">
-                {properties.map((property) => {
-                  const totalRating = property.reviews.reduce(
-                    (acc: number, r: any) => acc + r.rating,
-                    0
-                  );
-                  const avgRating =
-                    property.reviews.length > 0
-                      ? (totalRating / property.reviews.length).toFixed(1)
-                      : null;
-                  const href = isLoggedIn
-                    ? `/properties/${property.id}`
-                    : "/login?message=Sign+in+to+view+and+book+properties";
-                  return (
-                    <Link href={href} key={property.id} className="group animate-fade-up">
-                      <article className="card-hover overflow-hidden h-full flex flex-col p-0 bg-white dark:bg-[#141310] border border-black/[0.08] dark:border-[#fff8dc]/[0.06] rounded-2xl transition-all duration-200 hover:dark:bg-[#1c1a16] hover:dark:border-[#fff8dc]/10">
-                        {/* Image */}
-                        <div className="relative aspect-video overflow-hidden bg-black/[0.03] dark:bg-[#1c1a16]">
-                          {property.images[0] ? (
-                            <img
-                              src={property.images[0]}
-                              alt={property.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                            />
-                          ) : (
-                            <div className="w-full h-full flex items-center justify-center text-[#9b8e7e] dark:text-[#524d47]">
-                              <MapPin className="w-10 h-10" />
-                            </div>
-                          )}
-                          <span className="absolute top-3 left-3 bg-white/95 dark:bg-[#1c1a16]/95 text-[#1a1208] dark:text-[#f5f0e8] text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full shadow-sm backdrop-blur-sm border border-transparent dark:border-[#fff8dc]/[0.06]">
-                            {property.city}
-                          </span>
-                          {property.isVerified && (
-                            <span className="absolute top-3 right-3 bg-[#b8943d] dark:bg-[#c9a84c] text-white dark:text-[#0c0b09] text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                              <BadgeCheck className="w-3 h-3" /> Verified
-                            </span>
-                          )}
-                        </div>
-                        {/* Content */}
-                        <div className="p-5 flex-1 flex flex-col justify-between gap-4">
-                          <div>
-                            <div className="flex justify-between items-start gap-2 mb-1">
-                              <h3 className="font-bold text-[#1a1208] dark:text-[#f5f0e8] line-clamp-1 group-hover:text-[#b8943d] dark:group-hover:text-[#c9a84c] transition-colors">
-                                {property.title}
-                              </h3>
-                              {avgRating && (
-                                <div className="flex items-center gap-1 text-amber-500 text-sm font-semibold shrink-0">
-                                  <Star className="w-3.5 h-3.5 fill-amber-500" />
-                                  {avgRating}
-                                </div>
-                              )}
-                            </div>
-                            <p className="text-xs text-[#9b8e7e] dark:text-[#8a8278] line-clamp-2">
-                              {property.description}
-                            </p>
-                          </div>
-                          <div>
-                            <div className="flex gap-3 text-xs text-[#9b8e7e] dark:text-[#8a8278] pb-3 border-b border-black/[0.05] dark:border-[#fff8dc]/[0.04]">
-                              <span>{property.bedrooms} Beds</span>
-                              <span>•</span>
-                              <span>{property.bathrooms} Baths</span>
-                              <span>•</span>
-                              <span>{property.maxGuests} Guests</span>
-                            </div>
-                            <div className="flex items-center justify-between pt-3">
-                              <span className="text-xs text-[#9b8e7e] dark:text-[#8a8278]">Per night</span>
-                              <span className="font-extrabold text-[#b8943d] dark:text-[#c9a84c] text-lg">
-                                {Number(property.pricePerNight).toLocaleString()} ETB
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      </article>
-                    </Link>
-                  );
-                })}
-              </div>
+              <HomePropertiesSlider
+                properties={serializableProperties}
+                isLoggedIn={isLoggedIn}
+              />
             )}
           </div>
         </section>

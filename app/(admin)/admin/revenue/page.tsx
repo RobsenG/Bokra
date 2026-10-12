@@ -1,6 +1,6 @@
 import prisma from "@/lib/prisma";
 import { PLATFORM_FEE_PERCENT, calculatePlatformFee, calculateNetAmount } from "@/lib/platform";
-import { DollarSign, TrendingUp, CreditCard, Building2, FileText } from "lucide-react";
+import { DollarSign, TrendingUp, CreditCard, Building2, FileText, Calendar, Wallet } from "lucide-react";
 
 function formatDate(d: any): string {
   if (!d) return "—";
@@ -23,13 +23,22 @@ function safeNum(val: any): number {
 }
 
 export default async function AdminRevenuePage() {
-  // Execute all database queries concurrently in a single parallel batch
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const now = new Date();
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+  const dayOfWeek = now.getDay();
+  const diffToMonday = now.getDate() - dayOfWeek + (dayOfWeek === 0 ? -6 : 1);
+  const startOfWeek = new Date(now.setDate(diffToMonday));
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
   let rawPayments: any[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let confirmedBookingsWithoutPayment: any[] = [];
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let withdrawals: any[] = [];
+  let todayRevenueAgg: any = { _sum: { amount: null } };
+  let weekRevenueAgg: any = { _sum: { amount: null } };
+  let monthRevenueAgg: any = { _sum: { amount: null } };
 
   try {
     const results = await Promise.all([
@@ -78,11 +87,29 @@ export default async function AdminRevenuePage() {
         },
         orderBy: { createdAt: "desc" },
       }),
+      // Query 4: Today revenue
+      prisma.payment.aggregate({
+        where: { status: "SUCCESS", createdAt: { gte: startOfToday } },
+        _sum: { amount: true },
+      }),
+      // Query 5: This week revenue
+      prisma.payment.aggregate({
+        where: { status: "SUCCESS", createdAt: { gte: startOfWeek } },
+        _sum: { amount: true },
+      }),
+      // Query 6: This month revenue
+      prisma.payment.aggregate({
+        where: { status: "SUCCESS", createdAt: { gte: startOfMonth } },
+        _sum: { amount: true },
+      }),
     ]);
 
     rawPayments = results[0] || [];
     confirmedBookingsWithoutPayment = results[1] || [];
     withdrawals = results[2] || [];
+    todayRevenueAgg = results[3];
+    weekRevenueAgg = results[4];
+    monthRevenueAgg = results[5];
   } catch (err) {
     console.error("[Admin Revenue DB Error]", err);
   }
@@ -104,172 +131,216 @@ export default async function AdminRevenuePage() {
     return (isNaN(timeB) ? 0 : timeB) - (isNaN(timeA) ? 0 : timeA);
   });
 
-  // Calculate totals safely
+  // Calculate totals
   const totalVolume = payments.reduce((sum, p) => sum + safeNum(p.amount), 0);
   const totalBookingCommissions = calculatePlatformFee(totalVolume);
-
   const totalWithdrawalFees = withdrawals.reduce((sum, w) => sum + safeNum(w.platformFee), 0);
   const totalPlatformRevenue = Math.round((totalBookingCommissions + totalWithdrawalFees) * 100) / 100;
 
-  // Revenue-generating hosts
+  const todayVol = safeNum(todayRevenueAgg._sum?.amount);
+  const todayCommission = calculatePlatformFee(todayVol);
+
+  const weekVol = safeNum(weekRevenueAgg._sum?.amount);
+  const weekCommission = calculatePlatformFee(weekVol);
+
+  const monthVol = safeNum(monthRevenueAgg._sum?.amount);
+  const monthCommission = calculatePlatformFee(monthVol);
+
   const activeHostIds = new Set(
     payments.map((p) => p.booking?.property?.host?.id).filter(Boolean)
   );
   const activeHostsCount = activeHostIds.size;
 
-  // Monthly breakdown for last 6 months
-  const monthlyData: { [key: string]: number } = {};
-  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const now = new Date();
+  // Last 7 days revenue trend calculation
+  const last7DaysData: { day: string; amount: number; isToday: boolean }[] = [];
+  const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  // Initialize last 6 months
-  for (let i = 5; i >= 0; i--) {
-    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const key = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
-    monthlyData[key] = 0;
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    d.setHours(0, 0, 0, 0);
+
+    const nextD = new Date(d);
+    nextD.setDate(nextD.getDate() + 1);
+
+    const dayName = dayLabels[d.getDay()];
+    const isToday = i === 0;
+
+    const dayPayments = payments.filter((p) => {
+      if (!p.createdAt) return false;
+      const pTime = new Date(p.createdAt).getTime();
+      return pTime >= d.getTime() && pTime < nextD.getTime();
+    });
+
+    const dayVol = dayPayments.reduce((sum, p) => sum + safeNum(p.amount), 0);
+    const dayFee = calculatePlatformFee(dayVol);
+
+    last7DaysData.push({
+      day: dayName,
+      amount: dayFee,
+      isToday,
+    });
   }
 
-  // Populate monthly commission totals safely
-  payments.forEach((p) => {
-    if (!p || !p.createdAt) return;
-    try {
-      const d = new Date(p.createdAt);
-      if (isNaN(d.getTime())) return;
-      const monthIdx = d.getMonth();
-      const year = d.getFullYear();
-      if (monthIdx >= 0 && monthIdx < 12) {
-        const key = `${monthNames[monthIdx]} ${year}`;
-        if (key in monthlyData) {
-          monthlyData[key] += calculatePlatformFee(safeNum(p.amount));
-        }
-      }
-    } catch {
-      // ignore date parse errors
-    }
-  });
-
-  const chartEntries = Object.entries(monthlyData);
-  const maxMonthlyRevenue = Math.max(...Object.values(monthlyData).map(safeNum), 1);
+  const max7DaysAmount = Math.max(...last7DaysData.map((d) => d.amount), 1);
 
   return (
     <div className="space-y-8 pb-12 font-sans">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-[#f5f0e8] tracking-tight">
-          Revenue Overview
+        <h1 className="text-3xl font-extrabold text-[#1a1208] dark:text-[#f5f0e8] tracking-tight">
+          Platform Revenue Analytics
         </h1>
-        <p className="text-sm text-neutral-500 dark:text-[#8a8278] mt-0.5">
-          Platform earnings, commission history, and host withdrawal fees.
+        <p className="text-xs text-[#6b5e4e] dark:text-[#8a8278] mt-1">
+          Detailed platform commission history, transaction volume, and cash-out fee tracking.
         </p>
       </div>
 
-      {/* Top Stats Cards */}
+      {/* TOP SECTION — REVENUE SUMMARY BANNER */}
+      <div className="bg-gradient-to-br from-[#faf7f0] to-[#f0ebe0] dark:from-[#1c1a14] dark:to-[#141310] border border-[#b8943d]/20 dark:border-[#c9a84c]/20 rounded-3xl p-8 shadow-sm flex flex-col lg:flex-row items-stretch justify-between gap-8">
+        {/* Left Side */}
+        <div className="space-y-3 flex-1">
+          <span className="text-xs font-extrabold uppercase tracking-widest text-[#b8943d] dark:text-[#c9a84c]">
+            PLATFORM REVENUE
+          </span>
+          <h2 className="text-5xl font-black text-[#b8943d] dark:text-[#c9a84c]">
+            {totalPlatformRevenue.toLocaleString()} ETB
+          </h2>
+          <p className="text-xs text-[#6b5e4e] dark:text-[#8a8278] font-medium">
+            All time earnings (3% Booking Commissions + Host Withdrawal Fees)
+          </p>
+        </div>
+
+        {/* Right Side breakdown */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:w-[45%]">
+          <div className="p-4 rounded-2xl bg-white/70 dark:bg-[#141310]/70 border border-black/[0.06] dark:border-[#fff8dc]/[0.06] space-y-1">
+            <span className="text-[11px] font-bold text-[#6b5e4e] dark:text-[#8a8278] uppercase">
+              Today
+            </span>
+            <p className="text-lg font-black text-[#1a1208] dark:text-[#f5f0e8]">
+              {todayCommission.toLocaleString()} ETB
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white/70 dark:bg-[#141310]/70 border border-black/[0.06] dark:border-[#fff8dc]/[0.06] space-y-1">
+            <span className="text-[11px] font-bold text-[#6b5e4e] dark:text-[#8a8278] uppercase">
+              This Week
+            </span>
+            <p className="text-lg font-black text-[#1a1208] dark:text-[#f5f0e8]">
+              {weekCommission.toLocaleString()} ETB
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-white/70 dark:bg-[#141310]/70 border border-black/[0.06] dark:border-[#fff8dc]/[0.06] space-y-1">
+            <span className="text-[11px] font-bold text-[#6b5e4e] dark:text-[#8a8278] uppercase">
+              This Month
+            </span>
+            <p className="text-lg font-black text-[#b8943d] dark:text-[#c9a84c]">
+              {monthCommission.toLocaleString()} ETB
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* STATS CARDS (PREMIUM GRADIENTS) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Card 1: Total Platform Revenue */}
-        <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] p-5 shadow-xs">
+        {/* Card 1 */}
+        <div className="bg-gradient-to-br from-white to-[#faf9f7] dark:from-[#141310] dark:to-[#0f0e0c] rounded-2xl border border-black/[0.08] dark:border-[#fff8dc]/[0.06] p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#b8943d] dark:text-[#c9a84c] uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#b8943d] dark:text-[#c9a84c] uppercase tracking-wider">
               Total Platform Revenue
             </span>
-            <div className="p-2 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c]">
-              <DollarSign className="size-4" />
+            <div className="w-12 h-12 rounded-2xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] flex items-center justify-center">
+              <DollarSign className="size-6" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-[#b8943d] dark:text-[#c9a84c] mt-3">
+          <p className="text-4xl font-black text-[#b8943d] dark:text-[#c9a84c]">
             {totalPlatformRevenue.toLocaleString()} ETB
           </p>
-          <p className="text-[10px] text-neutral-500 dark:text-[#8a8278] mt-1 font-medium">
-            Booking Commissions + Withdrawal Fees
-          </p>
         </div>
 
-        {/* Card 2: Total Booking Volume */}
-        <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] p-5 shadow-xs">
+        {/* Card 2 */}
+        <div className="bg-gradient-to-br from-white to-[#faf9f7] dark:from-[#141310] dark:to-[#0f0e0c] rounded-2xl border border-black/[0.08] dark:border-[#fff8dc]/[0.06] p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-neutral-500 dark:text-[#8a8278] uppercase tracking-wider">
+            <span className="text-xs font-bold text-[#6b5e4e] dark:text-[#8a8278] uppercase tracking-wider">
               Total Booking Volume
             </span>
-            <div className="p-2 rounded-xl bg-blue-50 dark:bg-[#60a5fa]/10 text-blue-600 dark:text-[#93c5fd]">
-              <CreditCard className="size-4" />
+            <div className="w-12 h-12 rounded-2xl bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center">
+              <CreditCard className="size-6" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-neutral-900 dark:text-[#f5f0e8] mt-3">
+          <p className="text-4xl font-black text-[#1a1208] dark:text-[#f5f0e8]">
             {totalVolume.toLocaleString()} ETB
           </p>
-          <p className="text-[10px] text-neutral-500 dark:text-[#8a8278] mt-1 font-medium">
-            Gross transaction volume processed
-          </p>
         </div>
 
-        {/* Card 3: Withdrawal Fees */}
-        <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] p-5 shadow-xs">
+        {/* Card 3 */}
+        <div className="bg-gradient-to-br from-white to-[#faf9f7] dark:from-[#141310] dark:to-[#0f0e0c] rounded-2xl border border-black/[0.08] dark:border-[#fff8dc]/[0.06] p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-amber-600 dark:text-[#fcd34d] uppercase tracking-wider">
-              Withdrawal Fees Collected
+            <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+              Withdrawal Fees
             </span>
-            <div className="p-2 rounded-xl bg-amber-50 dark:bg-[#f59e0b]/10 text-amber-600 dark:text-[#fcd34d]">
-              <TrendingUp className="size-4" />
+            <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+              <TrendingUp className="size-6" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-amber-700 dark:text-[#fcd34d] mt-3">
+          <p className="text-4xl font-black text-amber-700 dark:text-amber-400">
             {totalWithdrawalFees.toLocaleString()} ETB
           </p>
-          <p className="text-[10px] text-neutral-500 dark:text-[#8a8278] mt-1 font-medium">
-            Fees collected from host cash-outs
-          </p>
         </div>
 
-        {/* Card 4: Active Hosts */}
-        <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] p-5 shadow-xs">
+        {/* Card 4 */}
+        <div className="bg-gradient-to-br from-white to-[#faf9f7] dark:from-[#141310] dark:to-[#0f0e0c] rounded-2xl border border-black/[0.08] dark:border-[#fff8dc]/[0.06] p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-[#b8943d] dark:text-[#c9a84c] uppercase tracking-wider">
-              Revenue-Generating Hosts
+            <span className="text-xs font-bold text-[#b8943d] dark:text-[#c9a84c] uppercase tracking-wider">
+              Active Hosts
             </span>
-            <div className="p-2 rounded-xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c]">
-              <Building2 className="size-4" />
+            <div className="w-12 h-12 rounded-2xl bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] flex items-center justify-center">
+              <Building2 className="size-6" />
             </div>
           </div>
-          <p className="text-2xl font-extrabold text-[#b8943d] dark:text-[#c9a84c] mt-3">
+          <p className="text-4xl font-black text-[#b8943d] dark:text-[#c9a84c]">
             {activeHostsCount}
-          </p>
-          <p className="text-[10px] text-neutral-500 dark:text-[#8a8278] mt-1 font-medium">
-            Hosts with active earnings
           </p>
         </div>
       </div>
 
-      {/* Revenue Breakdown Chart */}
-      <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] p-6 shadow-xs space-y-4">
+      {/* REVENUE TREND LINE (LAST 7 DAYS CSS BAR CHART) */}
+      <div className="bg-white dark:bg-[#141310] rounded-3xl border border-black/[0.08] dark:border-[#fff8dc]/[0.06] p-6 sm:p-8 shadow-xs space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="font-bold text-neutral-900 dark:text-[#f5f0e8] text-base">
-              Monthly Commissions (Last 6 Months)
+            <h2 className="font-extrabold text-[#1a1208] dark:text-[#f5f0e8] text-base">
+              7-Day Revenue Trend (CSS Sparkline)
             </h2>
-            <p className="text-xs text-neutral-500 dark:text-[#8a8278]">
-              Breakdown of {PLATFORM_FEE_PERCENT}% booking commissions over time
+            <p className="text-xs text-[#6b5e4e] dark:text-[#8a8278]">
+              Daily commission fees earned over the past week
             </p>
           </div>
-          <span className="text-xs font-bold text-[#b8943d] dark:text-[#c9a84c] bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-[#b8943d]/20 dark:border-[#c9a84c]/20 px-3 py-1 rounded-full">
-            {PLATFORM_FEE_PERCENT}% Service Fee
+          <span className="text-xs font-bold text-[#b8943d] dark:text-[#c9a84c] bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 border border-[#b8943d]/20 px-3 py-1 rounded-full">
+            Live Daily Feed
           </span>
         </div>
 
-        <div className="h-48 pt-6 flex items-end justify-between gap-3 border-b border-neutral-200 dark:border-[#fff8dc]/[0.06] px-4">
-          {chartEntries.map(([month, amount]) => {
-            const rawHeight = (safeNum(amount) / (maxMonthlyRevenue || 1)) * 100;
-            const heightPercent = Math.max(8, Math.min(100, Math.round(isNaN(rawHeight) ? 8 : rawHeight)));
+        <div className="h-44 flex items-end justify-between gap-3 pt-6 pb-2 border-b border-black/[0.06] dark:border-white/[0.06] px-4">
+          {last7DaysData.map((d, idx) => {
+            const heightPct = Math.max(10, Math.round((d.amount / max7DaysAmount) * 100));
 
             return (
-              <div key={month} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
-                <span className="text-[10px] font-extrabold text-neutral-900 dark:text-[#f5f0e8] opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-100 dark:bg-[#1c1a16] px-2 py-0.5 rounded-md border border-neutral-200 dark:border-[#fff8dc]/[0.06]">
-                  {safeNum(amount).toLocaleString()} ETB
+              <div key={idx} className="flex-1 flex flex-col items-center gap-2 group h-full justify-end">
+                {/* Tooltip */}
+                <span className="text-[10px] font-bold text-[#b8943d] dark:text-[#c9a84c] opacity-0 group-hover:opacity-100 transition-opacity bg-neutral-100 dark:bg-[#1c1a16] px-2 py-0.5 rounded-md border border-black/[0.08]">
+                  {d.amount.toLocaleString()} ETB
                 </span>
                 <div
-                  className="w-full max-w-[48px] bg-gradient-to-t from-[#a07830] to-[#c9a84c] rounded-t-lg transition-all group-hover:brightness-110"
-                  style={{ height: `${heightPercent}%` }}
+                  style={{ height: `${heightPct}%` }}
+                  className={`w-full max-w-[42px] rounded-t-lg transition-all duration-300 ${
+                    d.isToday
+                      ? "bg-[#b8943d] dark:bg-[#c9a84c] ring-2 ring-[#b8943d]/40"
+                      : "bg-[#b8943d]/40 dark:bg-[#c9a84c]/40 hover:bg-[#b8943d]"
+                  }`}
                 />
-                <span className="text-[10px] font-semibold text-neutral-500 dark:text-[#8a8278] mt-1">
-                  {month}
+                <span className={`text-[11px] font-semibold ${d.isToday ? "text-[#b8943d] dark:text-[#c9a84c] font-bold" : "text-[#6b5e4e] dark:text-[#8a8278]"}`}>
+                  {d.day} {d.isToday && "(Today)"}
                 </span>
               </div>
             );
@@ -277,33 +348,46 @@ export default async function AdminRevenuePage() {
         </div>
       </div>
 
-      {/* Commission Earnings Table */}
-      <div className="bg-white dark:bg-[#141310] border border-neutral-200 dark:border-[#fff8dc]/[0.06] rounded-2xl shadow-xs overflow-hidden space-y-4">
-        <div className="px-6 py-4 border-b border-neutral-200 dark:border-[#fff8dc]/[0.05]">
-          <h2 className="font-bold text-neutral-900 dark:text-[#f5f0e8] text-base">Booking Commission History</h2>
-          <p className="text-xs text-neutral-500 dark:text-[#8a8278]">All successful booking payments and calculated platform commissions.</p>
+      {/* PAYMENTS TABLE WITH ALTERNATING ROWS & GOLD COMMISSION HIGHLIGHT */}
+      <div className="bg-white dark:bg-[#141310] border border-black/[0.08] dark:border-[#fff8dc]/[0.06] rounded-3xl shadow-xs overflow-hidden space-y-4">
+        <div className="px-6 py-5 border-b border-black/[0.06] dark:border-[#fff8dc]/[0.05]">
+          <h2 className="font-extrabold text-[#1a1208] dark:text-[#f5f0e8] text-base">
+            Booking Commission Transactions
+          </h2>
+          <p className="text-xs text-[#6b5e4e] dark:text-[#8a8278]">
+            Detailed breakdown of guest payments and calculated {PLATFORM_FEE_PERCENT}% service fees.
+          </p>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-neutral-100 dark:bg-[#1c1a16] text-neutral-600 dark:text-[#524d47] uppercase font-bold text-[10px]">
+            <thead className="bg-[#faf9f7] dark:bg-[#1c1a16] text-[#6b5e4e] dark:text-[#8a8278] uppercase font-bold text-[10px]">
               <tr>
-                <th className="px-5 py-3.5">Date</th>
-                <th className="px-5 py-3.5">Booking ID</th>
-                <th className="px-5 py-3.5">Renter</th>
-                <th className="px-5 py-3.5">Property</th>
-                <th className="px-5 py-3.5">Host</th>
-                <th className="px-5 py-3.5">Booking Amount</th>
-                <th className="px-5 py-3.5">Platform Commission ({PLATFORM_FEE_PERCENT}%)</th>
-                <th className="px-5 py-3.5">Host Net Earnings</th>
-                <th className="px-5 py-3.5">Chapa Ref</th>
+                <th className="px-5 py-4">Date</th>
+                <th className="px-5 py-4">Booking ID</th>
+                <th className="px-5 py-4">Renter</th>
+                <th className="px-5 py-4">Property</th>
+                <th className="px-5 py-4">Host</th>
+                <th className="px-5 py-4">Booking Amount</th>
+                <th className="px-5 py-4 text-right">Commission ({PLATFORM_FEE_PERCENT}%)</th>
+                <th className="px-5 py-4 text-right">Host Net</th>
+                <th className="px-5 py-4">Chapa Ref</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-neutral-200 dark:divide-[#fff8dc]/[0.04]">
+            <tbody className="divide-y divide-black/[0.05] dark:divide-white/[0.04]">
               {payments.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-12 text-center text-neutral-500 dark:text-[#8a8278] text-xs">
-                    No successful booking payments recorded yet.
+                  <td colSpan={9} className="py-16 text-center space-y-3">
+                    <div className="w-12 h-12 rounded-full bg-[#b8943d]/10 text-[#b8943d] flex items-center justify-center mx-auto opacity-70">
+                      <CreditCard className="size-6" />
+                    </div>
+                    <p className="font-extrabold text-sm text-[#1a1208] dark:text-[#f5f0e8]">
+                      No revenue recorded yet
+                    </p>
+                    <p className="text-xs text-[#6b5e4e] dark:text-[#8a8278] max-w-sm mx-auto">
+                      Revenue will appear here automatically once renters complete booking payments.
+                    </p>
+                    <div className="w-12 h-0.5 bg-[#b8943d] mx-auto rounded-full mt-2" />
                   </td>
                 </tr>
               ) : (
@@ -316,36 +400,47 @@ export default async function AdminRevenuePage() {
                   const propertyTitle = p.booking?.property?.title || "Property Stay";
                   const propertyCity = p.booking?.property?.city || "";
                   const hostName = p.booking?.property?.host?.name || p.booking?.property?.host?.email || "Host";
-                  const key = p.id || `pmt-${idx}`;
+                  const isOdd = idx % 2 === 1;
 
                   return (
-                    <tr key={key} className="hover:bg-neutral-50 dark:hover:bg-[#fff8dc]/[0.02] transition-colors">
-                      <td className="px-5 py-4 whitespace-nowrap text-neutral-500 dark:text-[#8a8278] font-medium">
+                    <tr
+                      key={p.id || idx}
+                      className={`transition-colors hover:bg-black/[0.03] dark:hover:bg-white/[0.03] ${
+                        isOdd ? "bg-black/[0.01] dark:bg-white/[0.01]" : "bg-transparent"
+                      }`}
+                    >
+                      <td className="px-5 py-4 whitespace-nowrap text-[#6b5e4e] dark:text-[#8a8278] font-medium">
                         {formatDate(p.createdAt)}
                       </td>
-                      <td className="px-5 py-4 font-mono font-bold text-neutral-900 dark:text-[#f5f0e8]">
+                      <td className="px-5 py-4 font-mono font-bold text-[#1a1208] dark:text-[#f5f0e8]">
                         {bookingId}
                       </td>
-                      <td className="px-5 py-4 font-semibold text-neutral-900 dark:text-[#f5f0e8]">
+                      <td className="px-5 py-4 font-semibold text-[#1a1208] dark:text-[#f5f0e8]">
                         {renterName}
                       </td>
                       <td className="px-5 py-4">
-                        <p className="font-semibold text-neutral-900 dark:text-[#f5f0e8] line-clamp-1">{propertyTitle}</p>
-                        {propertyCity && <p className="text-[10px] text-neutral-500 dark:text-[#8a8278]">{propertyCity}</p>}
+                        <p className="font-semibold text-[#1a1208] dark:text-[#f5f0e8] line-clamp-1">
+                          {propertyTitle}
+                        </p>
+                        {propertyCity && (
+                          <p className="text-[10px] text-[#6b5e4e] dark:text-[#8a8278]">
+                            {propertyCity}
+                          </p>
+                        )}
                       </td>
-                      <td className="px-5 py-4 text-neutral-600 dark:text-[#8a8278]">
+                      <td className="px-5 py-4 text-[#6b5e4e] dark:text-[#8a8278]">
                         {hostName}
                       </td>
-                      <td className="px-5 py-4 font-bold text-neutral-900 dark:text-[#f5f0e8] whitespace-nowrap">
+                      <td className="px-5 py-4 font-bold text-[#1a1208] dark:text-[#f5f0e8] whitespace-nowrap">
                         {gross.toLocaleString()} ETB
                       </td>
-                      <td className="px-5 py-4 font-extrabold text-[#b8943d] dark:text-[#c9a84c] whitespace-nowrap bg-[#b8943d]/5 dark:bg-[#c9a84c]/10">
+                      <td className="px-5 py-4 font-black text-[#b8943d] dark:text-[#c9a84c] whitespace-nowrap bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-right">
                         +{fee.toLocaleString()} ETB
                       </td>
-                      <td className="px-5 py-4 font-semibold text-neutral-600 dark:text-[#8a8278] whitespace-nowrap">
+                      <td className="px-5 py-4 font-semibold text-[#6b5e4e] dark:text-[#8a8278] whitespace-nowrap text-right">
                         {net.toLocaleString()} ETB
                       </td>
-                      <td className="px-5 py-4 font-mono text-[10px] text-neutral-500 dark:text-[#8a8278] whitespace-nowrap">
+                      <td className="px-5 py-4 font-mono text-[10px] text-[#9b8e7e] whitespace-nowrap">
                         {p.chapaReference || "MOCK-REF"}
                       </td>
                     </tr>
@@ -354,91 +449,6 @@ export default async function AdminRevenuePage() {
               )}
             </tbody>
           </table>
-        </div>
-      </div>
-
-      {/* Host Withdrawal Fees Table */}
-      <div className="bg-white dark:bg-[#141310] border border-neutral-200 dark:border-[#fff8dc]/[0.06] rounded-2xl shadow-xs overflow-hidden space-y-4">
-        <div className="px-6 py-4 border-b border-neutral-200 dark:border-[#fff8dc]/[0.05]">
-          <h2 className="font-bold text-neutral-900 dark:text-[#f5f0e8] text-base">Withdrawal Fee History</h2>
-          <p className="text-xs text-neutral-500 dark:text-[#8a8278]">Fees collected when hosts withdraw earnings to their bank/telebirr accounts.</p>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-neutral-100 dark:bg-[#1c1a16] text-neutral-600 dark:text-[#524d47] uppercase font-bold text-[10px]">
-              <tr>
-                <th className="px-5 py-3.5">Date</th>
-                <th className="px-5 py-3.5">Host Name</th>
-                <th className="px-5 py-3.5">Requested Amount</th>
-                <th className="px-5 py-3.5">Platform Fee ({PLATFORM_FEE_PERCENT}%)</th>
-                <th className="px-5 py-3.5">Net Transferred</th>
-                <th className="px-5 py-3.5">Reference</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-200 dark:divide-[#fff8dc]/[0.04]">
-              {withdrawals.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-neutral-500 dark:text-[#8a8278] text-xs">
-                    No host withdrawal transactions recorded yet.
-                  </td>
-                </tr>
-              ) : (
-                withdrawals.map((w, idx) => {
-                  const hostDisplayName = w.host?.name || w.host?.email || "Host";
-                  const key = w.id || `wd-${idx}`;
-                  const amount = safeNum(w.amount);
-                  const fee = safeNum(w.platformFee);
-                  const net = safeNum(w.netAmount);
-
-                  return (
-                    <tr key={key} className="hover:bg-neutral-50 dark:hover:bg-[#fff8dc]/[0.02] transition-colors">
-                      <td className="px-5 py-4 text-neutral-500 dark:text-[#8a8278] font-medium whitespace-nowrap">
-                        {formatDate(w.createdAt)}
-                      </td>
-                      <td className="px-5 py-4 font-semibold text-neutral-900 dark:text-[#f5f0e8]">
-                        {hostDisplayName}
-                      </td>
-                      <td className="px-5 py-4 font-bold text-neutral-900 dark:text-[#f5f0e8] whitespace-nowrap">
-                        {amount.toLocaleString()} ETB
-                      </td>
-                      <td className="px-5 py-4 font-extrabold text-[#b8943d] dark:text-[#c9a84c] whitespace-nowrap bg-[#b8943d]/5 dark:bg-[#c9a84c]/10">
-                        +{fee.toLocaleString()} ETB
-                      </td>
-                      <td className="px-5 py-4 font-semibold text-neutral-600 dark:text-[#8a8278] whitespace-nowrap">
-                        {net.toLocaleString()} ETB
-                      </td>
-                      <td className="px-5 py-4 font-mono text-[10px] text-neutral-500 dark:text-[#8a8278] whitespace-nowrap">
-                        {w.chapaReference || formatShortId(w.id, "BOKRA-WD-")}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Summary Card */}
-      <div className="bg-gradient-to-br from-[#1c1a16] to-[#141310] border border-[#fff8dc]/[0.08] text-[#f5f0e8] rounded-2xl p-6 shadow-md max-w-xl ml-auto space-y-4">
-        <h3 className="font-extrabold text-base border-b border-[#fff8dc]/[0.06] pb-3 flex items-center gap-2">
-          <FileText className="size-4 text-[#c9a84c]" />
-          <span>Platform Revenue Summary</span>
-        </h3>
-        <div className="space-y-2 text-xs">
-          <div className="flex justify-between text-[#8a8278]">
-            <span>Booking Commissions ({PLATFORM_FEE_PERCENT}%):</span>
-            <span className="font-mono font-bold text-[#f5f0e8]">{totalBookingCommissions.toLocaleString()} ETB</span>
-          </div>
-          <div className="flex justify-between text-[#8a8278]">
-            <span>Withdrawal Fees Collected:</span>
-            <span className="font-mono font-bold text-[#f5f0e8]">{totalWithdrawalFees.toLocaleString()} ETB</span>
-          </div>
-          <div className="pt-3 border-t border-[#fff8dc]/[0.06] flex justify-between items-center text-sm font-extrabold text-[#c9a84c]">
-            <span>Total Platform Revenue:</span>
-            <span className="text-xl font-mono text-[#c9a84c]">{totalPlatformRevenue.toLocaleString()} ETB</span>
-          </div>
         </div>
       </div>
     </div>

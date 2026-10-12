@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import prisma from "@/lib/prisma";
 import AdminSidebar from "@/components/dashboard/AdminSidebar";
-import AdminNotificationBell from "@/components/dashboard/AdminNotificationBell";
+import NotificationBell from "@/components/dashboard/NotificationBell";
 import UserMenu from "@/components/common/UserMenu";
 import { ThemeToggle } from "@/components/common/ThemeProvider";
 import { getUnreadNotifications } from "@/lib/notifications";
@@ -41,8 +41,8 @@ export default async function AdminLayout({
           </div>
           <div className="flex items-center gap-3">
             <ThemeToggle />
-            <AdminNotificationBell
-              notifications={unreadNotifications.map((n) => ({
+            <NotificationBell
+              initialNotifications={unreadNotifications.map((n) => ({
                 id: n.id,
                 type: n.type,
                 message: n.message,

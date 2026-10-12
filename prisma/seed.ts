@@ -6,29 +6,38 @@ const prisma = new PrismaClient();
 async function main() {
   console.log("Running seed (safe mode — will NOT wipe existing data)...");
 
-  // Only create admin if it doesn't already exist
-  const existingAdmin = await prisma.user.findUnique({
+  // Create or upsert Admin
+  const adminPasswordHash = await bcrypt.hash("Admin@123", 10);
+  const admin = await prisma.user.upsert({
     where: { email: "admin@bokrastay.com" },
-  });
-
-  if (existingAdmin) {
-    console.log(`✅ Admin already exists: ${existingAdmin.email} — skipping seed.`);
-    return;
-  }
-
-  const passwordHash = await bcrypt.hash("Admin@123", 10);
-
-  const admin = await prisma.user.create({
-    data: {
+    update: {},
+    create: {
       name: "Bokra Admin",
       email: "admin@bokrastay.com",
-      password: passwordHash,
+      password: adminPasswordHash,
       role: "ADMIN",
       isVerified: true,
+      termsAcceptedAt: new Date(),
     },
   });
+  console.log(`✅ Admin account ensured: ${admin.email}`);
 
-  console.log(`✅ Created Admin: ${admin.email}`);
+  // Create or upsert Super Admin
+  const superAdminPasswordHash = await bcrypt.hash("SuperAdmin@2026", 10);
+  const superAdmin = await prisma.user.upsert({
+    where: { email: "superadmin@bokrastay.com" },
+    update: {},
+    create: {
+      email: "superadmin@bokrastay.com",
+      name: "Bokra Super Admin",
+      password: superAdminPasswordHash,
+      role: "SUPER_ADMIN",
+      isVerified: true,
+      termsAcceptedAt: new Date(),
+    },
+  });
+  console.log(`✅ Super Admin account ensured: ${superAdmin.email}`);
+
   console.log("Database seeding completed successfully! 🎉");
 }
 

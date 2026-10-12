@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import Link from "next/link";
 import BookingForm from "./BookingForm";
 import ReviewForm from "./ReviewForm";
+import PropertyReviewsSection from "./PropertyReviewsSection";
 import FavoriteButton from "@/components/common/FavoriteButton";
 import PropertyGallery from "./PropertyGallery";
 import { generateReviewSummary } from "@/lib/groq";
@@ -125,7 +126,10 @@ export default async function PropertyDetailPage({
   }
 
   const isOwner = session?.user?.id === property.hostId;
-  const isAdmin = session?.user?.role === "ADMIN";
+  const isAdmin =
+    session?.user?.role === "ADMIN" ||
+    session?.user?.role === "FINANCE_ADMIN" ||
+    session?.user?.role === "SUPER_ADMIN";
   const isPubliclyViewable =
     property.status !== "REJECTED" &&
     (property.isVerified || property.status === "APPROVED");
@@ -456,91 +460,18 @@ export default async function PropertyDetailPage({
 
           <hr className="border-neutral-200 dark:border-[#fff8dc]/[0.04]" />
 
-          {/* AI Review Summary */}
-          <div className="bg-[#b8943d]/10 dark:bg-gradient-to-br dark:from-[#c9a84c]/[0.06] dark:to-transparent rounded-3xl p-6 md:p-8 border border-[#b8943d]/20 dark:border-[#c9a84c]/[0.12] space-y-4">
-            <div className="flex items-center gap-2 text-[#b8943d] dark:text-[#c9a84c] font-bold">
-              <Sparkles className="w-5 h-5" />
-              <h3 className="text-lg">AI Review Summary</h3>
-            </div>
-            <p className="text-sm md:text-base text-neutral-900 dark:text-[#f5f0e8] leading-relaxed font-medium">
-              {aiSummary}
-            </p>
-            <p className="text-xs text-[#b8943d] dark:text-[#c9a84c] font-semibold">Powered by AI</p>
-          </div>
-
-          {/* Reviews List */}
-          <div className="space-y-6">
-            <h3 className="text-xl font-extrabold text-neutral-900 dark:text-[#f5f0e8] flex items-center gap-2">
-              <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
-              {property.reviews.length}{" "}
-              {property.reviews.length === 1 ? "Review" : "Reviews"}
-            </h3>
-
-            {property.reviews.length === 0 ? (
-              <p className="text-neutral-500 dark:text-[#8a8278] text-sm italic">
-                No reviews yet — be the first to review this place!
-              </p>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                {property.reviews.map((review: any) => (
-                  <div
-                    key={review.id}
-                    className="space-y-3 p-5 rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.05] bg-white dark:bg-[#fff8dc]/[0.02] shadow-2xs"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-[#b8943d]/10 dark:bg-[#c9a84c]/[0.08] border border-neutral-200 dark:border-[#fff8dc]/[0.06] overflow-hidden shrink-0 flex items-center justify-center font-bold text-[#b8943d] dark:text-[#c9a84c] text-sm">
-                        {review.renter.avatar &&
-                        typeof review.renter.avatar === "string" &&
-                        review.renter.avatar.startsWith("https://") ? (
-                          <img
-                            src={review.renter.avatar}
-                            alt="Avatar"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          (review.renter.name || review.renter.email || "R")[0].toUpperCase()
-                        )}
-                      </div>
-                      <div>
-                        <p className="font-bold text-sm text-neutral-900 dark:text-[#f5f0e8]">
-                          {review.renter.name || review.renter.email}
-                        </p>
-                        <p className="text-xs text-neutral-500 dark:text-[#8a8278]">
-                          {new Date(review.createdAt).toLocaleDateString(undefined, {
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star
-                          key={i}
-                          className={`w-3.5 h-3.5 ${
-                            i < review.rating
-                              ? "fill-amber-500 text-amber-500"
-                              : "text-neutral-300 dark:text-[#524d47]"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                    {review.comment && (
-                      <p className="text-sm text-neutral-600 dark:text-[#d4cfc7] leading-relaxed">
-                        {review.comment}
-                      </p>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          {/* Redesigned Reviews & AI Sentiment Section */}
+          <PropertyReviewsSection
+            reviews={property.reviews as any}
+            aiSummary={aiSummary}
+          />
 
           {/* Add Review Form */}
           {session?.user && (
             <div className="pt-4 border-t border-neutral-200 dark:border-[#fff8dc]/[0.04]">
-              {session.user.role === "ADMIN" ? (
+              {session.user.role === "ADMIN" ||
+                session.user.role === "FINANCE_ADMIN" ||
+                session.user.role === "SUPER_ADMIN" ? (
                 <p className="text-sm font-medium text-neutral-500 dark:text-[#8a8278] py-2">
                   Admins cannot leave reviews
                 </p>
@@ -555,7 +486,7 @@ export default async function PropertyDetailPage({
         <div className="relative">
           <div className="sticky top-24">
             <div className="bg-white dark:bg-[#1c1a16] rounded-3xl border border-neutral-200 dark:border-[#c9a84c]/[0.15] shadow-xl dark:shadow-[0_0_0_1px_rgba(201,168,76,0.06),0_32px_80px_rgba(0,0,0,0.5)] p-6 md:p-8 space-y-6">
-              {session?.user?.role === "ADMIN" || isOwner ? (
+              {isAdmin || isOwner ? (
                 <div className="text-center py-6 space-y-3">
                   <p className="text-sm font-bold text-neutral-900 dark:text-[#f5f0e8]">
                     {isOwner

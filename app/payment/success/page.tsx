@@ -21,7 +21,9 @@ export default async function PaymentSuccessPage({
   const booking = await prisma.booking.findUnique({
     where: { id: cleanBookingId },
     include: {
-      property: true,
+      property: {
+        include: { host: true },
+      },
       renter: true,
       payment: true,
     },
@@ -58,9 +60,26 @@ export default async function PaymentSuccessPage({
           email: booking.renter.email,
           name: booking.renter.name || "Guest",
           propertyTitle: booking.property.title,
-          checkIn: new Date(booking.checkIn).toLocaleDateString(),
-          checkOut: new Date(booking.checkOut).toLocaleDateString(),
+          propertyAddress: booking.property.address,
+          propertyCity: booking.property.city,
+          hostName: booking.property.host.name || "Your Host",
+          hostEmail: booking.property.host.email,
+          hostPhone: booking.property.host.phone ?? null,
+          checkIn: new Date(booking.checkIn).toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
+          checkOut: new Date(booking.checkOut).toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          }),
           totalPrice: Number(booking.totalPrice),
+          bookingId: booking.id,
+          chapaReference: booking.payment?.chapaReference ?? null,
         }).catch((err) => console.error("Failed to send confirmation email on success page:", err));
       }
     } catch (err) {

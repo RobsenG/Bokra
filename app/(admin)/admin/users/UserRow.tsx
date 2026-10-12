@@ -10,7 +10,7 @@ interface UserRowProps {
     id: string;
     name: string | null;
     email: string;
-    role: "RENTER" | "HOST" | "ADMIN";
+    role: string;
     isVerified: boolean;
     trustBadge?: string | null;
     trustBadgeAt?: string | null;

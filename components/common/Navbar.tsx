@@ -7,6 +7,7 @@ import { ThemeToggle } from "./ThemeProvider";
 export default async function Navbar() {
   const session = await auth();
   const isLoggedIn = !!session?.user;
+  const userRole = session?.user?.role;
 
   return (
     <header className="bg-white/90 dark:bg-[#0c0b09]/85 backdrop-blur-xl border-b border-black/[0.06] dark:border-[#fff8dc]/[0.05] sticky top-0 z-50 font-sans transition-colors duration-200">
@@ -25,7 +26,7 @@ export default async function Navbar() {
           >
             Find stays
           </Link>
-          {isLoggedIn && session?.user?.role === "HOST" && (
+          {isLoggedIn && userRole === "HOST" && (
             <Link
               href="/host/properties"
               className="text-sm font-medium text-[#6b5e4e] dark:text-[#8a8278] hover:text-[#1a1208] dark:hover:text-[#d4cfc7] transition-colors duration-200"
@@ -33,12 +34,28 @@ export default async function Navbar() {
               Properties
             </Link>
           )}
-          {isLoggedIn && session?.user?.role === "ADMIN" && (
+          {isLoggedIn && userRole === "ADMIN" && (
             <Link
               href="/admin/dashboard"
               className="text-sm font-medium text-[#6b5e4e] dark:text-[#8a8278] hover:text-[#1a1208] dark:hover:text-[#d4cfc7] transition-colors duration-200"
             >
               Admin
+            </Link>
+          )}
+          {isLoggedIn && userRole === "SUPER_ADMIN" && (
+            <Link
+              href="/superadmin/dashboard"
+              className="text-sm font-medium text-[#b8943d] dark:text-[#c9a84c] font-semibold hover:text-[#1a1208] dark:hover:text-[#d4cfc7] transition-colors duration-200"
+            >
+              Super Admin
+            </Link>
+          )}
+          {isLoggedIn && userRole === "FINANCE_ADMIN" && (
+            <Link
+              href="/finance/dashboard"
+              className="text-sm font-medium text-emerald-600 dark:text-emerald-400 font-semibold hover:text-[#1a1208] dark:hover:text-[#d4cfc7] transition-colors duration-200"
+            >
+              Finance Admin
             </Link>
           )}
         </nav>

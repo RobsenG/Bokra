@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
@@ -10,10 +11,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: {
     strategy: "jwt",
   },
+  trustHost: true,
+  secret: process.env.AUTH_SECRET || process.env.NEXTAUTH_SECRET || "bokrastay-secret-key-change-in-production-2026",
+  debug: process.env.NODE_ENV === "development",
   pages: {
     signIn: "/login",
+    error: "/login",
   },
   providers: [
+    Google({
+      clientId: process.env.GOOGLE_CLIENT_ID || process.env.AUTH_GOOGLE_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || process.env.AUTH_GOOGLE_SECRET || "",
+      allowDangerousEmailAccountLinking: true,
+    }),
     CredentialsProvider({
       name: "Credentials",
       credentials: {
@@ -54,21 +64,40 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  events: {
+    async createUser({ user }) {
+      if (user.id) {
+        try {
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              avatar: user.image || null,
+              isVerified: true,
+              termsAcceptedAt: new Date(),
+            },
+          });
+        } catch (error) {
+          console.error("[NextAuth events.createUser] Error updating user defaults:", error);
+        }
+      }
+    },
+  },
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id as string;
-        token.role = user.role;
-        token.avatar = user.avatar;
+        token.role = (user.role as Role) || "RENTER";
+        token.avatar = user.avatar || user.image;
       }
-      // Refresh avatar from database on each request
+      // Refresh user role & avatar from database on each request
       if (token.id) {
         const dbUser = await prisma.user.findUnique({
           where: { id: token.id as string },
-          select: { avatar: true, name: true },
+          select: { avatar: true, image: true, name: true, role: true },
         });
         if (dbUser) {
-          token.avatar = dbUser.avatar;
+          token.role = dbUser.role as Role;
+          token.avatar = dbUser.avatar || dbUser.image;
           token.name = dbUser.name;
         }
       }
@@ -78,9 +107,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (token && session.user) {
         session.user.id = token.id as string;
         session.user.role = token.role as Role;
-        session.user.avatar = token.avatar as string | null;
+        session.user.avatar = (token.avatar as string | null) || null;
+        if (!session.user.image && token.avatar) {
+          session.user.image = token.avatar as string;
+        }
       }
       return session;
     },
   },
 });
+

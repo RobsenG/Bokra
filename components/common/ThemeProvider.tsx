@@ -14,16 +14,24 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setTheme] = useState<Theme>("dark")
 
   useEffect(() => {
+    // Read saved theme or current DOM class applied by inline script
     const stored = localStorage.getItem("bokra-theme") as Theme
-    const initial = stored || "dark"
-    setTheme(initial)
-    document.documentElement.classList.toggle("dark", initial === "dark")
+    if (stored === "dark" || stored === "light") {
+      setTheme(stored)
+      document.documentElement.classList.toggle("dark", stored === "dark")
+    } else {
+      const isDark = document.documentElement.classList.contains("dark")
+      const current = isDark ? "dark" : "light"
+      setTheme(current)
+      localStorage.setItem("bokra-theme", current)
+    }
   }, [])
 
   const toggleTheme = () => {
     const next = theme === "dark" ? "light" : "dark"
     setTheme(next)
     localStorage.setItem("bokra-theme", next)
+    document.cookie = `bokra-theme=${next}; path=/; max-age=31536000`
     document.documentElement.classList.toggle("dark", next === "dark")
   }
 
@@ -38,6 +46,12 @@ export const useTheme = () => useContext(ThemeContext)
 
 export function ThemeToggle() {
   const { theme, toggleTheme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
   return (
     <button
       onClick={toggleTheme}
@@ -50,10 +64,13 @@ export function ThemeToggle() {
                  transition-all duration-200 cursor-pointer"
       aria-label="Toggle theme"
     >
-      {theme === "dark"
-        ? <Sun className="w-4 h-4" />
-        : <Moon className="w-4 h-4" />
-      }
+      {mounted && theme === "dark" ? (
+        <Sun className="w-4 h-4" />
+      ) : mounted && theme === "light" ? (
+        <Moon className="w-4 h-4" />
+      ) : (
+        <span className="w-4 h-4" />
+      )}
     </button>
   )
 }

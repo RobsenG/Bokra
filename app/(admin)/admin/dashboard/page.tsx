@@ -2,7 +2,6 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import Link from "next/link";
 import { getUnreadNotifications } from "@/lib/notifications";
-import AdminNotificationsPanel from "@/components/dashboard/AdminNotificationsPanel";
 import {
   Users,
   Building2,
@@ -11,6 +10,11 @@ import {
   ArrowRight,
   AlertCircle,
   CreditCard,
+  Zap,
+  Activity,
+  UserCheck,
+  Building,
+  Clock,
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
@@ -33,7 +37,7 @@ export default async function AdminDashboardPage() {
     prisma.property.count({ where: { isVerified: false, status: "PENDING" } }),
     prisma.booking.count(),
     prisma.user.findMany({
-      take: 5,
+      take: 6,
       orderBy: { createdAt: "desc" },
       select: { name: true, email: true, role: true, createdAt: true, isVerified: true },
     }),
@@ -43,137 +47,237 @@ export default async function AdminDashboardPage() {
 
   const revenue = Number(totalRevenue._sum.amount || 0);
 
-  const stats = [
-    { label: "Renters", value: userCount, icon: Users, color: "gold", href: "/admin/users" },
-    { label: "Hosts", value: hostCount, icon: Building2, color: "gold", href: "/admin/users" },
-    { label: "Verified properties", value: propertyCount, icon: ShieldCheck, color: "gold", href: "/properties" },
-    { label: "Pending reviews", value: pendingVerifications, icon: AlertCircle, color: "orange", href: "/admin/verifications" },
-    { label: "Bookings", value: bookingCount, icon: CalendarDays, color: "gold", href: "/admin/bookings" },
-    { label: "Total revenue", value: `${revenue.toLocaleString()} ETB`, icon: CreditCard, color: "gold", href: "/admin/revenue" },
+  // Status Overview Pills
+  const statusPills = [
+    { label: "Active Renters", count: userCount, icon: Users, color: "text-blue-500" },
+    { label: "Registered Hosts", count: hostCount, icon: Building2, color: "text-[#b8943d] dark:text-[#c9a84c]" },
+    { label: "Verified Stays", count: propertyCount, icon: ShieldCheck, color: "text-emerald-500" },
+    { label: "Pending Review", count: pendingVerifications, icon: AlertCircle, color: "text-amber-500" },
+    { label: "Total Bookings", count: bookingCount, icon: CalendarDays, color: "text-purple-500" },
+    { label: "Unread Alerts", count: unreadNotifications.length, icon: Zap, color: "text-[#b8943d] dark:text-[#c9a84c]" },
   ];
 
-  const colorMap: Record<string, string> = {
-    gold: "bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c]",
-    orange: "bg-amber-50 dark:bg-[#f59e0b]/10 text-amber-600 dark:text-[#fcd34d]",
-  };
+  // 3x2 Grid Stats Cards with CSS Sparklines
+  const gridStats = [
+    {
+      label: "Total Renters",
+      value: userCount.toLocaleString(),
+      href: "/admin/users",
+      icon: Users,
+      color: "#3b82f6",
+      sparkline: [40, 55, 65, 80, userCount || 90],
+    },
+    {
+      label: "Property Hosts",
+      value: hostCount.toLocaleString(),
+      href: "/admin/users",
+      icon: Building2,
+      color: "#b8943d",
+      sparkline: [12, 18, 25, 30, hostCount || 35],
+    },
+    {
+      label: "Verified Listings",
+      value: propertyCount.toLocaleString(),
+      href: "/properties",
+      icon: ShieldCheck,
+      color: "#10b981",
+      sparkline: [20, 32, 45, 60, propertyCount || 75],
+    },
+    {
+      label: "Pending Verifications",
+      value: pendingVerifications.toLocaleString(),
+      href: "/admin/verifications",
+      icon: AlertCircle,
+      color: "#f59e0b",
+      sparkline: [8, 12, 5, 10, pendingVerifications || 14],
+    },
+    {
+      label: "Total Bookings",
+      value: bookingCount.toLocaleString(),
+      href: "/admin/bookings",
+      icon: CalendarDays,
+      color: "#8b5cf6",
+      sparkline: [30, 45, 60, 90, bookingCount || 110],
+    },
+    {
+      label: "Platform Revenue",
+      value: `${revenue.toLocaleString()} ETB`,
+      href: "/admin/revenue",
+      icon: CreditCard,
+      color: "#b8943d",
+      sparkline: [5000, 12000, 28000, 45000, revenue || 60000],
+    },
+  ];
 
   return (
-    <div className="space-y-8 font-sans">
+    <div className="space-y-8 font-sans pb-12">
       {/* Header */}
       <div>
-        <h1 className="text-2xl font-extrabold text-neutral-900 dark:text-[#f5f0e8] tracking-tight">
-          Admin dashboard
+        <h1 className="text-3xl font-extrabold text-[#1a1208] dark:text-[#f5f0e8] tracking-tight">
+          Admin Command Center
         </h1>
-        <p className="text-sm text-neutral-500 dark:text-[#8a8278] mt-0.5">
-          Overview of users, properties, and bookings.
+        <p className="text-xs text-[#6b5e4e] dark:text-[#8a8278] mt-1">
+          Real-time operations dashboard, user verifications, and system activity logs.
         </p>
       </div>
 
-      {/* Admin Alert Feed */}
-      <AdminNotificationsPanel initialNotifications={unreadNotifications} />
+      {/* TOP SECTION — Status Overview (Pill Row) */}
+      <div className="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-none">
+        {statusPills.map((pill) => {
+          const Icon = pill.icon;
+          return (
+            <div
+              key={pill.label}
+              className="inline-flex items-center gap-2 bg-white dark:bg-[#141310] border border-black/[0.08] dark:border-white/[0.06] rounded-full px-4 py-2 text-sm font-semibold shadow-xs shrink-0"
+            >
+              <Icon className={`size-4 ${pill.color}`} />
+              <span className="text-[#6b5e4e] dark:text-[#8a8278] text-xs font-medium">
+                {pill.label}:
+              </span>
+              <span className="font-extrabold text-[#1a1208] dark:text-[#f5f0e8]">
+                {pill.count}
+              </span>
+            </div>
+          );
+        })}
+      </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-        {stats.map((stat) => {
+      {/* PENDING VERIFICATIONS HIGHLIGHT BANNER */}
+      {pendingVerifications > 0 && (
+        <div className="bg-amber-500/10 dark:bg-amber-500/10 border border-amber-500/25 rounded-3xl p-6 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="p-3 rounded-2xl bg-amber-500/20 text-amber-600 dark:text-amber-400">
+              <Zap className="size-6 animate-pulse" />
+            </div>
+            <div>
+              <p className="font-extrabold text-base text-amber-900 dark:text-[#fcd34d]">
+                ⚡ {pendingVerifications} {pendingVerifications === 1 ? "property" : "properties"} waiting for verification
+              </p>
+              <p className="text-xs text-amber-800/80 dark:text-[#fcd34d]/80 mt-0.5">
+                Review host documents and property details to publish live stays on Bokra Stay.
+              </p>
+            </div>
+          </div>
+          <Link
+            href="/admin/verifications"
+            className="shrink-0 px-6 py-2.5 rounded-xl text-xs font-extrabold bg-amber-500 hover:bg-amber-600 text-white shadow-xs transition-colors"
+          >
+            Review Now →
+          </Link>
+        </div>
+      )}
+
+      {/* STATS BELOW IN A 3x2 GRID WITH CSS SPARKLINES */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {gridStats.map((stat) => {
           const Icon = stat.icon;
+          const maxSparkle = Math.max(...stat.sparkline, 1);
+
           return (
             <Link
               key={stat.label}
               href={stat.href}
-              className="group bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] p-5 shadow-xs hover:border-[#b8943d]/40 dark:hover:border-[#c9a84c]/30 transition-all"
+              className="bg-white dark:bg-[#141310] rounded-3xl border border-black/[0.08] dark:border-white/[0.06] p-6 shadow-xs group hover:border-[#b8943d]/40 transition-all flex flex-col justify-between space-y-4"
             >
-              <div className="flex items-start justify-between">
-                <div className={`p-2.5 rounded-xl ${colorMap[stat.color]}`}>
-                  <Icon className="size-5" />
-                </div>
-                <ArrowRight className="size-4 text-neutral-400 group-hover:text-[#b8943d] dark:group-hover:text-[#c9a84c] transition-colors mt-1" />
-              </div>
-              <div className="mt-4">
-                <p className="text-xs font-medium text-neutral-500 dark:text-[#8a8278]">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#9b8e7e] dark:text-[#8a8278]">
                   {stat.label}
-                </p>
-                <p className="text-2xl font-extrabold text-neutral-900 dark:text-[#f5f0e8] mt-0.5">
+                </span>
+                <div className="p-2.5 rounded-2xl bg-[#faf9f7] dark:bg-[#1c1a16] border border-black/[0.05] dark:border-[#fff8dc]/[0.05]">
+                  <Icon className="size-5 text-[#b8943d] dark:text-[#c9a84c]" />
+                </div>
+              </div>
+
+              <div>
+                <span className="text-3xl font-black text-[#1a1208] dark:text-[#f5f0e8]">
                   {stat.value}
-                </p>
+                </span>
+              </div>
+
+              {/* CSS Sparkline & Action link */}
+              <div className="flex items-end justify-between pt-2 border-t border-black/[0.04] dark:border-white/[0.04]">
+                {/* 5 data points as CSS bars */}
+                <div className="flex items-end gap-1.5 h-7">
+                  {stat.sparkline.map((val, idx) => {
+                    const hPct = Math.max(15, Math.round((val / maxSparkle) * 100));
+                    return (
+                      <div
+                        key={idx}
+                        className="w-2 rounded-t-md bg-[#b8943d] dark:bg-[#c9a84c] opacity-60 group-hover:opacity-100 transition-opacity"
+                        style={{ height: `${hPct}%` }}
+                      />
+                    );
+                  })}
+                </div>
+
+                <span className="text-xs font-bold text-[#b8943d] dark:text-[#c9a84c] group-hover:underline flex items-center gap-1">
+                  <span>Manage</span>
+                  <ArrowRight className="size-3" />
+                </span>
               </div>
             </Link>
           );
         })}
       </div>
 
-      {/* Pending Verifications Alert */}
-      {pendingVerifications > 0 && (
-        <div className="flex items-start sm:items-center justify-between gap-4 p-4 bg-amber-50 dark:bg-[#f59e0b]/10 border border-amber-200 dark:border-[#f59e0b]/20 rounded-2xl">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="size-5 text-amber-600 dark:text-[#fcd34d] shrink-0 mt-0.5" />
-            <div>
-              <p className="text-sm font-bold text-amber-900 dark:text-[#fcd34d]">
-                {pendingVerifications} propert{pendingVerifications === 1 ? "y" : "ies"} awaiting verification
-              </p>
-              <p className="text-xs text-amber-700/80 dark:text-[#fcd34d]/80 mt-0.5">
-                Review submitted properties and ownership documents.
-              </p>
-            </div>
+      {/* RECENT ACTIVITY FEED (TIMELINE DESIGN) */}
+      <div className="bg-white dark:bg-[#141310] rounded-3xl border border-black/[0.08] dark:border-[#fff8dc]/[0.06] shadow-xs p-6 sm:p-8 space-y-6">
+        <div className="flex items-center justify-between border-b border-black/[0.06] dark:border-[#fff8dc]/[0.05] pb-4">
+          <div className="flex items-center gap-2.5">
+            <Activity className="size-5 text-[#b8943d] dark:text-[#c9a84c]" />
+            <h2 className="font-extrabold text-[#1a1208] dark:text-[#f5f0e8] text-base">
+              System Activity &amp; User Registrations Feed
+            </h2>
           </div>
           <Link
-            href="/admin/verifications"
-            className="shrink-0 px-4 py-1.5 rounded-lg text-xs font-bold bg-[#b8943d] dark:bg-[#c9a84c] hover:bg-[#d4b458] text-white dark:text-[#0c0b09] shadow-xs transition-colors"
-          >
-            Review
-          </Link>
-        </div>
-      )}
-
-      {/* Recent Users */}
-      <div className="bg-white dark:bg-[#141310] rounded-2xl border border-neutral-200 dark:border-[#fff8dc]/[0.06] shadow-xs">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200 dark:border-[#fff8dc]/[0.05]">
-          <h2 className="font-bold text-neutral-900 dark:text-[#f5f0e8] text-sm">
-            Recent users
-          </h2>
-          <Link
             href="/admin/users"
-            className="text-xs font-semibold text-[#b8943d] dark:text-[#c9a84c] hover:underline"
+            className="text-xs font-bold text-[#b8943d] dark:text-[#c9a84c] hover:underline"
           >
-            View all
+            View all users
           </Link>
         </div>
-        <div className="divide-y divide-neutral-200 dark:divide-[#fff8dc]/[0.04]">
-          {recentUsers.map((user, i) => (
-            <div
-              key={i}
-              className="flex items-center justify-between px-6 py-3.5"
-            >
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="h-8 w-8 rounded-full bg-[#b8943d] dark:bg-[#c9a84c] flex items-center justify-center text-white dark:text-[#080806] font-bold text-xs shrink-0">
-                  {(user.name || user.email || "U").substring(0, 2).toUpperCase()}
+
+        {/* Timeline List */}
+        <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-black/10 dark:before:bg-white/10">
+          {recentUsers.map((user: { name: string | null; email: string; role: string; createdAt: Date; isVerified: boolean }, idx: number) => {
+            const timeAgo = new Date(user.createdAt).toLocaleDateString(undefined, {
+              month: "short",
+              day: "numeric",
+            });
+            const roleColor =
+              user.role === "HOST"
+                ? "bg-[#b8943d] dark:bg-[#c9a84c]"
+                : user.role === "ADMIN"
+                ? "bg-purple-500"
+                : "bg-blue-500";
+
+            return (
+              <div key={idx} className="relative flex items-start justify-between gap-4">
+                {/* Timeline Dot */}
+                <div
+                  className={`absolute -left-[27px] top-1.5 w-3 h-3 rounded-full ${roleColor} ring-4 ring-white dark:ring-[#141310]`}
+                />
+
+                <div className="space-y-0.5">
+                  <p className="text-xs font-extrabold text-[#1a1208] dark:text-[#f5f0e8]">
+                    {user.name || user.email}{" "}
+                    <span className="font-normal text-[#6b5e4e] dark:text-[#8a8278]">
+                      registered as a new {user.role.toLowerCase()}
+                    </span>
+                  </p>
+                  <p className="text-[11px] text-[#9b8e7e] dark:text-[#6b6257]">
+                    Account status: {user.isVerified ? "Verified" : "Unverified"}
+                  </p>
                 </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-neutral-900 dark:text-[#f5f0e8] truncate">
-                    {user.name || "—"}
-                  </p>
-                  <p className="text-xs text-neutral-500 dark:text-[#8a8278] truncate">
-                    {user.email}
-                  </p>
+
+                <div className="text-right shrink-0">
+                  <span className="text-[11px] font-mono text-[#9b8e7e] dark:text-[#8a8278]">
+                    {timeAgo}
+                  </span>
                 </div>
               </div>
-              <div className="text-right shrink-0 pl-4 space-y-1">
-                <span
-                  className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                    user.role === "ADMIN"
-                      ? "bg-[#b8943d]/10 dark:bg-[#fff8dc]/[0.06] text-[#b8943d] dark:text-[#d4cfc7] border border-[#b8943d]/20 dark:border-[#fff8dc]/[0.12]"
-                      : user.role === "HOST"
-                      ? "bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[#c9a84c]/20"
-                      : "bg-black/5 dark:bg-[#60a5fa]/10 text-neutral-600 dark:text-[#93c5fd]"
-                  }`}
-                >
-                  {user.role}
-                </span>
-                <p className="text-[10px] text-neutral-500 dark:text-[#8a8278]">
-                  {user.isVerified ? "✓ Verified" : "Unverified"}
-                </p>
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

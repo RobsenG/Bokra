@@ -47,8 +47,12 @@ export async function bookProperty(propertyId: string, checkInStr: string, check
     throw new Error("You must be logged in to book a property.");
   }
 
-  if (session.user.role === "ADMIN") {
-    throw new Error("Administrators are not allowed to make bookings.");
+  if (
+    session.user.role === "ADMIN" ||
+    session.user.role === "FINANCE_ADMIN" ||
+    session.user.role === "SUPER_ADMIN"
+  ) {
+    throw new Error("Admin accounts are not allowed to make bookings.");
   }
 
   // Get full user details for payment gateway

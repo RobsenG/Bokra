@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import AIChatbot from "@/components/common/AIChatbot";
 import { ThemeProvider } from "@/components/common/ThemeProvider";
+import { AuthProvider } from "@/components/common/AuthProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -25,8 +26,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full antialiased dark">
+    <html lang="en" className="h-full antialiased" suppressHydrationWarning>
       <head>
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('bokra-theme');var isDark=t?t==='dark':(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(isDark){document.documentElement.classList.add('dark')}else{document.documentElement.classList.remove('dark')}}catch(e){}})()`,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
@@ -36,8 +43,10 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col bg-[#faf9f7] dark:bg-[#0a0a0f] text-[#1a1208] dark:text-[#f8f6f0] font-sans transition-colors duration-300">
         <ThemeProvider>
-          {children}
-          <AIChatbot />
+          <AuthProvider>
+            {children}
+            <AIChatbot />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

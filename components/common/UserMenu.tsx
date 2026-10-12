@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { User as UserIcon, LogOut, LayoutDashboard, ClipboardList } from "lucide-react";
+import { User as UserIcon, LogOut, LayoutDashboard, ClipboardList, Shield, DollarSign } from "lucide-react";
 import { signOut } from "next-auth/react";
 
 interface UserMenuProps {
@@ -38,12 +38,16 @@ export default function UserMenu({ user }: UserMenuProps) {
   }, []);
 
   const getDashboardLink = () => {
-    if (user.role === "HOST") return "/host/dashboard";
+    if (user.role === "SUPER_ADMIN") return "/superadmin/dashboard";
+    if (user.role === "FINANCE_ADMIN") return "/finance/dashboard";
     if (user.role === "ADMIN") return "/admin/dashboard";
+    if (user.role === "HOST") return "/host/dashboard";
     return "/renter/bookings";
   };
 
   const getProfileLink = () => {
+    if (user.role === "SUPER_ADMIN") return "/superadmin/dashboard";
+    if (user.role === "FINANCE_ADMIN") return "/finance/dashboard";
     if (user.role === "HOST") return "/host/profile";
     return "/renter/profile";
   };
@@ -54,6 +58,10 @@ export default function UserMenu({ user }: UserMenuProps) {
   };
 
   const getBadgeClass = () => {
+    if (user.role === "SUPER_ADMIN")
+      return "bg-amber-500/10 text-amber-500 border border-amber-500/20 dark:bg-amber-400/10 dark:text-amber-400 dark:border-amber-400/20";
+    if (user.role === "FINANCE_ADMIN")
+      return "bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 dark:bg-emerald-400/10 dark:text-emerald-400 dark:border-emerald-400/20";
     if (user.role === "ADMIN")
       return "bg-[#1a1208] text-white border border-[#1a1208] dark:bg-[#fff8dc]/[0.06] dark:text-[#d4cfc7] dark:border-[#fff8dc]/[0.12]";
     if (user.role === "HOST")
@@ -106,7 +114,7 @@ export default function UserMenu({ user }: UserMenuProps) {
               </p>
               <p className="text-xs text-[#9b8e7e] dark:text-[#8a8278] truncate">{user.email}</p>
               <span className={`inline-flex items-center px-2.5 py-0.5 mt-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${getBadgeClass()}`}>
-                {user.role || "RENTER"}
+                {user.role === "SUPER_ADMIN" ? "SUPER ADMIN" : user.role === "FINANCE_ADMIN" ? "FINANCE ADMIN" : user.role || "RENTER"}
               </span>
             </div>
           </div>

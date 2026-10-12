@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
-import { sendBookingConfirmationEmail } from "@/lib/email";
+import {
+  sendBookingConfirmationEmail,
+  sendHostBookingNotificationEmail,
+} from "@/lib/email";
 
 // Shared logic for processing the payment status update
 async function processPayment(tx_ref: string, status: string) {
@@ -15,7 +18,11 @@ async function processPayment(tx_ref: string, status: string) {
     where: { id: bookingId },
     include: {
       payment: true,
-      property: true,
+      property: {
+        include: {
+          host: true,
+        },
+      },
       renter: true,
     },
   });
@@ -25,6 +32,7 @@ async function processPayment(tx_ref: string, status: string) {
   }
 
   const isSuccess = status.toUpperCase() === "SUCCESS";
+  const wasAlreadyConfirmed = booking.status === "CONFIRMED";
 
   await prisma.$transaction([
     // Update or create payment
@@ -50,19 +58,56 @@ async function processPayment(tx_ref: string, status: string) {
     }),
   ]);
 
-  if (isSuccess && booking.status !== "CONFIRMED") {
-    // Only send email if we are transitioning to CONFIRMED
+  if (isSuccess && !wasAlreadyConfirmed) {
+    // Only send emails when transitioning to CONFIRMED for the first time
+    const formattedCheckIn = booking.checkIn.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+    const formattedCheckOut = booking.checkOut.toLocaleDateString("en-US", {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    // Send confirmation email to the renter
     try {
       await sendBookingConfirmationEmail({
         email: booking.renter.email,
         name: booking.renter.name || "Guest",
         propertyTitle: booking.property.title,
-        checkIn: booking.checkIn.toLocaleDateString(),
-        checkOut: booking.checkOut.toLocaleDateString(),
+        propertyAddress: booking.property.address,
+        propertyCity: booking.property.city,
+        hostName: booking.property.host.name || "Your Host",
+        hostEmail: booking.property.host.email,
+        hostPhone: booking.property.host.phone ?? null,
+        checkIn: formattedCheckIn,
+        checkOut: formattedCheckOut,
         totalPrice: Number(booking.totalPrice),
+        bookingId: booking.id,
+        chapaReference: booking.payment?.chapaReference ?? null,
       });
     } catch (err) {
-      console.error("Failed to send confirmation email:", err);
+      console.error("Failed to send renter confirmation email:", err);
+    }
+
+    // Send notification email to the host
+    try {
+      await sendHostBookingNotificationEmail({
+        hostEmail: booking.property.host.email,
+        hostName: booking.property.host.name || "Host",
+        renterName: booking.renter.name || "Guest",
+        propertyTitle: booking.property.title,
+        checkIn: formattedCheckIn,
+        checkOut: formattedCheckOut,
+        totalPrice: Number(booking.totalPrice),
+        bookingId: booking.id,
+      });
+    } catch (err) {
+      console.error("Failed to send host notification email:", err);
     }
   }
 
@@ -82,15 +127,24 @@ export async function GET(req: NextRequest) {
     }
 
     const bookingId = await processPayment(tx_ref, status);
+    console.log(`[Webhook GET] Processed bookingId: ${bookingId}`);
 
     if (status.toUpperCase() === "SUCCESS") {
-      return NextResponse.redirect(new URL(`/renter/bookings?message=Booking confirmed successfully!`, req.url));
+      return NextResponse.redirect(
+        new URL(`/renter/bookings?message=Booking confirmed successfully!`, req.url)
+      );
     } else {
-      return NextResponse.redirect(new URL(`/renter/bookings?error=Payment was declined or failed.`, req.url));
+      return NextResponse.redirect(
+        new URL(`/renter/bookings?error=Payment was declined or failed.`, req.url)
+      );
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Failed to verify payment.";
     console.error("[Webhook GET Error]:", error);
-    return NextResponse.redirect(new URL(`/renter/bookings?error=${encodeURIComponent(error.message || "Failed to verify payment.")}`, req.url));
+    return NextResponse.redirect(
+      new URL(`/renter/bookings?error=${encodeURIComponent(message)}`, req.url)
+    );
   }
 }
 
@@ -98,7 +152,7 @@ export async function POST(req: NextRequest) {
   try {
     // TODO: Verify Chapa webhook signature in production
     // const chapaSignature = req.headers.get('chapa-signature')
-    
+
     const body = await req.json();
     const tx_ref = body.tx_ref || body.trx_ref;
     const status = body.status;
@@ -108,8 +162,10 @@ export async function POST(req: NextRequest) {
     await processPayment(tx_ref, status);
 
     return NextResponse.json({ success: true });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message =
+      error instanceof Error ? error.message : "Internal Server Error";
     console.error("[Webhook POST Error]:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

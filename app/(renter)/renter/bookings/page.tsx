@@ -2,9 +2,8 @@ import { auth } from "@/lib/auth";
 import prisma from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-import { CalendarDays, MapPin, ExternalLink } from "lucide-react";
-import CancelBookingButton from "./CancelBookingButton";
-import PayNowButton from "./PayNowButton";
+import { CalendarDays } from "lucide-react";
+import RenterBookingsSlider from "./RenterBookingsSlider";
 
 export default async function RenterBookingsPage({
   searchParams,
@@ -34,32 +33,45 @@ export default async function RenterBookingsPage({
     console.error("[DB Error] Could not fetch bookings:", error);
   }
 
-  const getBadge = (status: string, payment?: any) => {
-    switch (status) {
-      case "PENDING":
-        return <span className="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-[#f59e0b]/10 text-amber-700 dark:text-[#fcd34d] border border-amber-200 dark:border-[#f59e0b]/20">Awaiting payment</span>;
-      case "CONFIRMED":
-        return (
-          <span className="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[#c9a84c]/20">
-            Confirmed {payment ? `(${Number(payment.amount).toLocaleString()} ETB)` : ""}
-          </span>
-        );
-      case "CANCELLED":
-        return <span className="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold bg-red-50 dark:bg-[#ef4444]/10 text-red-700 dark:text-[#fca5a5] border border-red-200 dark:border-[#ef4444]/20">Cancelled</span>;
-      case "COMPLETED":
-        return <span className="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[#c9a84c]/20">Completed</span>;
-      default:
-        return <span className="shrink-0 px-2.5 py-1 rounded-full text-[10px] font-bold bg-black/5 dark:bg-[#fff8dc]/[0.06] text-[#6b5e4e] dark:text-[#8a8278]">{status}</span>;
-    }
-  };
+  // Format bookings data safely for client component
+  const serializableBookings = bookings.map((b) => ({
+    id: b.id,
+    checkIn: b.checkIn.toISOString(),
+    checkOut: b.checkOut.toISOString(),
+    totalPrice: Number(b.totalPrice),
+    status: b.status,
+    createdAt: b.createdAt.toISOString(),
+    property: {
+      id: b.property.id,
+      title: b.property.title,
+      city: b.property.city,
+      images: b.property.images || [],
+    },
+    payment: b.payment
+      ? {
+          id: b.payment.id,
+          amount: Number(b.payment.amount),
+          chapaReference: b.payment.chapaReference,
+        }
+      : null,
+  }));
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto py-4 font-sans">
-      <div>
-        <h1 className="text-2xl font-extrabold text-[#1a1208] dark:text-[#f5f0e8] tracking-tight">Your bookings</h1>
-        <p className="text-sm text-[#6b5e4e] dark:text-[#8a8278] mt-0.5">
-          View your upcoming and past stays.
-        </p>
+    <div className="space-y-6 w-full py-4 font-sans">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-2">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1a1208] dark:text-[#f5f0e8] tracking-tight">
+            Your bookings
+          </h1>
+          <p className="text-sm text-[#6b5e4e] dark:text-[#8a8278] mt-1">
+            View your upcoming stays and booking history.
+          </p>
+        </div>
+        {bookings.length > 0 && (
+          <span className="text-xs font-semibold px-3 py-1 rounded-full bg-[#b8943d]/10 dark:bg-[#c9a84c]/10 text-[#b8943d] dark:text-[#c9a84c] border border-[#b8943d]/20 dark:border-[#c9a84c]/20">
+            {bookings.length} {bookings.length === 1 ? "stay booked" : "stays booked"}
+          </span>
+        )}
       </div>
 
       {message && (
@@ -90,77 +102,7 @@ export default async function RenterBookingsPage({
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {bookings.map((booking) => (
-            <div 
-              key={booking.id} 
-              className="bg-white dark:bg-[#141310] border border-black/[0.08] dark:border-[#fff8dc]/[0.06] rounded-3xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col h-full"
-            >
-              {/* Image Banner */}
-              <div 
-                className="h-44 w-full bg-cover bg-center bg-black/5 dark:bg-[#1c1a16] shrink-0"
-                style={{ backgroundImage: `url(${booking.property.images[0] || ""})` }}
-              />
-
-              <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-start gap-2">
-                    <h3 className="font-bold text-[#1a1208] dark:text-[#f5f0e8] text-sm line-clamp-1">
-                      {booking.property.title}
-                    </h3>
-                    {getBadge(booking.status, booking.payment)}
-                  </div>
-                  <p className="text-xs text-[#6b5e4e] dark:text-[#8a8278] flex items-center gap-1">
-                    <MapPin className="size-3" /> {booking.property.city}
-                  </p>
-                  {booking.payment?.chapaReference && (
-                    <p className="text-[10px] text-[#6b5e4e] dark:text-[#8a8278] font-mono">
-                      Ref: {booking.payment.chapaReference}
-                    </p>
-                  )}
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 text-xs py-3 border-t border-b border-black/[0.06] dark:border-[#fff8dc]/[0.06]">
-                  <div>
-                    <p className="text-[#6b5e4e] dark:text-[#8a8278] font-medium">Check-in</p>
-                    <p className="font-semibold text-[#1a1208] dark:text-[#f5f0e8] mt-0.5">
-                      {new Date(booking.checkIn).toLocaleDateString(undefined, { dateStyle: "medium" })}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-[#6b5e4e] dark:text-[#8a8278] font-medium">Check-out</p>
-                    <p className="font-semibold text-[#1a1208] dark:text-[#f5f0e8] mt-0.5">
-                      {new Date(booking.checkOut).toLocaleDateString(undefined, { dateStyle: "medium" })}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex justify-between items-center pt-1">
-                  <div>
-                    <p className="text-[10px] text-[#6b5e4e] dark:text-[#8a8278] font-medium">Total price</p>
-                    <p className="font-black text-[#b8943d] dark:text-[#c9a84c] text-base">
-                      {Number(booking.totalPrice).toLocaleString()} ETB
-                    </p>
-                  </div>
-                  <div className="flex gap-2 items-center">
-                    {booking.status === "PENDING" && (
-                      <PayNowButton bookingId={booking.id} />
-                    )}
-                    {(booking.status === "PENDING" || booking.status === "CONFIRMED") && (
-                      <CancelBookingButton bookingId={booking.id} />
-                    )}
-                    <Link href={`/properties/${booking.property.id}`}>
-                      <button className="flex items-center gap-1 text-xs font-semibold text-[#6b5e4e] hover:text-[#b8943d] dark:text-[#d4cfc7] dark:hover:text-[#c9a84c] border border-black/10 dark:border-[#fff8dc]/[0.07] hover:border-[#b8943d] dark:hover:border-[#c9a84c] px-3 py-1.5 rounded-xl transition-all cursor-pointer">
-                        <span>View</span>
-                        <ExternalLink className="size-3" />
-                      </button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <RenterBookingsSlider bookings={serializableBookings} />
       )}
     </div>
   );
