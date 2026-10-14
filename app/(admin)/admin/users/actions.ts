@@ -21,6 +21,9 @@ export async function suspendUser(userId: string) {
   });
 
   revalidatePath("/admin/users");
+  revalidatePath("/host", "layout");
+  revalidatePath("/host/properties");
+  revalidatePath("/host/dashboard");
 }
 
 export async function activateUser(userId: string) {
@@ -35,6 +38,9 @@ export async function activateUser(userId: string) {
   });
 
   revalidatePath("/admin/users");
+  revalidatePath("/host", "layout");
+  revalidatePath("/host/properties");
+  revalidatePath("/host/dashboard");
 }
 
 export async function getUserDetails(userId: string) {

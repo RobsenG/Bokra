@@ -126,6 +126,11 @@ export async function approveDocument(documentId: string) {
   revalidatePath("/admin/dashboard");
   revalidatePath("/host/dashboard");
   revalidatePath("/host/verification");
+  revalidatePath("/host/properties");
+  revalidatePath("/host/properties/new");
+  revalidatePath("/host/profile");
+  // Revalidate the host layout (root host path) so the banner clears everywhere
+  revalidatePath("/host", "layout");
 }
 
 export async function rejectDocument(documentId: string) {
